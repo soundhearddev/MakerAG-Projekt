@@ -1,0 +1,394 @@
+/* ==============================================
+   BACKGROUND
+============================================== */
+body {
+    background-size: 4%;
+}
+
+/* ==============================================
+   SEARCH HEADER
+============================================== */
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.search-header h1 {
+    margin: 0;
+    color: var(--cat-text);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* ==============================================
+   SEARCH BAR & CONTROLS
+============================================== */
+.search-bar {
+    margin-bottom: 2rem;
+}
+
+.search-input-wrapper {
+    max-width: 96rem;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--cat-extra);
+    border-radius: 8px;
+    background: var(--cat-primary);
+    color: var(--cat-text);
+    font-family: 'Montserrat', sans-serif;
+    transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--cat-accent);
+    box-shadow: 0 0 0 3px rgba(141, 169, 196, 0.1);
+}
+
+#searchInput::placeholder {
+    color: var(--cat-text);
+    opacity: 0.5;
+}
+
+.btn-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--cat-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.btn-clear:hover {
+    opacity: 1;
+    transform: translateY(-50%);
+}
+
+.search-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.option-group label {
+    font-weight: 500;
+    color: var(--cat-text);
+}
+
+.option-group select {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--cat-extra);
+    border-radius: 6px;
+    background: var(--cat-primary);
+    color: var(--cat-text);
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-group select:focus {
+    outline: none;
+    border-color: var(--cat-accent);
+}
+
+/* ==============================================
+   SEARCH INFO
+============================================== */
+.search-info {
+    padding: 0.75rem 1rem;
+    background: var(--cat-extra);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+#resultCount {
+    font-weight: 600;
+    color: var(--cat-accent);
+}
+
+#searchQuery {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* ==============================================
+   TABLE
+============================================== */
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--cat-secondary);
+}
+
+thead {
+    background: var(--cat-extra);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--cat-text);
+    border-bottom: 2px solid var(--cat-accent);
+    white-space: nowrap;
+}
+
+th[data-sort] {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s ease;
+}
+
+th[data-sort]:hover {
+    background: var(--cat-primary);
+}
+
+td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--cat-extra);
+    color: var(--cat-text);
+    vertical-align: middle;
+}
+
+tr:hover {
+    background: var(--cat-extra);
+}
+
+/* ==============================================
+   DOCS LINK (SPEZIFISCH FÜR TABELLE)
+============================================== */
+.docs-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--cat-accent);
+    color: var(--cat-primary) !important;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.docs-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: var(--cat-text);
+}
+
+.no-docs {
+    color: var(--cat-text);
+    opacity: 0.4;
+}
+
+/* ==============================================
+   EDITOR MODE
+============================================== */
+.cell {
+    display: inline-block;
+    min-width: 50px;
+    min-height: 20px;
+    padding: 2px 4px;
+}
+
+.editor-mode .cell {
+    border: 1px dashed var(--cat-accent);
+    border-radius: 4px;
+    cursor: text;
+    transition: all 0.3s ease;
+}
+
+.editor-mode .cell:hover {
+    background: var(--cat-extra);
+    border-style: solid;
+}
+
+.editor-mode .cell.editing {
+    background: var(--cat-primary);
+    border-color: var(--cat-text);
+    outline: 2px solid var(--cat-accent);
+}
+
+.editor-mode .cell.edited {
+    background: rgba(141, 169, 196, 0.2);
+    border-color: var(--cat-accent);
+}
+
+.cell.multiline {
+    white-space: pre-wrap;
+}
+
+/* ==============================================
+   EDITOR ACTIONS
+============================================== */
+.editor-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background: var(--cat-extra);
+    border-radius: 8px;
+}
+
+.btn-save {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: white;
+}
+
+.btn-save:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.btn-cancel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+}
+
+.btn-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+.change-counter {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--cat-accent);
+    font-size: 1.1rem;
+}
+
+/* ==============================================
+   LOADING STATES
+============================================== */
+.loading-row td {
+    text-align: center;
+    padding: 3rem;
+}
+
+/* ==============================================
+   RESPONSIVE
+============================================== */
+@media (max-width: 768px) {
+    .search-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .search-options {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .option-group {
+        width: 100%;
+    }
+
+    .option-group select {
+        flex: 1;
+    }
+
+    table {
+        font-size: 0.85rem;
+    }
+
+    th,
+    td {
+        padding: 0.5rem;
+    }
+
+    .editor-actions {
+        flex-direction: column;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .change-counter {
+        margin-left: 0;
+    }
+
+    .docs-link {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #searchInput {
+        padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    table {
+        font-size: 0.75rem;
+    }
+
+    th,
+    td {
+        padding: 0.4rem;
+    }
+}

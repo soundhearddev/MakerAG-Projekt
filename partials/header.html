@@ -1,0 +1,186 @@
+<!-- Google Fonts -->
+
+<link rel="stylesheet" href="/styles/header.css">
+
+
+</head>
+
+<body>
+
+  <header role="banner" class="site-header">
+    <div class="head">
+
+      <canvas id="canvas"></canvas>
+
+      <div id="maker" class="title">
+        <h1>Maker AG</h1>
+      </div>
+    </div>
+  </header>
+
+
+  <script>
+    (function initHeader() {
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const head = document.querySelector(".head");
+      const maker = document.getElementById("maker");
+
+      if (!canvas || !ctx || !head || !maker) {
+        console.error("Benötigte Elemente nicht gefunden");
+        return;
+      }
+
+      const CELL = 8;
+      const SPEED = 60;
+      const PIPE_COUNT = 20;
+      const DIRS = [
+        { x: 1, y: 0 },
+        { x: -1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: -1 }
+      ];
+
+      let COLS = 0;
+      let ROWS = 0;
+      let pipes = [];
+      let running = false;
+      let lastFrame = 0;
+      let animationId = null;
+
+      function resize() {
+        const rect = head.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        COLS = Math.floor(canvas.width / CELL);
+        ROWS = Math.floor(canvas.height / CELL);
+
+        if (running) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+
+      function getTextCell() {
+        const h1 = maker.querySelector("h1");
+        if (!h1) return { x: Math.floor(COLS / 2), y: Math.floor(ROWS / 2) };
+
+        const textRect = h1.getBoundingClientRect();
+        const headRect = head.getBoundingClientRect();
+
+        return {
+          x: Math.floor((textRect.left + textRect.width / 2 - headRect.left) / CELL),
+          y: Math.floor((textRect.top + textRect.height / 2 - headRect.top) / CELL)
+        };
+      }
+
+      function rand(max) {
+        return Math.floor(Math.random() * max);
+      }
+
+      class Pipe {
+        constructor() {
+          this.reset();
+        }
+
+        reset() {
+          // Zufällige Startposition im gesamten Canvas
+          const spawnMode = rand(4);
+
+          if (spawnMode === 0) {
+            // Von links
+            this.x = 0;
+            this.y = rand(ROWS);
+          } else if (spawnMode === 1) {
+            // Von rechts
+            this.x = COLS - 1;
+            this.y = rand(ROWS);
+          } else if (spawnMode === 2) {
+            // Von oben
+            this.x = rand(COLS);
+            this.y = 0;
+          } else {
+            // Von unten oder Mitte
+            this.x = rand(COLS);
+            this.y = ROWS - 1;
+          }
+
+          this.dir = DIRS[rand(4)];
+
+          // Zufällige Farbe aus den drei Hauptfarben
+          const colors = [
+            'hsla(358, 100%, 70%, 0.9)',  // rot/pink
+            'hsla(177, 62%, 60%, 0.9)',   // türkis
+            'hsla(47, 100%, 71%, 0.9)'    // gelb
+          ];
+          this.color = colors[rand(3)];
+
+
+        }
+
+        step() {
+          // Richtungswechsel mit höherer Wahrscheinlichkeit
+          if (Math.random() < 0.2) {
+            this.dir = DIRS[rand(4)];
+          }
+
+          const nx = this.x + this.dir.x;
+          const ny = this.y + this.dir.y;
+
+          // Wenn außerhalb der Grenzen, neu starten
+          if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) {
+            this.reset();
+            return;
+          }
+
+          // Zeichne nur die aktuelle Position
+          ctx.fillStyle = this.color;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = this.color;
+          ctx.fillRect(this.x * CELL, this.y * CELL, CELL, CELL);
+          ctx.shadowBlur = 0;
+
+          // Bewege zur nächsten Position
+          this.x = nx;
+          this.y = ny;
+        }
+      }
+
+      function startPipes() {
+        if (running) return;
+
+        running = true;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pipes = [];
+
+        for (let i = 0; i < PIPE_COUNT; i++) {
+          pipes.push(new Pipe());
+        }
+
+        lastFrame = performance.now();
+      }
+
+      // Nur auf Klick reagieren
+      maker.addEventListener("click", startPipes);
+
+      function loop(ts) {
+        if (running && ts - lastFrame > SPEED) {
+          pipes.forEach(p => p.step());
+          lastFrame = ts;
+        }
+
+        animationId = requestAnimationFrame(loop);
+      }
+
+      animationId = requestAnimationFrame(loop);
+
+      // Cleanup bei Seitenwechsel
+      window.addEventListener("beforeunload", () => {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+        }
+      });
+    })();
+  </script>

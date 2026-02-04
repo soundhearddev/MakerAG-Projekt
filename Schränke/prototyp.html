@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #viewer {
+            width: 100%;
+            height: 100%;
+        }
+
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viewer"></div>
+    <div id="info">Lädt Animation...</div>
+    <div id="controls">
+        <button class="control-btn" id="btnUp">↑ HOCH</button>
+        <button class="control-btn" id="btnDown">↓ RUNTER</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTF"></script>
+
+    <script>
+        // ==================== EINSTELLUNGEN ====================
+        const CONFIG = {
+            modelFile: 'animation.glb',
+
+            camera: {
+                useCameraAnimation: true,    // false = eigene Einstellungen verwenden
+                zoom: 1.2,                   // Z-Position (kleiner = näher)
+                height: 1.2,                 // Y-Position
+                fov: 50                      // Field of View
+            },
+
+            lights: {
+                ambient: 2.5,                // Grundhelligkeit
+                main: 2.0,                   // Hauptlicht
+                back: 1.5,                   // Rücklicht
+                side: 1.2                    // Seitenlichter
+            },
+
+            controls: {
+                zoomSpeed: 0.1,              // Mausrad Zoom-Geschwindigkeit
+                zoomMin: 0.3,                // Min Zoom-Distanz
+                zoomMax: 20,                 // Max Zoom-Distanz
+                heightStep: 0.5              // Höhen-Schrittweite (Buttons)
+            }
+        };
+        // =======================================================
+
+        // Globale Variablen
+        let scene, camera, renderer, mixer, clock;
+        const viewer = document.getElementById('viewer');
+        const info = document.getElementById('info');
+
+        // Initialisierung
+        function init() {
+            console.log('=== Initialisierung startet ===');
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+
+            // Kamera
+            camera = new THREE.PerspectiveCamera(
+                CONFIG.camera.fov,
+                viewer.clientWidth / viewer.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, CONFIG.camera.height, CONFIG.camera.zoom);
+            camera.lookAt(0, 1, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+            renderer.shadowMap.enabled = true;
+            viewer.appendChild(renderer.domElement);
+
+            // Clock für Animationen
+            clock = new THREE.Clock();
+
+            // Beleuchtung
+            setupLights();
+
+            // Event Listener
+            setupEventListeners();
+
+            // Model laden
+            loadModel();
+
+            // Animation Loop starten
+            animate();
+
+            console.log('✓ Initialisierung abgeschlossen');
+        }
+
+        // Beleuchtung Setup
+        function setupLights() {
+            // Ambient Light
+            const ambientLight = new THREE.AmbientLight(0xffffff, CONFIG.lights.ambient);
+            scene.add(ambientLight);
+
+            // Hauptlicht
+            const mainLight = new THREE.DirectionalLight(0xffffff, CONFIG.lights.main);
+            mainLight.position.set(5, 10, 5);
+            scene.add(mainLight);
+
+            // Rücklicht
+            const backLight = new THREE.DirectionalLight(0xffffff, CONFIG.lights.back);
+            backLight.position.set(-5, 5, -5);
+            scene.add(backLight);
+
+            // Seitenlicht Links
+            const sideLight1 = new THREE.DirectionalLight(0xffffff, CONFIG.lights.side);
+            sideLight1.position.set(-10, 3, 0);
+            scene.add(sideLight1);
+
+            // Seitenlicht Rechts
+            const sideLight2 = new THREE.DirectionalLight(0xffffff, CONFIG.lights.side);
+            sideLight2.position.set(10, 3, 0);
+            scene.add(sideLight2);
+
+            console.log('✓ Beleuchtung eingerichtet');
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Zoom mit Mausrad
+            viewer.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const direction = e.deltaY > 0 ? 1 : -1;
+                camera.position.z += direction * CONFIG.controls.zoomSpeed;
+                camera.position.z = Math.max(
+                    CONFIG.controls.zoomMin,
+                    Math.min(CONFIG.controls.zoomMax, camera.position.z)
+                );
+            });
+
+            // Höhen-Buttons
+            document.getElementById('btnUp').onclick = () => {
+                camera.position.y += CONFIG.controls.heightStep;
+                console.log('Kamera Höhe:', camera.position.y.toFixed(2));
+            };
+
+            document.getElementById('btnDown').onclick = () => {
+                camera.position.y -= CONFIG.controls.heightStep;
+                console.log('Kamera Höhe:', camera.position.y.toFixed(2));
+            };
+
+            // Window Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = viewer.clientWidth / viewer.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+            });
+
+            console.log('✓ Event Listener eingerichtet');
+        }
+
+        // Model laden
+        function loadModel() {
+            const loader = new THREE.GLTFLoader();
+
+            loader.load(
+                CONFIG.modelFile,
+                onModelLoaded,
+                onProgress,
+                onError
+            );
+        }
+
+        // Model erfolgreich geladen
+        function onModelLoaded(gltf) {
+            console.log('=== Model geladen ===');
+            console.log('Kameras:', gltf.cameras.length);
+            console.log('Animationen:', gltf.animations.length);
+
+            const model = gltf.scene;
+
+            // Schatten aktivieren
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            scene.add(model);
+
+            // Kamera aus Model verwenden (falls vorhanden)
+            let cameraFromFile = null;
+            model.traverse((child) => {
+                if (child.isCamera && !cameraFromFile) {
+                    cameraFromFile = child;
+                }
+            });
+
+            if (cameraFromFile) {
+                camera = cameraFromFile;
+                camera.aspect = viewer.clientWidth / viewer.clientHeight;
+                camera.updateProjectionMatrix();
+
+                if (!CONFIG.camera.useCameraAnimation) {
+                    camera.position.set(0, CONFIG.camera.height, CONFIG.camera.zoom);
+                    camera.lookAt(0, 1, 0);
+                }
+
+                console.log('✓ Kamera aus Model verwendet');
+                info.textContent = 'Kamera aus Model geladen';
+            } else {
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                model.position.sub(center);
+                console.log('✓ Standard-Kamera verwendet');
+                info.textContent = 'Standard-Kamera';
+            }
+
+            // Animationen
+            if (gltf.animations && gltf.animations.length > 0) {
+                mixer = new THREE.AnimationMixer(gltf.scene);
+
+                gltf.animations.forEach((clip, index) => {
+                    console.log(`Animation ${index}: ${clip.name} (${clip.duration.toFixed(2)}s)`);
+
+                    // Prüfe ob Kamera-Animation
+                    let isCameraAnimation = false;
+                    clip.tracks.forEach((track) => {
+                        if (track.name.toLowerCase().includes('camera')) {
+                            isCameraAnimation = true;
+                        }
+                    });
+
+                    // Spiele ab (außer Kamera-Animation wenn deaktiviert)
+                    if (!isCameraAnimation || CONFIG.camera.useCameraAnimation) {
+                        const action = mixer.clipAction(clip);
+                        action.setLoop(THREE.LoopOnce);
+                        action.clampWhenFinished = true;
+                        action.play();
+                        console.log(`  ✓ Wird abgespielt`);
+                    } else {
+                        console.log(`  ⊘ Übersprungen (Kamera-Animation deaktiviert)`);
+                    }
+                });
+
+                info.textContent = `Animation läuft (${gltf.animations.length} Clip(s))`;
+
+                mixer.addEventListener('finished', () => {
+                    info.textContent = 'Animation beendet';
+                    console.log('✓ Animation fertig');
+                });
+            } else {
+                info.textContent = 'Keine Animationen gefunden';
+                console.warn('⚠ Keine Animationen im Model');
+            }
+        }
+
+        // Lade-Fortschritt
+        function onProgress(xhr) {
+            if (xhr.total > 0) {
+                const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
+                info.textContent = `Lädt... ${percent}%`;
+            }
+        }
+
+        // Fehler beim Laden
+        function onError(error) {
+            console.error('✗ Fehler beim Laden:', error);
+            info.textContent = `FEHLER: "${CONFIG.modelFile}" nicht gefunden`;
+            info.style.color = '#ff4444';
+        }
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+
+            if (mixer) {
+                mixer.update(delta);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Starte wenn DOM bereit ist
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+
+</html>

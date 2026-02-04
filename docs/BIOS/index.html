@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIOS Bootloader</title>
+    <link rel="stylesheet" href="/styles/base.css">
+
+    <style>
+        html,
+        body {
+            scroll-behavior: auto;
+            /* verhindert Smooth-Scroll, das Cache-Effekte hat */
+        }
+    </style>
+</head>
+
+<body onload="window.scrollTo(0, 0);">
+    <script src="/js/loader.js"></script>
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+
+
+    <main>
+        <div class="container">
+            Man kann mit Assembly einen Bootloader erstellen welcher text anzeigen kann.<br>
+            Es ist war sehr schwierig wirkliche dokumentation über assembly zu finden, aber hier sind ein paar
+            hilfreiche seiten.
+            Das ist das dumme: Entweder man liest sich 400 Seiten von Assembly docs an und lernt es schritt für schritt
+            oder gar nicht.
+            und selbst dann, versteht man nur die hälfte.
+            <br>
+            <a href="https://hjlebbink.github.io/x86doc/" target=”_blank”>
+                x86 Assembly Documentation<br>
+            </a>
+            <a href="https://wiki.osdev.org/BIOS" target=”_blank”>
+                BIOS (WICHTIG FÜR DAS HIER) OSDev ist generell eine SEHR gute
+                seite<br>
+            </a>
+            <a href="data/fa191e0a-3ec9-48b7-9bbc-ec774f9d4edc.pdf" target=”_blank”>
+                auch irgentwelche docs (nicht so wichtig)<br>
+            </a>
+            <a href="data/db565157-c636-4749-aa07-9948d99eb27e.pdf" target=”_blank”>
+                x86 Assembly Language Reference Manual<br>
+            </a>
+            <a href="data/325462-089-sdm-vol-1-2abcd-3abcd-4.pdf" target=”_blank”>
+                Intel® 64 and IA-32 Architectures Software Developer’s Manual (auch nicht so wichtig)<br>
+            </a>
+
+
+            Und ja 90% was in den docs steht braucht man nicht. Sobalt
+            man ein grobes verständnis hat und die Sprache gelernt hat, kann man eigentlich das meiste FÜR HIER.
+        </div>
+        <div class="container">
+            <a href="https://github.com/soundhearddev/BIOS-Custom-Bootloader" target=”_blank”>Hier</a> ist mein Projekt
+            welches Text
+            anzeigen kann. Es hat so einige zeit in Anspruch genommen und es ist ein guter Anfang.
+            in der Zukunft will ich darauf aufbauen und villeicht wirklich ein boot loader daraus machen und nicht ein
+            Text output system... mal sehen.
+            Villeicht wechsel ich aber auch auf UEFI, weil ich sogar das als erstes machen wollte aber gesehen hab, dass
+            das so 10 mal so kompliziert ist um aufzusetzten.
+        </div>
+
+
+
+
+
+    </main>
+    <div style="height: 100rem;"></div>
+
+    <p id="text">
+
+    </p>
+
+
+    <script>
+
+        // Direkt beim Laden scrollen
+        window.addEventListener('beforeunload', () => {
+            // Cache verhindern (optional)
+            window.scrollTo(0, 0);
+        });
+
+        window.addEventListener('load', () => {
+            // Scroll immer nach oben setzen
+            window.scrollTo(0, 0);
+        });
+
+        function randomUnicodeChar() {
+            const ranges = [
+                [0x12000, 0x123FF], // Keilschrift
+                [0x13000, 0x1342F], // Ägyptische Hieroglyphen
+                [0x14400, 0x1467F], // Anatolische Hieroglyphen
+                [0x1F030, 0x1F09F], // Spielkarten
+                [0x1F700, 0x1F77F], // Alchemische Symbole
+                [0x1D400, 0x1D7FF]  // Mathematische alphanumerische Symbole
+            ];
+
+
+            const r = ranges[Math.floor(Math.random() * ranges.length)];
+            const cp = r[0] + Math.floor(Math.random() * (r[1] - r[0] + 1));
+            return String.fromCodePoint(cp);
+        }
+
+
+        const Tnumber = Math.floor(Math.random() * 3000 + 1)
+        function generateLine(len = 3000) {
+            let out = "";
+            for (let i = 0; i < len; i++) {
+                if (i == Tnumber) {
+                    out += "⠿"
+                }
+                out += randomUnicodeChar();
+            }
+            return out;
+        }
+
+        document.getElementById("text").textContent = generateLine();
+
+
+        const container = document.getElementById("text");
+
+        container.addEventListener("click", (e) => {
+
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const text = range.startContainer.textContent;
+            const offset = range.startOffset;
+
+            if (text[offset - 1] === "⠿") {
+
+                fetch('data/boot.iso')
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = 'boot.iso';
+                        a.click();
+                        URL.revokeObjectURL(a.href);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>

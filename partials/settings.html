@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings V3.0</title>
+    <link rel="stylesheet" href="/styles/settings.css">
+    <link rel="stylesheet" href="/styles/themes.css">
+</head>
+
+<body>
+
+    <!-- Settings Container -->
+    <div class="settings-container">
+
+        <!-- Settings Icon (Hamburger Menu) -->
+        <input class="settings-icon" type="checkbox" id="settings-icon" name="settings-icon" />
+        <label for="settings-icon" aria-label="Einstellungen Menü"></label>
+
+        <!-- Settings Navigation (Fullscreen Menu) -->
+        <nav class="settings-nav">
+            <ul>
+                <li><a href="#" data-modal="settings" data-title="Einstellungen">Einstellungen</a></li>
+                <li><a href="#" data-modal="themes" data-title="Themes">Themes</a></li>
+                <li><a href="#" data-modal="help" data-title="Hilfe">Hilfe</a></li>
+            </ul>
+        </nav>
+
+        <!-- MODAL 1: EINSTELLUNGEN -->
+        <div id="modal-settings" class="settings-modal" data-modal-type="settings">
+            <div class="settings-modal-content">
+                <div class="settings-titlebar" data-drag-handle>
+                    <span class="modal-title-text">Einstellungen</span>
+                    <button class="close-modal" aria-label="Schließen">×</button>
+                </div>
+
+                <div class="tab-navigation">
+                    <button class="tab-btn active" data-tab="general">
+                        <span class="tab-text">Allgemein</span>
+                    </button>
+                    <button class="tab-btn" data-tab="appearance">
+                        <span class="tab-text">Darstellung</span>
+                    </button>
+                    <button class="tab-btn" data-tab="advanced">
+                        <span class="tab-text">Erweitert</span>
+                    </button>
+                </div>
+
+                <div class="settings-body">
+                    <!-- Tab: Allgemein -->
+                    <div class="tab-content active" data-tab-content="general">
+                        <h3 class="tab-heading">Allgemeine Einstellungen</h3>
+
+                        <div class="setting-group">
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="language-select" class="setting-title">Sprache</label>
+                                    <span class="setting-description">Wähle deine bevorzugte Sprache</span>
+                                </div>
+                                <select id="language-select" class="setting-input">
+                                    <option value="de" selected>Deutsch</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="auto-save" class="setting-title">Auto-Save</label>
+                                    <span class="setting-description">Automatisch speichern (alle 60 Sekunden)</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="auto-save">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Darstellung -->
+                    <div class="tab-content" data-tab-content="appearance">
+                        <h3 class="tab-heading">Darstellung & Interface</h3>
+
+                        <div class="setting-group">
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="font-size" class="setting-title">Schriftgröße</label>
+                                    <span class="setting-description">Passe die Textgröße an (12-20px)</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="font-size" min="12" max="20" value="15"
+                                        class="setting-slider">
+                                    <span class="slider-value">15px</span>
+                                </div>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="animations" class="setting-title">Animationen</label>
+                                    <span class="setting-description">Bewegungseffekte und Übergänge aktivieren</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="animations" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="compact-mode" class="setting-title">Kompaktmodus</label>
+                                    <span class="setting-description">Dichtes Layout mit weniger Abstand</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="compact-mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Erweitert -->
+                    <div class="tab-content" data-tab-content="advanced">
+                        <h3 class="tab-heading">Erweiterte Einstellungen</h3>
+
+                        <div class="setting-group">
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="golMode" class="setting-title">Game of Life Overlay</label>
+                                    <span class="setting-description">Aktiviere den animierten Game of Life
+                                        Hintergrund</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="golMode" name="golMode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="debug-mode" class="setting-title">Debug-Modus</label>
+                                    <span class="setting-description">Zeige zusätzliche Informationen in der
+                                        Konsole</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="debug-mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label class="setting-title">Cache leeren</label>
+                                    <span class="setting-description">Lösche temporäre Daten und Session-Storage</span>
+                                </div>
+                                <button id="cache-clear" class="action-button">
+                                    Cache löschen
+                                </button>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label class="setting-title">Daten exportieren</label>
+                                    <span class="setting-description">Exportiere deine Einstellungen als
+                                        JSON-Datei</span>
+                                </div>
+                                <button id="export-settings" class="action-button">
+                                    Exportieren
+                                </button>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label class="setting-title">Daten importieren</label>
+                                    <span class="setting-description">Importiere gespeicherte Einstellungen</span>
+                                </div>
+                                <button id="import-settings" class="action-button">
+                                    Importieren
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button class="btn-secondary" data-action="reset">
+                        <span class="button-icon">↺</span>
+                        Zurücksetzen
+                    </button>
+                    <button class="btn-primary" data-action="save">
+                        <span class="button-icon">✓</span>
+                        Speichern
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 2: THEMES -->
+        <div id="modal-themes" class="settings-modal" data-modal-type="themes">
+            <div class="settings-modal-content">
+                <div class="settings-titlebar" data-drag-handle>
+                    <span class="modal-title-text">Themes & Hintergrund</span>
+                    <button class="close-modal" aria-label="Schließen">×</button>
+                </div>
+
+                <div class="tab-navigation">
+                    <button class="tab-btn active" data-tab="theme">
+                        <span class="tab-text">Theme</span>
+                    </button>
+                    <button class="tab-btn" data-tab="background">
+                        <span class="tab-text">Hintergrund</span>
+                    </button>
+                </div>
+
+                <div class="settings-body">
+                    <!-- Tab: Theme -->
+                    <div class="tab-content active" data-tab-content="theme">
+                        <h3 class="tab-heading">Theme Auswahl</h3>
+
+                        <div class="setting-group">
+                            <div class="setting-item theme-setting">
+                                <div class="setting-label">
+                                    <label class="setting-title">Wähle dein Theme</label>
+                                    <span class="setting-description">Personalisiere das Aussehen der Anwendung</span>
+                                </div>
+                            </div>
+
+                            <div class="theme-selector">
+                                <div class="theme-option active" data-theme="default" title="Standard Theme">
+                                    <div class="theme-preview"
+                                        style="background: linear-gradient(135deg, #1a1a1a, #bebebe);"></div>
+                                    <span class="theme-name">Standard</span>
+                                </div>
+                                <div class="theme-option" data-theme="hell" title="Hell Theme">
+                                    <div class="theme-preview"
+                                        style="background: linear-gradient(135deg, #ffffff, #d7e4fa);"></div>
+                                    <span class="theme-name">Hell</span>
+                                </div>
+                                <div class="theme-option" data-theme="water" title="Water Theme">
+                                    <div class="theme-preview"
+                                        style="background: linear-gradient(135deg, #062346, #173791);"></div>
+                                    <span class="theme-name">Water</span>
+                                </div>
+                                <div class="theme-option" data-theme="green" title="Green Theme">
+                                    <div class="theme-preview"
+                                        style="background: linear-gradient(135deg, #3b5347, #4a6755);"></div>
+                                    <span class="theme-name">Green</span>
+                                </div>
+                                <div class="theme-option" data-theme="redmoon" title="Red Moon Theme">
+                                    <div class="theme-preview"
+                                        style="background: linear-gradient(135deg, #0e0e0e, #640000);"></div>
+                                    <span class="theme-name">Red Moon</span>
+                                </div>
+                                <div class="theme-option" data-theme="cyberpunk" title="Cyberpunk Theme">
+                                    <div class="theme-preview"
+                                        style="background: linear-gradient(135deg, #a6327d, #d9ff00);"></div>
+                                    <span class="theme-name">Cyberpunk</span>
+                                </div>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="theme-preview-mode" class="setting-title">Live-Vorschau</label>
+                                    <span class="setting-description">Theme sofort anwenden beim Auswählen</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="theme-preview-mode" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Background Patterns -->
+                    <div class="tab-content" data-tab-content="background">
+                        <h3 class="tab-heading">Hintergrundmuster</h3>
+
+                        <div class="setting-group">
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label class="setting-title">Hintergrundmuster aktivieren</label>
+                                    <span class="setting-description">Zeige ein SVG-Muster als Seitenhintergrund</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="bg-pattern-enabled">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div id="bg-pattern-controls" class="bg-pattern-controls" style="display: none;">
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <label for="bg-pattern-select" class="setting-title">Muster wählen</label>
+                                        <span class="setting-description">Wähle ein Hintergrundmuster</span>
+                                    </div>
+                                    <select id="bg-pattern-select" class="setting-input">
+                                        <option value="">Lade Muster...</option>
+                                    </select>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <label for="bg-pattern-size" class="setting-title">Mustergröße</label>
+                                        <span class="setting-description">Anpassen der Musterwiederholung
+                                            (20-400px)</span>
+                                    </div>
+                                    <div class="slider-container">
+                                        <input type="range" id="bg-pattern-size" min="20" max="400" value="120"
+                                            class="setting-slider">
+                                        <span class="slider-value">120px</span>
+                                    </div>
+                                </div>
+
+
+
+
+
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <label class="setting-title">Eigenes Muster hochladen</label>
+                                        <span class="setting-description">SVG-Datei hochladen (max. 2MB)</span>
+                                    </div>
+                                    <div class="upload-container">
+                                        <input type="file" id="bg-pattern-upload" accept=".svg" style="display: none;">
+                                        <button id="bg-pattern-upload-btn" class="action-button">
+                                            Datei wählen
+                                        </button>
+                                        <span id="bg-pattern-upload-status" class="upload-status"></span>
+                                    </div>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <label class="setting-title">Vorschau</label>
+                                        <span class="setting-description">Live-Vorschau des ausgewählten Musters</span>
+                                    </div>
+                                    <div id="bg-pattern-preview" class="bg-pattern-preview">
+                                        <span class="preview-placeholder">Wähle ein Muster aus</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-footer">
+                    <button class="btn-secondary" data-action="close">
+                        <span class="button-icon">←</span>
+                        Zurück
+                    </button>
+                    <button class="btn-primary" data-action="save">
+                        <span class="button-icon">✓</span>
+                        Anwenden
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 3: HILFE -->
+        <div id="modal-help" class="settings-modal" data-modal-type="help">
+            <div class="settings-modal-content">
+                <div class="settings-titlebar" data-drag-handle>
+                    <span class="modal-title-text">Hilfe</span>
+                    <button class="close-modal" aria-label="Schließen">×</button>
+                </div>
+
+                <div class="settings-body">
+                    <h3 class="tab-heading">Hilfe & Dokumentation</h3>
+
+                    <div class="help-section">
+                        <h4 class="help-section-title">Dokumentation</h4>
+                        <div class="docs-buttons">
+                            <a class="action-button" href="/docs/Dokumentation/index.html" target="_blank">
+                                Dokumentation öffnen
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="help-section version-info">
+                        <p><strong>Version:</strong> 0.3.2</p>
+                        <p><strong>Letzte Aktualisierung:</strong> Januar 2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="/docs/RNG/overlay.js"></script>
+    <script src="/js/settings.js"></script>
+
+</body>
+
+</html>

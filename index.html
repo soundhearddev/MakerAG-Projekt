@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dings</title>
+
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="icon" href="/images/logo.png">
+
+
+    <script src="js/loader.js"></script>
+</head>
+
+<body>
+
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+    <div class="cool-container">
+        <div class="counter">
+            <h2>Anzahl gespeicherten Gegenstände</h2>
+            <div id="item-count" class="count">Lade...</div>
+            <!-- auch etwas unnötig man könnt es villeicht so machen, dass man das customizen kann, was anzegeigt wird mit cookies oder sessions oder so... -->
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Schränke und Räume</h2>
+        <div class="locker-wrapper">
+            <button class="scroll left" id="scrollLeft">◀</button>
+            <div class="locker" id="locker">
+                <ul>
+                    <!-- Farbe manuell eingeben weil zu anstrengen für jendes ding ein elemt zu erstellen uns so ist st übersichtlicher und besser anpassbar-->
+                    <li style="background-color: green;">S1</li>
+                    <li style="background-color: green;"">S2</li>
+                    <li>S3</li>
+                    <li>S4</li>
+                    <li>S5</li>
+                    <li>S6</li>
+                </ul>
+            </div>
+            <button class=" scroll right" id="scrollRight">▶</button>
+            </div>
+        </div>
+
+        <div id="Kategorien" class="container">
+            <h2>Kategorien</h2>
+            <div class="row">
+                <div class="category-card">
+
+                </div>
+            </div>
+        </div>
+
+        <div id="neuste-eintraege" class="container">
+            <h2>Neueste Einträge</h2>
+            <button id="load-latest">Neueste Einträge laden</button>
+            <div id="latest-entries"></div>
+            <br><br>
+        </div>
+
+
+        <div id="random-item-container" class="container">
+            <h2>Zufallsgenerator</h2>
+            <div class="random-item-content">
+
+                <button id="random-item-btn" class="random-item-button">
+                    Zufälliges Item
+                </button>
+                <div id="random-item-status" class="random-status"></div>
+            </div>
+        </div>
+<script src="js/main_script.js"></script>
+</body>
+
+</html>

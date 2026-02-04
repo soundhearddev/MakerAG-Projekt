@@ -1,0 +1,59 @@
+/* themes.css */
+
+/* dark theme */
+:root {
+  --default-primary: #1a1a1a;
+  --default-secondary: #202020;
+  --default-accent: #FBF3D1;
+  --default-text: #bebebe;
+  --default-extra: #484655;
+}
+
+/* Hell Theme */
+:root {
+  --hell-primary: #ffffff;
+  --hell-secondary: #f7f7f8;
+  --hell-accent: #5a5a5a;
+  --hell-text: #000000;
+  --hell-extra: #d7e4fa;
+}
+
+
+/* Water Theme */
+:root {
+  --water-primary: #062346;
+  --water-secondary: #0e233f;
+  --water-accent: #305577;
+  --water-text: #f4f2ed;
+  --water-extra: #173791;
+}
+
+/* Green Theme */
+:root {
+  --green-primary: #3b5347;
+  --green-secondary: #4a6755;
+  --green-accent: #90AB8B;
+  --green-text: #ffdbca;
+  --green-extra: #6B8A7A;
+}
+
+/* Redmoon Theme */
+:root {
+
+  --redmoon-primary: #0e0e0e;
+  --redmoon-secondary: #100806;
+  --redmoon-accent: #640000;
+  --redmoon-text: #F5E6E8;
+  --redmoon-extra: #2f0101;
+}
+
+
+
+/* Cyberpunk Theme */
+:root {
+  --cyberpunk-primary: #5a1943;
+  --cyberpunk-secondary: #a6327d;
+  --cyberpunk-accent: #c000b3;
+  --cyberpunk-text: #d9ff00;
+  --cyberpunk-extra: #43d9d8;
+}

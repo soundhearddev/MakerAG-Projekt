@@ -1,0 +1,50 @@
+<link rel="stylesheet" href="/styles/nav.css">
+
+<nav role="navigation" aria-label="Hauptnavigation">
+    <a href="/index.html" class="nav-link">Startseite</a>
+    <a href="/index.html#Kategorien" class="nav-link">Kategorien</a>
+    <a href="/index.html#neuste-eintraege" class="nav-link">Neueste Einträge</a>
+    <a href="/search.html" class="nav-link">Suchen</a>
+    <a href="/portfoliooderso.html" class="nav-link">Über</a>
+</nav>
+
+<script>
+    (function () {
+        'use strict';
+
+        // Aktuelle Seite markieren
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('nav .nav-link');
+
+        navLinks.forEach(link => {
+            const linkPath = new URL(link.href).pathname;
+
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+                link.setAttribute('aria-current', 'page');
+            }
+        });
+
+        // Smooth Scroll für Anker-Links
+        navLinks.forEach(link => {
+            if (link.hash) {
+                link.addEventListener('click', (e) => {
+                    const targetId = link.hash.substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        e.preventDefault();
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+
+                        // URL aktualisieren ohne Seite neu zu laden
+                        history.pushState(null, '', link.hash);
+                    }
+                });
+            }
+        });
+
+    })();
+</script>

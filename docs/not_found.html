@@ -1,0 +1,47 @@
+<!-- FALLBACK falls docs nicht vorhanden sind. Es geht zu dem link mit ?id=${id} das heißt die website kann schaune und kann halt die id anezeigen, entweder die id oder kann die id nehemn, in der datenbank nach der id suchen und den Namen anzigen oder so.-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Found</title>
+</head>
+
+<body>
+    <div id="item-info">
+
+    </div>
+    <h1>Dokumentation nicht gefunden</h1>
+    <p>Die angeforderte Dokumentation konnte nicht gefunden werden.
+        Möglicherweise existiert sie nicht oder der Link ist ungültig.</p>
+    <p><a href="../index.html">Startseite</a> zurück.</p>
+
+    <script>
+        // api/fetch_from_id.php nutzen um namen zu holen:
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id) {
+            fetch(`../api/fetch_from_id.php?id=${encodeURIComponent(id)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0 && data[0].name) {
+                        // gendenstnad gefudne un in deiv id="item-info" anzeigen
+                        document.getElementById('item-info').insertAdjacentHTML('beforeend', `<h2><p>Gegenstand: <strong>${data[0].name}</strong></p></h2>`);
+                    } else if (data && data.error) {
+                        document.body.insertAdjacentHTML('beforeend', `<p>Fehler: ${data.message}</p>`);
+                    } else {
+                        document.body.insertAdjacentHTML('beforeend', `<p>Kein Gegenstand mit der ID "${id}" gefunden.</p>`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler beim Abrufen der Daten:', error);
+                    document.body.insertAdjacentHTML('beforeend', `<p>Fehler beim Abrufen der Daten für die ID "${id}".</p>`);
+                });
+        }
+
+    </script>
+
+</body>
+
+</html>

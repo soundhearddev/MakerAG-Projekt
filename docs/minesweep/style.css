@@ -1,0 +1,234 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #ffffff00;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.controls {
+  background: rgb(212, 212, 212);
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 400px;
+}
+
+.difficulty-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.diff-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  background: #5d5a5e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.diff-btn:hover {
+  background: #005a4b;
+  transform: translateY(-2px);
+}
+
+.diff-btn.active {
+  background: #008357;
+}
+
+.info-panel {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000000;
+  font-family: 'Courier New', monospace;
+}
+
+.reset-btn {
+  padding: 12px 30px;
+  font-size: 18px;
+  background: #005a4b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.reset-btn:hover {
+  background: #316434;
+  transform: scale(1.05);
+}
+
+.status {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 6px;
+  min-width: 120px;
+  text-align: center;
+}
+
+.status.won {
+  background: #38743a;
+  color: white;
+}
+
+.status.lost {
+  background: #f44336;
+  color: white;
+}
+
+.board-container {
+  background: white;
+  padding: 15px;
+  max-width: 95vw;
+  overflow: auto;
+}
+
+.board {
+  display: grid;
+  gap: 1px;
+  background: #999;
+  border: 3px solid #666;
+}
+
+.cell {
+  background: #bbb;
+  border: 2px outset #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  user-select: none;
+  transition: background 0.1s;
+  min-width: 25px;
+  min-height: 25px;
+}
+
+.cell:hover:not(.revealed):not(.flagged) {
+  background: #ccc;
+
+}
+
+.cell.revealed {
+  background: #ddd;
+  cursor: default;
+  border: 1px solid #999;
+}
+
+.cell.mine {
+  background: #ff4444;
+  color: white;
+}
+
+.cell.flagged {
+  font-size: 23px;
+}
+
+.cell.number-1 {
+  color: #0000ff;
+}
+
+.cell.number-2 {
+  color: #008000;
+}
+
+.cell.number-3 {
+  color: #ff0000;
+}
+
+.cell.number-4 {
+  color: #000080;
+}
+
+.cell.number-5 {
+  color: #800000;
+}
+
+.cell.number-6 {
+  color: #008080;
+}
+
+.cell.number-7 {
+  color: #000000;
+}
+
+.cell.number-8 {
+  color: #808080;
+}
+
+@media (max-width: 600px) {
+  .controls {
+    min-width: 300px;
+  }
+
+  .difficulty-buttons {
+    flex-direction: column;
+  }
+}
+
+
+@keyframes fly {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--x), var(--y)) rotate(var(--rot));
+    opacity: 0;
+  }
+}
+
+.cell.flying {
+  position: absolute;
+  animation: fly var(--duration) linear forwards;
+  pointer-events: none;
+}

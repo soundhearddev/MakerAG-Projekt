@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LCG Noise</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: #ddd;
+            font-family: monospace;
+            display: flex;
+        }
+
+        #controls {
+            width: 300px;
+            padding: 12px;
+            border-right: 1px solid #333;
+        }
+
+        .control {
+            margin-bottom: 12px;
+        }
+
+        label {
+            font-size: 12px;
+        }
+
+        input[type="range"],
+        input[type="number"] {
+            width: 100%;
+        }
+
+        canvas {
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="controls">
+
+        <button id="resetSeed">Seed = Date.now()</button>
+
+        <div class="control">
+            <label>A</label>
+            <input type="range" id="A_range" min="0" max="5000000" step="1" value="1664525">
+            <input type="number" id="A_num" value="1664525">
+        </div>
+
+        <div class="control">
+            <label>C</label>
+            <input type="range" id="C_range" min="0" max="5000000" step="1" value="1013904223">
+            <input type="number" id="C_num" value="1013904223">
+        </div>
+
+        <div class="control">
+            <label>M</label>
+            <input type="range" id="M_range" min="256" max="4294967296" step="256" value="4294967296">
+            <input type="number" id="M_num" value="4294967296">
+        </div>
+
+        <div class="control">
+            <label>Breite</label>
+            <input type="range" id="W_range" min="16" max="512" value="128">
+            <input type="number" id="W_num" value="128">
+        </div>
+
+        <div class="control">
+            <label>Höhe</label>
+            <input type="range" id="H_range" min="16" max="512" value="128">
+            <input type="number" id="H_num" value="128">
+        </div>
+
+        <div class="control">
+            <label>Skalierung</label>
+            <input type="range" id="S_range" min="1" max="10" value="4">
+            <input type="number" id="S_num" value="4">
+        </div>
+
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        /* ===============================
+           STATE
+        ================================ */
+
+        let seed = Date.now();
+        let A = 1664525;
+        let C = 1013904223;
+        let M = 2 ** 32;
+        let W = 128;
+        let H = 128;
+        let S = 4;
+
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        /* ===============================
+           RNG
+        ================================ */
+
+        function randomLCG() {
+            seed = (A * seed + C) % M;
+            return seed / M;
+        }
+
+        /* ===============================
+           RENDER
+        ================================ */
+
+        function render() {
+            canvas.width = W * S;
+            canvas.height = H * S;
+
+            for (let y = 0; y < H; y++) {
+                for (let x = 0; x < W; x++) {
+                    const v = Math.floor(randomLCG() * 256);
+                    const g = 255 - v;
+                    ctx.fillStyle = `rgb(${g},${g},${g})`;
+                    ctx.fillRect(x * S, y * S, S, S);
+                }
+            }
+        }
+
+        /* ===============================
+           SLIDER ↔ NUMBER SYNC
+        ================================ */
+
+        function bind(id, setter) {
+            const r = document.getElementById(id + "_range");
+            const n = document.getElementById(id + "_num");
+
+            function update(value) {
+                r.value = value;
+                n.value = value;
+                setter(+value);
+                render();
+            }
+
+            r.oninput = () => update(r.value);
+            n.oninput = () => update(n.value);
+        }
+
+        bind("A", v => A = v);
+        bind("C", v => C = v);
+        bind("M", v => M = v);
+        bind("W", v => W = v);
+        bind("H", v => H = v);
+        bind("S", v => S = v);
+
+        document.getElementById("resetSeed").onclick = () => {
+            seed = Date.now();
+            render();
+        };
+
+        /* ===============================
+           START
+        ================================ */
+
+        render();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,117 @@
+<!-- Das ist der simpelste html code den es gibt... what the helly-->
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suche - Inventarverwaltung</title>
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/search.css">
+</head>
+
+<body>
+    <!-- Page Loader -->
+    <div class="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+    <div class="search">
+        <div class="search-header">
+            <h1>Inventar-Suche</h1>
+
+        </div>
+
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput"
+                    placeholder="Suche nach ID, Name, Marke, Kategorie, Locker, Seriennummer..." 
+                    autocomplete="off"
+                    aria-label="Suchfeld">
+                <button id="clearSearch" class="btn-clear" title="Suche zurücksetzen" aria-label="Suche löschen">✕</button>
+            </div>
+
+            <div class="search-options">
+                <div class="option-group">
+                    <label for="sortField">Sortieren nach:</label>
+                    <select id="sortField" aria-label="Sortierfeld auswählen">
+                        <option value="id">ID</option>
+                        <option value="name">Name</option>
+                        <option value="category">Kategorie</option>
+                        <option value="brand">Marke</option>
+                        <option value="quantity">Menge</option>
+                        <option value="locker">Locker</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="sortOrder">Reihenfolge:</label>
+                    <select id="sortOrder" aria-label="Sortierreihenfolge auswählen">
+                        <option value="DESC">Absteigend</option>
+                        <option value="ASC">Aufsteigend</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="limitResults">Ergebnisse:</label>
+                    <select id="limitResults" aria-label="Anzahl Ergebnisse auswählen">
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="searchInfo" class="search-info hidden">
+            <span id="resultCount">0 Ergebnisse</span>
+            <span id="searchQuery"></span>
+        </div>
+
+
+        <div class="table-wrapper">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th data-sort="id">ID</th>
+                        <th>Bild</th>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="category">Kategorie</th>
+                        <th data-sort="subcategory">Subkategorie</th>
+                        <th data-sort="brand">Marke</th>
+                        <th data-sort="model">Modell</th>
+                        <th>Serial</th>
+                        <th data-sort="quantity">Menge</th>
+                        <th data-sort="locker">Locker</th>
+                        <th>Dokumentation</th>
+                        <th>Notizen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="loading-row">
+                        <td colspan="12">
+                            <div class="loading-message">
+                                <div class="spinner"></div>
+                                <span>Lade Daten...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/js/search.js"></script>
+    <script src="/js/loader.js"></script>
+</body>
+
+</html>

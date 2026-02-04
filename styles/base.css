@@ -1,0 +1,488 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ==============================================
+   ROOT & GLOBAL SETTINGS
+============================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+
+
+/* ==============================================
+   BODY & GLOBAL
+============================================== */
+body {
+    transition: opacity 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--cat-text);
+    background-color: var(--cat-primary);
+    background-position: center;
+    background-repeat: repeat;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+body.loaded {
+    opacity: 1;
+}
+
+#header,
+#nav,
+#settings {
+    visibility: hidden;
+}
+
+body.loaded #header,
+body.loaded #nav,
+body.loaded #settings {
+    visibility: visible;
+}
+
+/* ==============================================
+   CONTAINER - GEMEINSAME BASIS
+============================================== */
+.container,
+.cool-container,
+.search {
+    width: 90%;
+    max-width: 1600px;
+    margin: 2rem auto;
+    background-color: var(--cat-secondary);
+    padding: 2rem;
+    box-shadow: 0 8px 30px var(--cat-extra);
+    color: var(--cat-text);
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.container:hover,
+.cool-container:hover {
+    box-shadow: 0 8px 40px var(--cat-accent);
+    transition: box-shadow 0.5s ease;
+}
+
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.cool-container::before {
+    background: radial-gradient(circle, var(--cat-extra), transparent 70%);
+    animation: rotate-gradient 3s forwards;
+}
+
+@keyframes rotate-gradient {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(148deg);
+    }
+}
+
+.container>*,
+.cool-container>*,
+.search>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* ==============================================
+   ÜBERSCHRIFTEN
+============================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    border-bottom: 2px solid var(--cat-text);
+    padding-bottom: 0.3rem;
+    color: var(--cat-text);
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--cat-text);
+}
+
+/* ==============================================
+   LINKS - UNIVERSAL STYLING
+============================================== */
+a {
+    color: var(--cat-accent);
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+a:not(.btn-docs):not(.btn-search):not(.btn-details):not(.category-card):not(.docs-link)::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--cat-accent);
+    transition: width 0.3s ease;
+}
+
+a:not(.btn-docs):not(.btn-search):not(.btn-details):not(.category-card):not(.docs-link):hover::after {
+    width: 100%;
+}
+
+a:hover {
+    color: var(--cat-text);
+    text-shadow: 0 0 8px var(--cat-accent);
+}
+
+/* ==============================================
+   BUTTONS - GEMEINSAME BASIS
+============================================== */
+button {
+    background-color: var(--cat-extra);
+    color: var(--cat-text);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--cat-extra);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Styled Buttons */
+.btn-docs,
+.btn-search,
+.btn-details,
+.btn-save,
+.btn-cancel,
+.btn-editor {
+    appearance: none;
+    background-color: transparent;
+    border: 0.125em solid var(--cat-extra);
+    border-radius: 0.9375em;
+    box-sizing: border-box;
+    color: var(--cat-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+    min-height: 3.75em;
+    min-width: 0;
+    outline: none;
+    padding: 1em 2.3em;
+    text-align: center;
+    text-decoration: none;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    will-change: transform;
+}
+
+.btn-docs:hover,
+.btn-search:hover,
+.btn-details:hover,
+.btn-editor:hover {
+    color: var(--cat-primary);
+    background-color: var(--cat-text);
+    box-shadow: 0 4px 12px var(--cat-accent);
+    transform: translateY(-2px);
+}
+
+.btn-docs:active,
+.btn-search:active,
+.btn-details:active,
+.btn-editor:active {
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+.btn-docs:disabled,
+.btn-search:disabled,
+.btn-details:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* ==============================================
+   THUMBNAILS - GEMEINSAME BASIS
+============================================== */
+.thumbnail,
+.item-thumbnail,
+.random-thumbnail {
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid var(--cat-accent);
+    transition: transform 0.3s ease;
+}
+
+.thumbnail {
+    max-width: 80px;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    display: block;
+}
+
+.thumbnail:hover {
+    transform: scale(2.5);
+    z-index: 100;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.no-image,
+.no-thumbnail,
+.no-thumbnail-large {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cat-primary);
+    border-radius: 6px;
+    color: var(--cat-text);
+    opacity: 0.5;
+    border: 2px solid var(--cat-accent);
+}
+
+.no-image {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+/* ==============================================
+   LOADING STATES
+============================================== */
+.loading-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--cat-accent);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--cat-extra);
+    border-top-color: var(--cat-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==============================================
+   ERROR & NO RESULTS
+============================================== */
+.error-message,
+.no-items,
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--cat-accent);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ==============================================
+   UTILITY CLASSES
+============================================== */
+.hidden {
+    display: none;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* ==============================================
+   LISTEN
+============================================== */
+ul,
+ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+ul li {
+    margin-bottom: 0.5rem;
+}
+
+/* ==============================================
+   HIGHLIGHT (Suchbegriff-Markierung)
+============================================== */
+.highlight {
+    background: var(--cat-accent);
+    color: var(--cat-primary);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+/* ==============================================
+   FOCUS STATES
+============================================== */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--cat-accent);
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN - GEMEINSAME BREAKPOINTS
+============================================== */
+@media screen and (max-width: 991px) {
+
+    .settings-icon:checked+label,
+    .settings-icon:not(:checked)+label {
+        right: 55px;
+    }
+
+    .settings-nav {
+        right: 30px;
+    }
+
+    .settings-nav ul li a {
+        font-size: 8vh;
+    }
+}
+
+@media (max-width: 1200px) {
+    .thumbnail {
+        max-width: 60px;
+        max-height: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .container,
+    .cool-container,
+    .search {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .thumbnail {
+        max-width: 50px;
+        max-height: 50px;
+    }
+
+    .btn-docs,
+    .btn-search,
+    .btn-details,
+    .btn-save,
+    .btn-cancel,
+    .btn-editor {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .container,
+    .cool-container,
+    .search {
+        width: 95%;
+        padding: 0.75rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    .thumbnail {
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    .thumbnail:hover {
+        transform: scale(2);
+    }
+
+    nav {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    nav a {
+        margin: 0.5rem 0;
+    }
+}

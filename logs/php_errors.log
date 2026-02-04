@@ -1,0 +1,227 @@
+[30-Dec-2025 18:13:11 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:13:11 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:13:11 UTC] DB Error (empty query): Connection refused
+[30-Dec-2025 18:13:54 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:13:54 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:13:54 UTC] DB Error (empty query): Table 'db.items' doesn't exist
+[30-Dec-2025 18:14:26 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:26 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:26 UTC] DB Error (empty query): Table 'db.items' doesn't exist
+[30-Dec-2025 18:14:31 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:31 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:31 UTC] DB Error (empty query): Table 'db.items' doesn't exist
+[30-Dec-2025 18:14:32 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:32 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:32 UTC] DB Error (empty query): Table 'db.items' doesn't exist
+[30-Dec-2025 18:14:36 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:36 UTC] Search Query: 'h', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:36 UTC] DB Error (search): Table 'db.items' doesn't exist
+[30-Dec-2025 18:14:36 UTC] Stack Trace: #0 /var/www/html/api/search.php(126): mysqli->prepare()
+#1 {main}
+[30-Dec-2025 18:14:37 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:37 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:37 UTC] DB Error (empty query): Table 'db.items' doesn't exist
+[30-Dec-2025 18:14:53 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:53 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:53 UTC] Leere Suche: 0 Items gefunden
+[30-Dec-2025 18:14:55 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:14:55 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:14:55 UTC] Leere Suche: 0 Items gefunden
+[30-Dec-2025 18:15:04 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:15:04 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:15:04 UTC] Leere Suche: 0 Items gefunden
+[30-Dec-2025 18:18:49 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:18:49 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:18:49 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:18:50 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:18:50 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:18:50 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:18:50 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:18:50 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:18:50 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:18:53 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:18:53 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:18:53 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:19:03 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:19:03 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:19:03 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:23:00 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:23:00 UTC] Search Query: 'Arduino Uno R3', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:23:00 UTC] Suche 'Arduino Uno R3': 1 Items gefunden
+[30-Dec-2025 18:23:16 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:23:16 UTC] Search Query: 'Netzwerkkabel Cat6', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:23:16 UTC] Suche 'Netzwerkkabel Cat6': 1 Items gefunden
+[30-Dec-2025 18:28:23 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:28:23 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:28:23 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:28:24 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:28:24 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:28:24 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:28:59 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:28:59 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:28:59 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:29:26 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:29:26 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:29:26 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:40:41 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:40:41 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:40:41 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:40:42 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:40:42 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:40:42 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:40:43 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:40:43 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:40:43 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:40:43 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:40:43 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:40:43 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:44:53 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:44:53 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:44:53 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:44:54 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:44:54 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:44:54 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:44:56 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:44:56 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:44:56 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:44:56 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:44:56 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:44:56 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:45:18 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:45:18 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:45:18 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:46:04 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:46:04 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:46:04 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:46:40 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:46:40 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:46:40 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:46:41 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:46:41 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:46:41 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:49:01 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:01 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:01 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:49:02 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:02 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:02 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:49:24 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:24 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:24 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:26 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:26 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:26 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:27 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:27 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:27 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:27 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:27 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:27 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:27 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:27 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:27 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:27 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:27 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:49:27 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:44 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:44 UTC] Search Query: '', Limit: 50, Sort: id ASC
+[30-Dec-2025 18:49:44 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:50 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:50 UTC] Search Query: '', Limit: 50, Sort: name ASC
+[30-Dec-2025 18:49:50 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:49:54 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:49:54 UTC] Search Query: '', Limit: 50, Sort: name ASC
+[30-Dec-2025 18:49:54 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:50:00 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:00 UTC] Search Query: '', Limit: 50, Sort: quantity ASC
+[30-Dec-2025 18:50:00 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:50:05 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:05 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:05 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 18:50:21 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:21 UTC] Search Query: 'Peripherie', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:21 UTC] Suche 'Peripherie': 1 Items gefunden
+[30-Dec-2025 18:50:25 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:25 UTC] Search Query: 'Netzwerk', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:25 UTC] Suche 'Netzwerk': 1 Items gefunden
+[30-Dec-2025 18:50:27 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:27 UTC] Search Query: 'Elektronik', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:27 UTC] Suche 'Elektronik': 8 Items gefunden
+[30-Dec-2025 18:50:35 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:35 UTC] Search Query: 'Netzwerkkabel Cat6', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:35 UTC] Suche 'Netzwerkkabel Cat6': 1 Items gefunden
+[30-Dec-2025 18:50:38 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:38 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:38 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:50:52 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:50:52 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:50:52 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 18:53:09 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 18:53:09 UTC] Search Query: 'Elektronik', Limit: 50, Sort: id DESC
+[30-Dec-2025 18:53:09 UTC] Suche 'Elektronik': 8 Items gefunden
+[30-Dec-2025 19:00:01 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 19:00:01 UTC] Search Query: 'AMILO Pa 1538', Limit: 50, Sort: id DESC
+[30-Dec-2025 19:00:01 UTC] Suche 'AMILO Pa 1538': 1 Items gefunden
+[30-Dec-2025 19:04:07 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 19:04:07 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 19:04:07 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 20:35:39 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 20:35:39 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 20:35:39 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 20:35:48 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 20:35:48 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 20:35:48 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 21:41:12 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 21:41:12 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 21:41:12 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 21:41:13 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 21:41:13 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 21:41:13 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 21:42:26 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 21:42:26 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 21:42:26 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 21:42:39 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 21:42:39 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 21:42:39 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 22:28:44 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:28:44 UTC] Search Query: 'Peripherie', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:28:44 UTC] Suche 'Peripherie': 1 Items gefunden
+[30-Dec-2025 22:49:04 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:04 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:04 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 22:49:08 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:08 UTC] Search Query: '105', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:08 UTC] Suche '105': 0 Items gefunden
+[30-Dec-2025 22:49:09 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:09 UTC] Search Query: '10', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:09 UTC] Suche '10': 3 Items gefunden
+[30-Dec-2025 22:49:12 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:12 UTC] Search Query: '10', Limit: 50, Sort: name DESC
+[30-Dec-2025 22:49:12 UTC] Suche '10': 3 Items gefunden
+[30-Dec-2025 22:49:13 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:13 UTC] Search Query: '10', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:13 UTC] Suche '10': 3 Items gefunden
+[30-Dec-2025 22:49:27 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:27 UTC] Search Query: '1', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:27 UTC] Suche '1': 9 Items gefunden
+[30-Dec-2025 22:49:28 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:28 UTC] Search Query: '10', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:28 UTC] Suche '10': 3 Items gefunden
+[30-Dec-2025 22:49:30 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:30 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:30 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 22:49:31 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:31 UTC] Search Query: '10', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:31 UTC] Suche '10': 3 Items gefunden
+[30-Dec-2025 22:49:34 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 22:49:34 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 22:49:34 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 23:04:01 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 23:04:01 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 23:04:01 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 23:04:02 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 23:04:02 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 23:04:02 UTC] Leere Suche: 10 Items gefunden
+[30-Dec-2025 23:56:02 UTC] Config geladen von: /var/www/html/secure/config.php
+[30-Dec-2025 23:56:02 UTC] Search Query: '', Limit: 50, Sort: id DESC
+[30-Dec-2025 23:56:02 UTC] Leere Suche: 10 Items gefunden
