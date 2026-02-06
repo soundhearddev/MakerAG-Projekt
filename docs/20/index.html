@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimeter</title>
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/docs.css">
+</head>
+
+
+
+
+<body>
+
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+    <div class="container">
+
+
+        <div style="display:flex">
+            <h1>Multimeter</h1>
+            <h2 id="model" style="margin-left:1rem">M-3650D</h2>
+            <h2 id="firma" style="margin-left:1rem">VOLTCRAFT</h2>
+        </div>
+        <p>Das AMILO Pa 1538 ist ein Laptop-Modell der Marke Fujitsu Siemens
+            Computers. Es wurde für den privaten und geschäftlichen Gebrauch
+            entwickelt und bietet eine Kombination aus Leistung, Mobilität und
+            Funktionalität.</p>
+    </div>
+    <div class="container">
+        <h2>Info:</h2>
+    <div class="container">
+
+        <p>
+            <strong>Bilder:</strong><br>
+        <div style="display: flex; overflow-x: auto; gap: 10px;">
+            <img src="images/450px-Voltcraft_M-3650D_Bumper.jpg" alt="Bild 1" style="height: 300px;">
+            <img src="images/800px-Voltcraft_M-3650D_Seite.jpg" alt="Bild 2" style="height: 300px;">
+            <img src="images/600px-Voltcraft_M-3650D_transparent.png" alt="Bild 3" style="height: 300px;">
+
+        </div>
+    </div>
+    <div class="container">
+
+        </p>
+        <p>
+            Sonsitege Dokumente: <br>
+
+            <a href="./Manual.pdf" target="_blank" class="btn-docs">Manual</a>
+
+        </p>
+
+
+    </div>
+
+    <script src="/js/loader.js"></script>
+
+    <script>
+
+
+        const togglePdfBtn0 = document.getElementById('togglePdfBtn0');
+        const pdfContainer0 = document.getElementById('pdfContainer0');
+
+
+        togglePdfBtn0.addEventListener('click', () => {
+            if (pdfContainer0.style.display === 'none') {
+                pdfContainer0.style.display = 'block';
+            } else {
+                pdfContainer0.style.display = 'none';
+            }
+        });
+
+
+        const togglePdfBtn1 = document.getElementById('togglePdfBtn1');
+        const pdfContainer1 = document.getElementById('pdfContainer1');
+
+        togglePdfBtn1.addEventListener('click', () => {
+            if (pdfContainer1.style.display === 'none') {
+                pdfContainer1.style.display = 'block';
+            } else {
+                pdfContainer1.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
