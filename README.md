@@ -1,28 +1,46 @@
-[Docs](./docs/dings.md)
+# [Docs](./docs/1/Dokumentation.html)
+
+# Maker AG
+![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=JetBrains+Mono&owner=1&pattern=Solid&theme=Dark)
+## Organisationssystem
+### *ja ich habe immernoch keinen richtigen Namen für das Projekt gefunden*
+
+
+# Projektübersicht
+Dieses Projekt ist ein Sortiersystem für die Räume U24, U25 und den Hardware-Raum. Es nutzt eine MariaDB-Datenbank, ein PHP-Backend und ein Web-Frontend, um alle Gegenstände strukturiert darzustellen, zu dokumentieren und jederzeit abrufbar zu machen.
+
+
+# Motivation
+Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. Ziel war es, ein praxisnahes Projekt zu entwickeln, das langfristig die Verwaltung von Materialien erleichtert.
+
+# Ziele
+
+- Eintragung und Dokumentation aller Gegenstände in den Räumen U24, U25 und Hardware-Raum
+
+- Speicherung der Daten in MariaDB
+
+- Webbasierter Zugriff über Frontend
+
+- Backend in PHP zur Verwaltung und Abfrage der Daten
+
+- Dokumentation zu jedem Gegenstand
+
+- GitHub-Integration für Versionskontrolle und Kontribution
+
+
+# Technologien
+
+- **Backend:** PHP
+
+- **Frontend:** HTML, CSS, JavaScript
+
+- **Datenbank:** MariaDB
+
+- **Hardware:** Raspberry Pi 4 B 2GB
+
+- **Verbindung:** haubtsächtlich SSH
+
+- **IDE:** VS Code
 
 
 
-<h2>TODO:</h2>
-
-- Änderung von Mysql zu Mongodb (wird nciht passieren)
-- html html html:
-
-    - settings button
-    - jede einzelne seite halt
-    - gut aussehende css/html
-    - VILLEICHT auccounts für administration oder so (wenn man zeit hat und es nicht zu angrengend ist) 
-    - etc.
-
-- Dokumentation von jedem Gegenstand (wenn Maker AG)
-- Dokumentation zum verfahren / Docs
-- GUTEN weg von tabelle(json). Also was soll die Tabelle alles beinhalten
-- Irgentwas besonderes machen (Maybe so secrets/easter eggs oder so)
-- MongoDB auf derm R-pie installieren
-- Visualisierung erstellen wie alles miteinander arbeitet!!!
-
-- Das aller wichtigste ist einfach dass erstmal alle Gegenstände dokumentiert werden. Das wird auch die meiste Zeit aufbrauchen. Das und das erstellen der ganzen html seiten 😢😢😢
-
-<br><br>
-Bisher ist der Plan, dass es so funktioniert, dass bei jedem start die datenbank überprüft und halt jeden Gegenstand die Seite davür aktiviert. Also z.B kann man in der DB bei dem Gegenstand eine Variabel oder so angeben von der html seite oder script oder so, welche der main script dann ausführen kann um jede Seite zu aktivieren. So können auch seiten deaktiviert werden, wenn der gegenstand nicht mehr da ist oder so. 
-
-Außerdem kann man auch die datenbank nutzne um direkt daten in die hmtl seiten zu laden also dynamischen infos (anzahl, notes, etc.). 
