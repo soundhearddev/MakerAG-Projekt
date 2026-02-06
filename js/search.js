@@ -27,7 +27,6 @@ function showToast(message, type = 'info', duration = 3000) {
 
   container.appendChild(toast);
 
-  // Force reflow for animation
   requestAnimationFrame(() => {
     toast.classList.add('show');
   });
@@ -103,7 +102,7 @@ function isTokenExpired(token) {
     const timestamp = parseInt(stored, 10);
     const hoursSinceStored = (Date.now() - timestamp) / (1000 * 60 * 60);
     
-    return hoursSinceStored > 24; // Token expires after 24 hours
+    return hoursSinceStored > 24;
   } catch {
     return true;
   }
@@ -114,7 +113,6 @@ function isTokenExpired(token) {
 // =============================================================================
 log.info("Seite wird geladen...");
 
-// URL-Parameter auslesen und initiale Suche starten
 (function initFromUrl() {
   log.debug("URL-Parameter werden gelesen...");
   try {
@@ -139,7 +137,6 @@ log.info("Seite wird geladen...");
   }
 })();
 
-// Token-Validierung beim Seiten-Load
 async function checkTokenOnLoad() {
   log.debug("Token-Check beim Seiten-Load...");
   const token = localStorage.getItem("editorToken");
@@ -188,7 +185,6 @@ async function checkTokenOnLoad() {
   }
 }
 
-// Token-Check nach DOM-Ready
 if (document.readyState === 'loading') {
   document.addEventListener("DOMContentLoaded", checkTokenOnLoad);
 } else {
@@ -199,12 +195,10 @@ window.addEventListener("load", () => {
   log.success("Seite vollständig geladen");
 });
 
-
 // =============================================================================
 // SEARCH FUNCTIONALITY
 // =============================================================================
 async function searchItems(query) {
-  // Abort previous request if still running
   if (state.activeRequest) {
     state.activeRequest.abort();
     log.debug("Vorherige Anfrage abgebrochen");
@@ -219,7 +213,6 @@ async function searchItems(query) {
   state.currentQuery = query;
   state.isLoading = true;
 
-  // Loading-Indikator
   const tbody = document.querySelector("#resultsTable tbody");
   if (!tbody) {
     log.error("Tabellen-Body nicht gefunden");
@@ -239,7 +232,6 @@ async function searchItems(query) {
   `;
 
   try {
-    // Build URL with parameters
     const params = new URLSearchParams({
       query: query,
       sort: state.sortField,
@@ -251,7 +243,7 @@ async function searchItems(query) {
 
     const controller = new AbortController();
     state.activeRequest = controller;
-    const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+    const timeout = setTimeout(() => controller.abort(), 30000);
 
     const res = await fetch(`/api/search.php?${params}`, {
       signal: controller.signal,
@@ -280,7 +272,7 @@ async function searchItems(query) {
 
     const data = response.data || [];
     state.currentData = data;
-    state.retryCount = 0; // Reset retry counter on success
+    state.retryCount = 0;
 
     log.success(`${response.count} Ergebnisse gefunden`);
 
@@ -296,7 +288,6 @@ async function searchItems(query) {
       showToast("Netzwerkfehler", "error");
       showError("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
       
-      // Auto-retry on network errors
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
         log.info(`Versuche erneut (${state.retryCount}/${state.maxRetries})...`);
@@ -355,7 +346,7 @@ function renderTable(data, query) {
     row.dataset.itemId = item.id;
     row.innerHTML = `
       <td>${escapeHtml(item.id)}</td>
-      <td>${renderThumbnail(item.thumbnail)}</td>
+      <td>${renderThumbnail(item.thumbnail, item.id)}</td>
       <td>${renderCell(item.name, "name", index, query)}</td>
       <td>${renderCell(item.category, "category", index, query)}</td>
       <td>${renderCell(item.subcategory, "subcategory", index, query)}</td>
@@ -367,7 +358,7 @@ function renderTable(data, query) {
       <td>${
         state.editorMode
           ? renderEditableDocsLink(item.docs_link, index)
-          : renderDocsLink(item.docs_link)
+          : renderDocsLink(item.docs_link, item.id)
       }</td>
       <td>${renderCell(item.notes, "notes", index, query, true)}</td>
     `;
@@ -397,21 +388,24 @@ function renderCell(value, field, index, query, isMultiline = false) {
   return isMultiline ? highlighted.replace(/\n/g, "<br>") : highlighted;
 }
 
-function renderThumbnail(path) {
-  if (!path) return '<span class="no-image">Kein Bild</span>';
-  return `<img src="${escapeHtml(path)}"
-              alt="Thumbnail"
+function renderThumbnail(path, itemId) {
+  // Fallback auf /images/uhhhh.jpg wenn kein Thumbnail gefunden wurde
+  const imagePath = path || '/images/uhhhh.jpg';
+  
+  return `<img src="${escapeHtml(imagePath)}"
+              alt="Thumbnail für Item ${itemId}"
               class="thumbnail"
               loading="lazy"
-              onerror="this.parentElement.innerHTML='<span class=\\'no-image\\'>Fehler</span>'">`;
+              onerror="this.src='/images/uhhhh.jpg'">`;
 }
 
-function renderDocsLink(path) {
+function renderDocsLink(path, itemId) {
   if (!path) return '<span class="no-docs">-</span>';
   return `<a href="${escapeHtml(path)}"
              target="_blank"
              rel="noopener noreferrer"
-             class="docs-link">DOCS</a>`;
+             class="docs-link"
+             title="Dokumentation für Item ${itemId}">DOCS</a>`;
 }
 
 function renderEditableDocsLink(path, index) {
@@ -448,7 +442,6 @@ document.addEventListener("DOMContentLoaded", () => {
     debouncedSearch(e.target.value);
   });
 
-  // Clear Search Button
   const clearBtn = document.getElementById("clearSearch");
   if (clearBtn) {
     clearBtn.addEventListener("click", () => {
@@ -458,7 +451,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Enter-Taste für sofortige Suche
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -500,7 +492,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // KEYBOARD SHORTCUTS
 // =============================================================================
 document.addEventListener("keydown", (e) => {
-  // Ctrl/Cmd + S = Save
   if ((e.ctrlKey || e.metaKey) && e.key === "s") {
     e.preventDefault();
     if (state.editorMode && Object.keys(state.editedData).length > 0) {
@@ -509,7 +500,6 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  // Ctrl/Cmd + K = Focus Search
   if ((e.ctrlKey || e.metaKey) && e.key === "k") {
     e.preventDefault();
     const searchInput = document.getElementById("searchInput");
@@ -519,7 +509,6 @@ document.addEventListener("keydown", (e) => {
     }
   }
 
-  // Escape = Cancel/Deselect
   if (e.key === "Escape") {
     if (document.activeElement.classList.contains("cell")) {
       document.activeElement.blur();
@@ -530,12 +519,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 // =============================================================================
-// PAGE VISIBILITY - Pause/Resume
+// PAGE VISIBILITY
 // =============================================================================
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     log.debug("Seite ist nicht mehr sichtbar");
-    // Abort any running requests when page is hidden
     if (state.activeRequest) {
       state.activeRequest.abort();
       state.activeRequest = null;
@@ -543,19 +531,14 @@ document.addEventListener("visibilitychange", () => {
     }
   } else {
     log.debug("Seite ist wieder sichtbar");
-    // Optionally refresh data when page becomes visible again
-    // Uncomment if desired:
-    // if (state.currentQuery !== null && !state.isLoading) {
-    //   searchItems(state.currentQuery);
-    // }
   }
 });
 
 // =============================================================================
-// WINDOW BEFOREUNLOAD - Warn about unsaved changes
+// WINDOW BEFOREUNLOAD
 // =============================================================================
 window.addEventListener("beforeunload", (e) => {
-  if (Object.keys(state.editedData).length > 0) {
+  if (Object.keys(state.editedData || {}).length > 0) {
     e.preventDefault();
     e.returnValue = "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?";
     return e.returnValue;
@@ -563,7 +546,7 @@ window.addEventListener("beforeunload", (e) => {
 });
 
 // =============================================================================
-// ERROR RECOVERY - Global error handler
+// ERROR RECOVERY
 // =============================================================================
 window.addEventListener("error", (e) => {
   log.error("Globaler JavaScript-Fehler", {
@@ -572,9 +555,6 @@ window.addEventListener("error", (e) => {
     lineno: e.lineno,
     colno: e.colno
   });
-  
-  // Don't show toast for every error, just log it
-  // Only show critical errors that affect functionality
 });
 
 window.addEventListener("unhandledrejection", (e) => {
@@ -582,91 +562,6 @@ window.addEventListener("unhandledrejection", (e) => {
     reason: e.reason,
     promise: e.promise
   });
-  
-  // Log but don't necessarily show to user
-  // unless it's a critical error
-});
-
-// =============================================================================
-// PERFORMANCE MONITORING
-// =============================================================================
-if (window.performance && window.performance.timing) {
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      const timing = window.performance.timing;
-      const loadTime = timing.loadEventEnd - timing.navigationStart;
-      const domReady = timing.domContentLoadedEventEnd - timing.navigationStart;
-      
-      log.info("Performance Metrics", {
-        "Page Load Time": `${loadTime}ms`,
-        "DOM Ready Time": `${domReady}ms`,
-        "DNS Lookup": `${timing.domainLookupEnd - timing.domainLookupStart}ms`,
-        "Server Response": `${timing.responseEnd - timing.requestStart}ms`
-      });
-    }, 0);
-  });
-}
-
-// =============================================================================
-// SERVICE WORKER REGISTRATION (Optional)
-// =============================================================================
-// Uncomment to enable offline support via service worker
-/*
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        log.success('Service Worker registered', registration.scope);
-      })
-      .catch(err => {
-        log.error('Service Worker registration failed', err);
-      });
-  });
-}
-*/
-
-// =============================================================================
-// ACCESSIBILITY IMPROVEMENTS
-// =============================================================================
-document.addEventListener("DOMContentLoaded", () => {
-  // Add ARIA live region for search results
-  const resultsTable = document.getElementById("resultsTable");
-  if (resultsTable) {
-    resultsTable.setAttribute("aria-live", "polite");
-    resultsTable.setAttribute("aria-atomic", "false");
-  }
-
-  // Improve keyboard navigation for table
-  const table = document.querySelector("table");
-  if (table) {
-    table.setAttribute("role", "table");
-  }
-
-  // Add skip link for keyboard users
-  const skipLink = document.createElement("a");
-  skipLink.href = "#resultsTable";
-  skipLink.className = "skip-link";
-  skipLink.textContent = "Direkt zu den Suchergebnissen";
-  skipLink.style.cssText = `
-    position: absolute;
-    top: -40px;
-    left: 0;
-    background: #000;
-    color: #fff;
-    padding: 8px;
-    text-decoration: none;
-    z-index: 100;
-  `;
-  skipLink.addEventListener("focus", () => {
-    skipLink.style.top = "0";
-  });
-  skipLink.addEventListener("blur", () => {
-    skipLink.style.top = "-40px";
-  });
-  
-  if (document.body.firstChild) {
-    document.body.insertBefore(skipLink, document.body.firstChild);
-  }
 });
 
 // =============================================================================
@@ -676,7 +571,6 @@ window.addEventListener("online", () => {
   log.success("Internetverbindung wiederhergestellt");
   showToast("Internetverbindung wiederhergestellt", "success");
   
-  // Retry last search if one was in progress
   if (state.currentQuery !== null && !state.isLoading) {
     searchItems(state.currentQuery);
   }
@@ -686,7 +580,6 @@ window.addEventListener("offline", () => {
   log.warning("Internetverbindung verloren");
   showToast("Keine Internetverbindung", "warning", 5000);
   
-  // Abort any running requests
   if (state.activeRequest) {
     state.activeRequest.abort();
     state.activeRequest = null;
@@ -695,91 +588,15 @@ window.addEventListener("offline", () => {
 });
 
 // =============================================================================
-// BROWSER COMPATIBILITY CHECKS
-// =============================================================================
-(function checkBrowserCompatibility() {
-  const features = {
-    'fetch': typeof fetch === 'function',
-    'Promise': typeof Promise === 'function',
-    'localStorage': (() => {
-      try {
-        localStorage.setItem('test', 'test');
-        localStorage.removeItem('test');
-        return true;
-      } catch {
-        return false;
-      }
-    })(),
-    'AbortController': typeof AbortController === 'function',
-    'URLSearchParams': typeof URLSearchParams === 'function'
-  };
-
-  const missing = Object.entries(features)
-    .filter(([name, supported]) => !supported)
-    .map(([name]) => name);
-
-  if (missing.length > 0) {
-    log.error("Browser-Kompatibilitätsprobleme erkannt", missing);
-    showToast(
-      `Ihr Browser unterstützt nicht alle benötigten Funktionen: ${missing.join(', ')}`,
-      "error",
-      10000
-    );
-  } else {
-    log.success("Alle Browser-Features werden unterstützt");
-  }
-})();
-
-// =============================================================================
-// DEVELOPMENT HELPERS
-// =============================================================================
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  // Development mode helpers
-  window.debugState = () => {
-    console.table({
-      'Editor Mode': state.editorMode,
-      'Current Query': state.currentQuery,
-      'Results Count': state.currentData.length,
-      'Edited Items': Object.keys(state.editedData).length,
-      'Sort Field': state.sortField,
-      'Sort Order': state.sortOrder,
-      'Limit': state.limit,
-      'Is Loading': state.isLoading,
-      'Retry Count': state.retryCount
-    });
-    return state;
-  };
-
-  window.clearAllData = () => {
-    if (confirm("DEVELOPMENT: Alle lokalen Daten löschen?")) {
-      localStorage.clear();
-      sessionStorage.clear();
-      location.reload();
-    }
-  };
-
-  window.simulateError = () => {
-    throw new Error("Simulated error for testing");
-  };
-
-  log.info("Development mode aktiv - Debug-Funktionen verfügbar", {
-    'debugState()': 'Zeigt aktuellen State',
-    'clearAllData()': 'Löscht alle lokalen Daten',
-    'simulateError()': 'Simuliert einen Fehler'
-  });
-}
-
-// =============================================================================
 // FINALIZATION
 // =============================================================================
 log.success("search.js vollständig geladen und initialisiert");
 
-// Expose version for debugging
-window.APP_VERSION = "2.0.0";
+window.APP_VERSION = "2.1.0";
 window.APP_INIT_TIME = new Date().toISOString();
 
 log.info("Application Info", {
   version: window.APP_VERSION,
   initialized: window.APP_INIT_TIME,
-  userAgent: navigator.userAgent.substring(0, 50) + "..."
+  mode: "ID-basierte Pfade aktiv"
 });

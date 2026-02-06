@@ -2,7 +2,7 @@
 
 /**
  * API Endpoint: Fetch All Items
- * Thumbnail wird immer aus /docs/{ordnername}/images/thumb.png geladen
+ * Verwendet Item-ID für docs und thumbnails: /docs/{id}/ und /docs/{id}/images/thumb.*
  */
 
 // Error Logging
@@ -11,11 +11,6 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', '/var/www/logs/php_errors.log');
 
-// Security Headers
-header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET");
-header("X-Content-Type-Options: nosniff");
 
 // Helper function
 function sendJsonResponse($data, $statusCode = 200)
@@ -57,63 +52,67 @@ $random = isset($_GET['random']) && $_GET['random'] === 'true';
 $latest = isset($_GET['latest']) && $_GET['latest'] === 'true';
 
 /**
- * Konvertiert docs_link zu vollständigem Pfad
+ * Generiert docs_link basierend auf Item-ID
  */
-function formatDocsLink($docsLink)
+function generateDocsLink($itemId)
 {
-    if (empty($docsLink)) {
+    if (empty($itemId)) {
         return null;
     }
-
-    $docsLink = trim($docsLink, "/ \t\n\r\0\x0B");
-
-    if (strpos($docsLink, '/') !== false || strpos($docsLink, '.html') !== false) {
-        return $docsLink;
+    
+    // Prüfe ob /docs/{id}/index.html existiert
+    $possiblePaths = [
+        $_SERVER['DOCUMENT_ROOT'] . "/docs/" . $itemId . "/index.html",
+        "/var/www/public/docs/" . $itemId . "/index.html"
+    ];
+    
+    foreach ($possiblePaths as $path) {
+        if (file_exists($path)) {
+            return "/docs/" . $itemId . "/index.html";
+        }
     }
-
-    return "/docs/" . $docsLink . "/index.html";
+    
+    return null;
 }
 
 /**
- * Findet Thumbnail in docs/{ordnername}/images/
- * Priorität: thumb.png -> thumb.jpg -> erstes gefundenes Bild
+ * Findet Thumbnail in /docs/{id}/images/
+ * Priorität: thumb.png -> thumb.jpg -> thumb.jpeg -> thumb.webp -> erstes Bild
  */
-function findThumbnailInDocs($docsLink)
+function findThumbnail($itemId)
 {
-    if (empty($docsLink)) {
+    if (empty($itemId)) {
         return null;
     }
 
-    $folderName = trim($docsLink, "/ \t\n\r\0\x0B");
-
-    $possiblePaths = [
-        $_SERVER['DOCUMENT_ROOT'] . "/docs/" . $folderName . "/images/",
-        "/var/www/public/docs/" . $folderName . "/images/"
+    $possibleBasePaths = [
+        $_SERVER['DOCUMENT_ROOT'] . "/docs/" . $itemId . "/images/",
+        "/var/www/public/docs/" . $itemId . "/images/"
     ];
 
-    foreach ($possiblePaths as $imagesPath) {
+    foreach ($possibleBasePaths as $imagesPath) {
         if (!is_dir($imagesPath)) {
             continue;
         }
 
         // PRIORITÄT 1: thumb.png
         if (file_exists($imagesPath . "thumb.png")) {
-            return "/docs/" . $folderName . "/images/thumb.png";
+            return "/docs/" . $itemId . "/images/thumb.png";
         }
 
         // PRIORITÄT 2: thumb.jpg
         if (file_exists($imagesPath . "thumb.jpg")) {
-            return "/docs/" . $folderName . "/images/thumb.jpg";
+            return "/docs/" . $itemId . "/images/thumb.jpg";
         }
 
         // PRIORITÄT 3: thumb.jpeg
         if (file_exists($imagesPath . "thumb.jpeg")) {
-            return "/docs/" . $folderName . "/images/thumb.jpeg";
+            return "/docs/" . $itemId . "/images/thumb.jpeg";
         }
 
         // PRIORITÄT 4: thumb.webp
         if (file_exists($imagesPath . "thumb.webp")) {
-            return "/docs/" . $folderName . "/images/thumb.webp";
+            return "/docs/" . $itemId . "/images/thumb.webp";
         }
 
         // FALLBACK: Suche nach beliebigem Bild
@@ -127,7 +126,7 @@ function findThumbnailInDocs($docsLink)
 
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             if (in_array($ext, $imageExtensions)) {
-                return "/docs/" . $folderName . "/images/" . $file;
+                return "/docs/" . $itemId . "/images/" . $file;
             }
         }
     }
@@ -136,34 +135,19 @@ function findThumbnailInDocs($docsLink)
 }
 
 /**
- * Post-Processing für Items
+ * Post-Processing für Items - Generiert Pfade basierend auf ID
  */
 function processItems($items)
 {
     foreach ($items as &$item) {
-        // Formatiere docs_link
-        if (isset($item['docs_link']) && !empty($item['docs_link'])) {
-            $originalDocsLink = $item['docs_link'];
-            $item['docs_link'] = formatDocsLink($originalDocsLink);
-
-            // Suche IMMER nach Thumbnail in docs/images/thumb.png
-            $foundThumbnail = findThumbnailInDocs($originalDocsLink);
-            if ($foundThumbnail) {
-                $item['thumbnail'] = $foundThumbnail;
-            }
-        }
-
-        // Falls immer noch kein Thumbnail und manueller Pfad vorhanden
-        if (isset($item['thumbnail']) && !empty($item['thumbnail'])) {
-            if (!preg_match('/^https?:\/\//', $item['thumbnail'])) {
-                if ($item['thumbnail'][0] !== '/') {
-                    $item['thumbnail'] = '/' . $item['thumbnail'];
-                }
-            }
-        }
-
-        // Füge has_docs Flag hinzu
+        $itemId = $item['id'];
+        
+        // Generiere docs_link basierend auf ID
+        $item['docs_link'] = generateDocsLink($itemId);
         $item['has_docs'] = !empty($item['docs_link']);
+        
+        // Generiere thumbnail basierend auf ID
+        $item['thumbnail'] = findThumbnail($itemId);
     }
     return $items;
 }
@@ -223,7 +207,7 @@ try {
     $result = $stmt->get_result();
     $items = $result->fetch_all(MYSQLI_ASSOC);
 
-    // Post-Processing
+    // Post-Processing - Generiert Pfade basierend auf ID
     $items = processItems($items);
 
     // Gesamtanzahl für Pagination
