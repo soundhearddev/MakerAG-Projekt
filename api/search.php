@@ -87,7 +87,8 @@ function cleanupInput($input, int $maxLength = 255): string
  * 
  * Statt überall die gleichen $_SERVER['DOCUMENT_ROOT'] + /var/www/public Pfade zu schreiben, wird das hier zentral gemacht.
  */
-function getPossibleDocsPaths($itemId, $subPath = '') {
+function getPossibleDocsPaths($itemId, $subPath = '')
+{
     $basePaths = [
         rtrim($_SERVER['DOCUMENT_ROOT'], '/'),
         '/var/www/public'
@@ -195,7 +196,7 @@ function processItems(array $items): array
         }
 
         // noch mehr checks 
-        $textFields = [ 
+        $textFields = [
             'name',
             'category',
             'subcategory',
@@ -215,6 +216,7 @@ function processItems(array $items): array
                 $item[$field] = '';
             }
         }
+    }
 
     return $items;
 }
@@ -323,7 +325,7 @@ $db = null;
 $stmt = null;
 
 try {
-    $db = Database::connect();
+    $db = Database::connect(); // Falls intelephense hier sagt, dass es ein fehler ist: NEIN! IST ES NICHT
 
     if (!$db instanceof mysqli) {
         throw new Exception("Database connection returned invalid type");
@@ -407,7 +409,7 @@ try {
         // implode verbindet Array Elemente zu einem String also wird der array $whereClauses verbunden zu einem String mit der trennung "\n      OR" wobei \n ein Zeilenumbruch ist und OR halt ein SQL-Operator. super duper simple
 
         // auch hier wieder gibt Vscode PHP extension eine sehr gute übersicht, was was ist:
-      //$whereClause = implode(separator:"\n                   OR ", array: $whereClauses);
+        //$whereClause = implode(separator:"\n                   OR ", array: $whereClauses);
         $whereClause = implode("\n                   OR ", $whereClauses);
 
         // noch ein simple ahh query 
@@ -486,9 +488,7 @@ try {
         "error"   => "Suchfehler",
         "message" => "Ein Fehler ist bei der Suche aufgetreten"
     ], 500);
-
-}
-    finally {
+} finally {
     // Cleanup
     if (isset($stmt) && $stmt instanceof mysqli_stmt) {
         $stmt->close();
@@ -496,4 +496,4 @@ try {
     if (isset($db) && $db instanceof mysqli) {
         $db->close();
     }
-    } 
+}
