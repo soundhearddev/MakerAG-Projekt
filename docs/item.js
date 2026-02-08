@@ -12,7 +12,7 @@ fetch(`/api/get_item.php?id=${id}`)
       return;
     }
 
-    const container = document.getElementById("itemContainer");
+    const container = document.getElementById("status");
 
     // Titel + Marke + Modell
     const title = document.createElement("h2");

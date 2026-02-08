@@ -1,8 +1,13 @@
+// Der Zweg dieser datei ist es die partials, also die einzelenen html dateien wie den header, den nav oder die Settings in eine html seite zu laden.
+// Ich hatte wenig Lust in jede datei die settings datei immer anzupassen, vorallem bei den settings weil das schon so 300 zeilen an Code sind. 
+// Diese Methode, die hier gewählt wurde ist wahrscheinlich nicht die Optimierteste version, funktioniert aber (die hälfte der Zeit)...
+
+
 // Cache für geladene HTML-Dateien
 const htmlCache = new Map();
 
-// Timeout für Fetch-Requests (10 Sekunden)
-const FETCH_TIMEOUT = 10000;
+// Timeout für Fetch-Requests (5 Sekunden)
+const FETCH_TIMEOUT = 5000;
 
 // Tracking für geladene Komponenten
 let loadedComponents = 0;
@@ -12,18 +17,19 @@ const totalComponents = 3;
  * Fetch mit Timeout
  */
 function fetchWithTimeout(url, timeout = FETCH_TIMEOUT) {
-  return Promise.race([
-    fetch(url),
-    new Promise((_, reject) =>
-      setTimeout(
-        () => reject(new Error(`Timeout beim Laden von ${url}`)),
-        timeout
-      )
-    ),
-  ]);
+  // Erstelle ein Timeout-Promise, das nach halt der angegebenen Zeit ablehnt
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Fehler beim Laden von ${url} --- Timeout`));
+    }, timeout);
+  });
+
+  // der eigentliche fetch
+  const fetchPromise = fetch(url);
+
+  // Promise.race gibt das Ergebnis des Promises zurück
+  return Promise.race([fetchPromise, timeoutPromise]);
 }
-
-
 
 /**
  * Hauptfunktion zum Laden von HTML-Partials
@@ -33,9 +39,8 @@ function fetchWithTimeout(url, timeout = FETCH_TIMEOUT) {
  * @returns {Promise<HTMLElement|null>}
  */
 // NOTE: ich LIEBE diese @param und @returns sachen.
-// ja ich habe das erst von ChatGPT kennengelernt aber esist so eine coole art um eine funktion zu erklären
+// ja ich habe das erst von ChatGPT kennengelernt aber es ist so eine coole art um eine funktion zu erklären
 // ich habe es leider nicht sehr oft genutzt... Eigentlich nie...
-
 
 async function loadHTML(id, file, useCache = true) {
   const el = document.getElementById(id);
@@ -49,11 +54,15 @@ async function loadHTML(id, file, useCache = true) {
     let html;
 
     // Cache prüfen
+    // gibt es cache?
     if (useCache && htmlCache.has(file)) {
       html = htmlCache.get(file);
-    } else {
+    } 
+    // nein? dann fetch
+    else {
       const res = await fetchWithTimeout(file);
 
+      // ist die antwort NICHT ok?
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       }
@@ -70,12 +79,14 @@ async function loadHTML(id, file, useCache = true) {
     el.innerHTML = html;
 
     // Scripts ausführen
+    // risky move. es führt halt jeden javascript in dem geholten code aus
     executeScripts(el);
 
     // Event Listener für Settings initialisieren
     initializeSettingsEvents();
 
     // Komponente als geladen markieren
+    // variabel ++ = +1
     loadedComponents++;
 
     console.log(
@@ -85,7 +96,7 @@ async function loadHTML(id, file, useCache = true) {
   } catch (error) {
     console.error(`✗ Fehler beim Laden von ${file}:`, error.message);
 
-    // Fallback-Inhalt anzeigen (nie genutzt, da ich eh schon 10 weitere fallbacks hatte)
+    // Fallback-Inhalt anzeigen (noch nie, da ich eh schon 10 weitere fallbacks gibt)
     el.innerHTML = `
             <div style="padding: 1rem; background: #fee; border: 1px solid #c00; border-radius: 4px;">
                 <strong>Fehler beim Laden</strong><br>
@@ -148,10 +159,11 @@ function initializeSettingsEvents() {
 
   if (!modal) return;
 
-  // Stelle sicher, dass Modal initial versteckt ist (Bug Fix #1)
+  // Stelle sicher, dass Fenster initial versteckt ist (Bug Fix #1)
   modal.classList.remove("active");
 
   // Stelle sicher, dass Checkbox unchecked ist (Bug Fix #1)
+
   if (menuCheckbox) {
     menuCheckbox.checked = false;
   }
@@ -190,14 +202,14 @@ function initializeSettingsEvents() {
     });
   }
 
-  // Klick außerhalb des Modals schließt es
+  // Klick außerhalb des Fensters schließt es
   modal.addEventListener("mousedown", (e) => {
     if (e.target === modal) {
       modal.classList.remove("active");
     }
   });
 
-  // ESC-Taste schließt Modal
+  // ESC-Taste schließt Fenster
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal.classList.contains("active")) {
       modal.classList.remove("active");
@@ -206,7 +218,7 @@ function initializeSettingsEvents() {
 }
 
 /**
- * Zentriert das Modal-Fenster
+ * Zentriert das Fenster
  */
 function centerModal() {
   const modalWindow = document.querySelector(".settings-modal-content");
@@ -219,7 +231,7 @@ function centerModal() {
 }
 
 /**
- * Lädt alle Komponenten neu (z.B. für Debugging)
+ * Lädt alle Komponenten neu
  */
 function reloadAllComponents() {
   htmlCache.clear();
@@ -230,8 +242,6 @@ function reloadAllComponents() {
     loadHTML("settings", "/partials/settings.html", false),
   ]);
 }
-
-// Für Debugging im Browser verfügbar machen
 if (typeof window !== "undefined") {
   window.loadHTML = loadHTML;
   window.reloadAllComponents = reloadAllComponents;
@@ -251,7 +261,8 @@ window.addEventListener("unhandledrejection", (e) => {
 // Initialisierung mit Error Handling
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Scroll-Position zurücksetzen
+    // Scroll-Position zurücksetzen 
+    // so oft habe ich das irgentwo hingeshriebn und es hat nie was geändert
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
 
@@ -303,3 +314,8 @@ function handleGlobalClicks(e) {
     modal.classList.remove("active");
   }
 }
+
+
+// Zusammenfassend lässt sich sagen, dass der haubtteil des loaders einfahc nur aus event listeners und halt abischerung damit alles gut funktioniert.
+// das wirkliche laden der datei ist nciht sehr schwer, aber das was halt mit sich kommt und was halt in der datei ist muss halt erstmal alles gehandeld werden.
+// Das wäre bei einfachen html/css code nicht so schlimm aber bei halt einem Settings menu wo es halt so viele Events zu handeln gibt, ist es halt schwierig mit allem. Dazu kommt ja auch noch das timing: Wenn nicht alles wirklich gleichzeitig angezeigt wird, dann sieht es nciht gut aus. Außerdem muss es halt auch schnell angezegit werden. ich denke nicht jeder will paar sekuenen warten bis die Seite komplett geladen ist. Also persönlich mag ich es auf jeden Fall nicht. Stand 08.02.2026 habe ich noch kein richtiges warte Symbol eingebaut, damit man nicht dieses Hässliche Laden der Seiten anschauen muss. Aber warscheinlich werde ich das noch hinzufügen.

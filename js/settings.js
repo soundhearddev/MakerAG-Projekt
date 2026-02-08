@@ -50,11 +50,11 @@
       extra: rootStyles.getPropertyValue(`--${themeName}-extra`).trim(),
     };
 
-    // Fallback zu 'water' wenn Theme nicht gefunden
+    // Fallback zu 'default' wenn Theme nicht gefunden
     // wird auch komplett zuerst geladen damit es wenigsten etwas gibt (auch einfach als fallback)
     // das problem ist jetzt wird man auch immer ganz kurz geflashed beim laden vom blauen
     if (!theme.primary) {
-      const fallbackTheme = getThemeFromCSS('water');
+      const fallbackTheme = getThemeFromCSS('default');
       return fallbackTheme;
     }
 
