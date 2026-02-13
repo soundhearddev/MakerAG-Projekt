@@ -21,12 +21,11 @@ ini_set('error_log', '/var/www/logs/php_errors.log');
 function sendJsonResponse(array $data, int $statusCode = 200): void
 {
     http_response_code($statusCode);
-    echo json_encode(
-        $data,
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-    );
+    header('Content-Type: application/json; charset=utf-8'); // HIER
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     exit;
 }
+
 
 /**
  * ERROR Logging
