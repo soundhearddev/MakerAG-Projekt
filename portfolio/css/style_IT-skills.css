@@ -1,0 +1,587 @@
+/* das macht das scrollen engenehmer und nicht instant */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Farben / allgemeine infos */
+:root {
+  --light-bg: #f0f0f0;/* Heller Hintergrund */
+  --dark-bg: #222831; /* Dunkler Hintergrund */
+  --dark-mode-color: #3c3d37;/* Dunkelmodus Farbe (wird auch für den hell/dunkel button verwendet) */
+  --light-text: #000000;/* Hellemodus Textfarbe */
+  --dark-text: #f0f0f0;/* Dunklelmodus Textfarbe */
+  --font-size: 16px;/* Schriftgröße */
+  --button-size: 25px;/* Größe der Schaltflächen */
+  --bg-dark-mode: #121212;/* dunkler hintergrund (wirklick) */
+  --border-color: #121212;/* farbe für die Border */
+  --bg-apply: #007BFF;/* farbe für die apply button */
+  --bg-white: #f0f0f0;/* weißer hintergrund für dropdown */
+  --bg-white-dark: #ccc7c7;
+  --accent: #00adb5;
+  --hov-button: #0056b3;
+  --box-bg: #C5D3E8;
+  --nav-dark-bg: #0C0C0C; /* Hintergrundfarbe der Navigation im Dunkelmodus */
+
+}
+
+
+/* ================================================================================================= */
+/*                                          Body                                                     */
+/* ================================================================================================= */
+body {
+  margin: 0;
+  color: var(--text-color-light);
+  background-color: var(--bg-white);
+  transition: background-color 0.3s, color 0.3s;
+  font-size: var(--font-size);
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* ================================================================================================= */
+/*                                          Navigation                                               */
+/* ================================================================================================= */
+nav {
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  display: flex; 
+  justify-content: space-between; 
+  box-sizing: border-box; 
+  padding: 10px 20px; 
+  background-color: var(--light-bg); 
+  box-shadow: 0 4px 2px -2px gray; 
+  transition: background-color 0.3s, color 0.1s;
+  z-index: 1000; /* Damit es immer oben bleibt */
+  animation-duration: 1s;
+  animation-delay: 0.5s;
+  animation-name: NavslideInDown; /* Animation für das Einblenden */
+  animation-fill-mode: forwards; /* Animation bleibt am Ende stehen */
+}
+
+nav .logo {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+
+nav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-top: 5px;
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+
+
+nav ul li a {
+  color: inherit;
+  transition: color 0.3s;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+
+
+nav ul li a:hover {
+  color: var(--accent);
+}
+
+.settings-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.settings-icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+body.dark-mode .settings-icon {
+  content: url('../img/settings_hell.png');
+}
+
+body.dark-mode .settings-icon {
+  filter: brightness(0) invert(1);
+}
+
+/* ================================================================================================= */
+/*                                          Settings                                                 */
+/* ================================================================================================= */
+
+/* Stil für den Einstellungsknopf von hell und dunkel */
+.image-button {
+  display: flex;/* Flexbox-Layout */
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: var(--dark-mode-color);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+
+/* Einstellungens-fenster */
+.settings {
+  position: fixed;
+  z-index: 2000;
+  top: 0;
+  right: -400px; /* Versteckt das Panel außerhalb des Bildschirms */
+  width: 300px;
+  height: 100%;
+  padding: 20px;
+  border: 1px solid var(--light-text);
+  color: var(--light-text);
+  background-color: var(--light-bg);
+  box-shadow: -3px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+
+.settings:target {
+  right: 0;
+}
+
+
+/* zum schließen des einstllungsfenster */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Das ist der wechsel von bildern im hell und dunkel modus und für die größe der bilder */
+.mode-image {
+  width: 25px;
+  height: 25px;
+  transition: opacity 0.3s;
+}
+
+/* Wenn die Checkbox akitviert ist, mach das hell modi bild unsichtbar */
+input[type="checkbox"]:checked+.image-button .light-image {
+  display: none;
+  /* Verstecke hell, wenn die Checkbox aktiviert ist */
+}
+
+/* Wenn die Checkbox aktiviert ist, mach das dunkel modi bild sichtbar */
+input[type="checkbox"]:checked+.image-button .dark-image {
+  display: block;
+  /* Zeige dunkel, wenn die Checkbox aktiviert ist */
+}
+
+/* Die Checkbox selbst bleibt unsichtbar, aber funktioniert trotzdem */
+input[type="checkbox"] {
+  display: none;
+  /* Die Checkbox ist unsichtbar */
+}
+
+/* Zeige sonne icon, wenn die Checkbox nicht aktiviert ist */
+.light-image {
+  display: block;
+}
+
+/* Verstecke das mond icon, wenn die Checkbox nicht aktiviert ist */
+.dark-image {
+  display: none;
+}
+
+.apply-button {
+  padding: 10px 20px; /* Innenabstand: oben/unten: 10px, links/rechts: 20px */
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  color: var(--dark-text);
+  background-color: var(--bg-apply);
+  cursor: pointer;
+  font-size: var(--font-size);
+}
+
+.apply-button:hover {
+  background-color: var(--hov-button);
+}
+
+
+
+.slider {
+  width: 100%;
+  max-width: 170px;
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling in Webkit-Browsern (z. B. Chrome, Safari) */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  height: 5px;
+  background: #ccc;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Styling des sliders (für Webkit-Browser) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  width: 15px;
+  height: 15px;
+  border-radius: 50%; /* Macht den slider kreisförmig */
+  background: #666;
+  cursor: pointer;
+}
+
+
+
+
+
+#language-switcher {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px; 
+}
+
+#language-switcher .lang {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: 2px solid #C4E1F6;
+  border-radius: 25px;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(27, 24, 24, 0.1);
+  transition: all 0.3s ease, transform 0.2s ease;
+}
+
+#language-switcher .lang img {
+  border-radius: 20%;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 4px rgba(43, 35, 35, 0.2);
+}
+
+#language-switcher .lang:hover {
+  background-color: #EDDFE0;
+  color: var(--light-text);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+#language-switcher .lang:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+#language-switcher .lang:not(:hover) {
+  animation: bounce 0.5s ease-out; 
+  background-color: var(--light-bg); 
+  color: var(--light-text); 
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(-10px);
+  }
+  20% {
+    transform: translateY(0px);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  70% {
+    transform: translateY(0px);
+  }
+  90% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Dunkelmodus                                              */
+/* ================================================================================================= */
+body.dark-mode {
+  color: var(--text-color-dark);
+  background-color: var(--dark-bg);
+}
+
+
+
+body.dark-mode nav {
+  color: var(--dark-text);
+  background-color: var(--nav-dark-bg);
+}
+
+
+body.dark-mode header {
+  color: var(--dark-text);
+  background-color: var(--header-dark-bg);
+}
+
+
+body.dark-mode .skill h3 {
+  color: #ff9800;
+}
+
+
+body.dark-mode .skill {
+  background-color: var(--dark-mode-color);
+}
+
+body.dark-mode .skill:hover {
+  background-color: #1E201E;
+}
+
+body.dark-mode .icon {
+  font-size: 2rem;
+  color: var(--dark-text);
+}
+
+body.dark-mode p {
+  color: var(--dark-text);
+}
+
+
+
+body.dark-mode .settings {
+  color: var(--dark-text);
+  background-color: var(--dark-bg);
+}
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                           skills                                                  */
+/* ================================================================================================= */
+
+.main {
+  top: 100px;
+}
+
+
+.container {
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 480px;
+  width: 100%;
+}
+
+
+.skills-card {
+  display: flex;
+  flex-direction: column; /* Setzt alle Karten untereinander */
+  width: 100%;
+  max-width: 600px;
+  gap: 20px;
+  margin-top: 20px;
+  margin-left: 50px;
+  margin-right: 50px;
+  max-height: 500px;
+}
+
+
+
+
+.skill {
+  background-color: var(--box-bg);
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+.skill:nth-child(1) {
+  animation-delay: 0.3s;
+}
+
+.skill:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.skill:nth-child(3) {
+  animation-delay: 0.9s;
+}
+
+.skill:nth-child(4) {
+  animation-delay: 1.2s;
+}
+
+.skill:nth-child(5) {
+  animation-delay: 1.5s;
+}
+
+.skill:hover {
+  transform: scale(1.05);
+  background-color: #A6AEBF;
+}
+
+
+
+.icon {
+  font-size: var(--font-size);
+  margin-bottom: 15px;
+  font-size: 2rem;
+}
+
+.skills-card .h3 {
+  font-size: var(--font-size);
+  margin-bottom: 10px;
+  color: #243642;
+}
+
+.skill-text {
+  display: flex; /* Flexbox aktivieren */
+  justify-content: center; /* Horizontal zentrieren */
+  align-items: center; /* Vertikal zentrieren */
+  font-size: var(--font-size);
+  color: var(--light-text);
+  margin: 0; /* Entfernt zusätzliche Margins */
+  padding-top: 80px;
+  padding-bottom: 40px;
+}
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Dropdown                                                 */
+/* ================================================================================================= */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  bottom: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: var(--bg-white);
+  min-width: 120px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  flex-direction: column;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content li {
+  list-style: none;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.dropdown:hover {
+  z-index: 10;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--bg-white-dark);
+}
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Animation                                                */
+/* ================================================================================================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes NavslideInDown {
+  from {
+    transform: translateY(0px); /* Startposition außerhalb des Bildschirms */
+    opacity: 0; /* Unsichtbar */
+  }
+  to {
+    transform: translateY(100px); /* Endposition */
+    opacity: 1; /* Sichtbar */
+  }
+}
+
+
+/* ================================================================================================= */
+/*                                          Handy-Ansicht                                            */
+/* ================================================================================================= */
+@media (max-width: 768px) { /* Wenn die Breite kleiner als 768px ist, dann  werden diese einstellungen genutzt */
+
+
+  /* Stellt sicher, dass nur das Logo und bestimmte Buttons angezeigt werden */
+  .mobile-dis {
+    display: none;
+  }
+  
+  .settings-icon {
+    display: block; /* der Einstellungs-Button bleibt sichtbar  */
+  }
+  
+
+  /* Das Navigationsmenü soll in der mobilen Ansicht versteckt werden, außer dem Einstellungs-Button */
+  nav {
+    justify-content: space-between; /*Schiebt die Inhalte nach links und rechts mit Platz dazwischen. */
+    align-items: left; /* Zentriert die Inhalte in der Mitte */
+  }
+  
+  .logo {
+    display: block;
+  }
+  }

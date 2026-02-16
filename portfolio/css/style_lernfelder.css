@@ -1,0 +1,752 @@
+/* das macht das scrollen angenehmer und nicht instant */
+html {
+  scroll-behavior: smooth; 
+}
+
+/* Farben */
+:root {
+  --dark-bg-alt: #001524; /* Dunkler Hintergrund (alternative Farbe) */
+  --light-bg: #f0f0f0; /* Heller Hintergrund */
+  --dark-bg: #222831; /* Dunkler Hintergrund */
+  --accent: #00adb5; /* Akzentfarbe */
+  --accent-darker: #047e85; /* Dunklere Akzentfarbe. obviously */ 
+  --dark-mode-color: #3c3d37; /* Dunkelmodus Farbe */
+  --header-dark-bg: #282A3A; /* Hintergrundfarbe des Headers im Dunkelmodus */
+  --light-text: #000000; /* Textfarbe für Hellemodus */
+  --dark-text: #f0f0f0; /* Textfarbe für Dunklelmodus  */
+  --nav-dark-bg: #0C0C0C; /* Hintergrundfarbe der Navigation im Dunkelmodus */
+  --bg-light-alt: #acacac; /* Hintergrundfarbe im Hellmodus (alternative Farbe) */
+  --font-size: 16px; 
+  --bg-white: #eeeeee; /* Weißer hintergrund */
+  --bg-dark-mode: #121212; /* dunkler hintergrund (wirklich) */
+  --bg-apply: #007BFF; /* farbe für die apply button */
+  --hov-button: #0056b3; /* hover farbe für die button */
+  --bg-white-dark: #ccc7c7; 
+  --hd-box-bg:#f4f1de;
+  --slider: #666; /* farbe für die slider */
+  --slider-bg: #ccc; /* farbe für den slider background */
+  --bg-dropdown: #f9f9f9;
+  --bg-box: #434a52; 
+  --glow:#0000ff;
+  --bg-box-hd: #77a6d3; 
+  --bg-box-hd-hov: #608cb4; 
+
+}
+
+  
+/* ================================================================================================= */
+/*                                          Body                                                     */
+/* ================================================================================================= */
+body {
+  margin: 0; 
+  color: var(--text-color-light); 
+  background-color: var(--bg-white); 
+  transition: background-color 0.3s, color 0.3s; 
+  font-size: var(--font-size); 
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+  
+  
+/* ================================================================================================= */
+/*                                          Navigation                                               */
+/* ================================================================================================= */
+nav {
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  display: flex; 
+  justify-content: space-between; 
+  box-sizing: border-box; 
+  padding: 10px 20px; 
+  background-color: var(--light-bg); 
+  box-shadow: 0 4px 2px -2px gray; 
+  transition: background-color 0.3s, color 0.1s;
+  z-index: 1000; 
+  animation-duration: 1s;
+  animation-delay: 0.5s;
+  animation-name: NavslideInDown;
+  animation-fill-mode: forwards; 
+}
+
+@keyframes NavslideInDown {
+  from {
+    transform: translateY(0px); 
+    opacity: 0; 
+  }
+  to {
+    transform: translateY(100px);
+    opacity: 1; 
+  }
+}
+
+
+/* logo = groß */
+nav .logo {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+nav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-top: 5px;
+}
+  
+nav ul li {
+  margin-right: 20px; 
+}
+
+nav ul li a {
+  color: inherit; 
+  font-weight: bold; 
+  text-decoration: none; 
+
+}
+
+
+
+  nav ul li a:hover { 
+    color: var(--accent);
+  }
+
+
+/* ================================================================================================= */
+/*                                          Header                                                   */
+/* ================================================================================================= */
+
+header {
+  padding: 70px 20px; /* Innenabstand oben/unten: 70px, links/rechts: 20px */
+  background-color: var(--bg-white-dark);
+  transition: background-color 0.3s, color 0.1s; 
+  text-align: center; 
+}
+  
+  
+  
+  
+
+/* ================================================================================================= */
+/*                                          Settings                                                 */
+/* ================================================================================================= */
+
+
+.image-button {
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  width: 50px; 
+  height: 50px; 
+  border-radius: 25px; 
+  background-color: var(--dark-mode-color); 
+  cursor: pointer; 
+  transition: background-color 0.3s; 
+}
+
+.settings-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.settings-icon:hover {
+  transform: scale(1.1); 
+  transition: transform 0.2s ease-in-out;
+}
+
+body.dark-mode .settings-icon {
+  content: url('../img/settings_hell.png'); 
+}
+
+body.dark-mode .settings-icon {
+  filter: brightness(0) invert(1);
+}
+
+
+/* Einstellungens-fenster */
+.settings {
+  position: fixed; 
+  z-index: 2000; 
+  top: 0;
+  right: -400px; 
+  width: 300px;
+  height: 100%; 
+  padding: 20px; 
+  border: 1px solid var(--light-text);
+  color: var(--light-text);
+  background-color: var(--light-bg); 
+  box-shadow: -3px 0 5px #00000033; 
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.settings:target {
+  animation: move 0.6s ease-in-out forwards; 
+}
+
+
+@keyframes move {
+  0% {
+    right: -400px; 
+  }
+  100% {
+    right: 0; 
+  }
+}
+
+
+
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.close-btn:target {
+  animation: reverse_move 1s ease-in-out forwards; 
+}
+
+@keyframes reverse_move {
+  0% {
+    right: 0px; 
+  }
+  100% {
+    right: -400px; 
+  }
+}
+
+
+
+.mode-image {
+  width: 25px;
+  height: 25px;
+  transition: opacity 0.3s;
+}
+
+/* Wenn die Checkbox akitviert ist, mach das hell modi bild unsichtbar */
+input[type="checkbox"]:checked + .image-button .light-image {
+  display: none; /* Verstecke hell, wenn die Checkbox aktiviert ist */
+}
+  
+  /* Wenn die Checkbox aktiviert ist, mach das dunkel modi bild sichtbar */
+  input[type="checkbox"]:checked + .image-button .dark-image {
+    display: block; /* Zeige dunkel, wenn die Checkbox aktiviert ist */
+  }
+  
+  /* Die Checkbox selbst bleibt unsichtbar, aber funktioniert trotzdem */
+  input[type="checkbox"] {
+    display: none; /* Die Checkbox ist unsichtbar */
+  }
+  
+  /* Zeige sonne icon, wenn die Checkbox nicht aktiviert ist */
+  .light-image {
+    display: block;
+  }
+  
+  /* Verstecke das mond icon, wenn die Checkbox nicht aktiviert ist */
+  .dark-image {
+    display: none; 
+  }
+
+  .apply-button {
+    position: relative; 
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    color: var(--dark-text);
+    background-color: var(--bg-apply);
+    cursor: pointer;
+    font-size: 16px;
+    overflow: hidden; 
+    transition: background-color 0.3s ease, transform 0.2s ease; 
+  }
+  
+  .apply-button:hover {
+    background-color: var(--hov-button);
+    transform: scale(1.05); /* Leichtes Vergrößern beim Hover */
+  }
+  
+  .apply-button:active {
+    transform: scale(0.95); 
+    animation: press-bounce 0.3s ease-in-out; 
+  }
+  
+  .apply-button:active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.8));
+    animation: load-progress 1s linear infinite; 
+    z-index: 0;
+  }
+  
+  .apply-button span {
+    position: relative;
+    z-index: 1; 
+  }
+  
+  @keyframes press-bounce {
+    0% {
+      transform: scale(0.95);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes load-progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+
+/* Styling des Sliders */
+.slider {
+  width: 100%;
+  max-width: 170px;
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling in Webkit-Browsern (z. B. Chrome, Opera) */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  height: 5px; 
+  background: var(--slider-bg);
+  border-radius: 5px;
+  cursor: pointer; /* Zeigt an, dass der Slider klickbar ist */
+}
+
+/* Styling des sliders (für Webkit-Browser) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  width: 15px; 
+  height: 15px; 
+  border-radius: 50%; /* Macht den slider kreisförmig */
+  background: var(--slider);
+  cursor: pointer;
+}
+
+
+#language-switcher {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px; 
+}
+
+#language-switcher .lang {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: 2px solid #C4E1F6;
+  border-radius: 25px;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(27, 24, 24, 0.1);
+  transition: all 0.3s ease, transform 0.2s ease;
+}
+
+#language-switcher .lang img {
+  border-radius: 20%;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 4px rgba(43, 35, 35, 0.2);
+}
+
+#language-switcher .lang:hover {
+  background-color: #EDDFE0;
+  color: var(--light-text);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+#language-switcher .lang:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+#language-switcher .lang:not(:hover) {
+  animation: bounce 0.5s ease-out; 
+  background-color: var(--light-bg); 
+  color: var(--light-text); 
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(-10px);
+  }
+  20% {
+    transform: translateY(0px);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  70% {
+    transform: translateY(0px);
+  }
+  90% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Dunkelmodus                                              */
+/* ================================================================================================= */
+  body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  body.dark-mode nav {
+    background-color: var(--nav-dark-bg);
+    color: var(--dark-text);
+  }
+  
+  body.dark-mode header {
+    background-color: var(--header-dark-bg);
+    color: var(--dark-text);
+  }
+  
+
+  body.dark-mode .lobby {
+    background-color: #2b2c28;
+    color: var(--dark-text);
+  }
+
+  .settings.dark-mode {
+    background-color: var(--dark-bg); /* Dunkler Hintergrund im Dark-Mode */
+    color: var(--dark-text); /* Dunkle Textfarbe im Dark-Mode */
+  }
+
+  
+  body.dark-mode .settings {
+    background-color: var(--dark-bg); /* Hintergrundfarbe im Dunkelmodus */
+    color: var(--dark-text); /* Textfarbe im Dunkelmodus */
+    border: 1px solid var(--dark-text); /* Umrandung im Dunkelmodus */
+  }
+
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Dropdown                                                 */
+/* ================================================================================================= */
+
+.dropdown {
+  position: relative; /* Positionierung für das Dropdown */
+  display: inline-block; /* Inline-Block für das Dropdown */
+  bottom: 5px;
+}
+
+.dropdown-content {
+  display: none; 
+  position: absolute; 
+  top: 100%; 
+  left: 0;
+  right: 0;
+  width: 100%; 
+  background-color: var(--bg-white); 
+  min-width: 120px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2); 
+  z-index: 1; 
+  padding: 0;
+  margin: 0; 
+  width: auto; 
+  flex-direction: column;
+  
+}
+
+.dropdown:hover .dropdown-content {
+  display: block; 
+}
+
+.dropdown-content li {
+  list-style: none; /* Keine Aufzählung */
+  
+}
+
+.dropdown-content a {
+  color: black; 
+  padding: 8px 12px; 
+  text-decoration: none; 
+  display: block; 
+  font-size: 14px; 
+}
+
+.dropdown:hover {
+  z-index: 10; 
+}
+.dropdown-content a:hover {
+  background-color: var(--bg-white-dark); 
+}
+
+/* ================================================================================================= */
+/*                                          Lobby                                                    */
+/* ================================================================================================= */
+
+  .lobby {
+    text-align: center;
+    padding: 50px;
+    background: #8a817c; 
+    color: white; 
+    border-radius: 10px; 
+    margin: 20px; 
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  
+  .box-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px; 
+  }
+  
+  .box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; 
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    animation: movebox 3s ease-in-out infinite;
+    height: 100px;
+    width: 100px;
+
+  }
+  
+  .box a {
+    text-decoration: none;
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    height: 100%;
+    width: 100%;
+    border-radius: 8px;
+  }
+  
+
+  .box:hover {
+
+      background-color: #3498db;
+      color: white;
+      transform: scale(1.1);
+  }
+
+  @keyframes movebox {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px); /* Karten bewegen sich nach oben */
+    }
+    80% {
+      transform: translateY(0); /* Kurz in den standart zurückkehren */
+    }
+  }
+  
+  /* Verzögerung für jede box, um den Effekt nacheinander zu starten */
+  .box:nth-child(1) {
+    animation-delay: 1s;
+  }
+  
+  .box:nth-child(2) {
+    animation-delay: 1.5s;
+  }
+  
+  .box:nth-child(3) {
+    animation-delay: 2s;
+  }
+  
+  .box:nth-child(4) {
+    animation-delay: 2.5s;
+  }
+  
+  .box:nth-child(5) {
+    animation-delay: 3s;
+  }
+  
+  .box:nth-child(6) {
+    animation-delay: 3.5s;
+  }
+  
+  .box:nth-child(7) {
+    animation-delay: 4s;
+  }
+  
+  .box:nth-child(8) {
+    animation-delay: 4.5s;
+  }
+  
+  .box:nth-child(9) {
+    animation-delay: 5.5s;
+  }
+  
+  .box:nth-child(10) {
+    animation-delay: 6s;
+  }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+
+  }
+
+  .tooltip .text {
+    visibility: hidden;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 85px; /* Tooltip erscheint oben */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+.tooltip:hover .text {
+  visibility: visible;
+}
+
+/* animation für die roten boxen */
+.box-rot-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px; /* Abstand zwischen den Karten */
+}
+
+.box-rot {
+
+    position: relative;
+    width: 150px;
+    height: 150px;
+    background-color: #e74c3c;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+.box-rot a {
+  text-decoration: none;
+  color: #000000; 
+  font-size: 22px; 
+  font-weight: bold;
+  display: block; /* Block-Element für den gesamten Button */
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  
+}
+
+/* Schüttel-Effekt */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+  100% { transform: translateX(0); }
+}
+
+.box-rot:hover {
+  animation: shake 0.5s ease-in-out;
+}
+
+    .box-rot:hover .tooltip .text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+
+
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Handy-Ansicht                                            */
+/* ================================================================================================= */
+@media (max-width: 768px) {
+  /* Stellt sicher, dass nur das Logo und bestimmte Buttons angezeigt werden */
+
+  .mobile-dis {
+    display: none;
+  }
+
+  .settings-icon {
+    display: block; /* Stellt sicher, dass der Einstellungs-Button sichtbar bleibt */
+  }
+
+  .learning-field-button {
+    display: block; /* Der Lernfelder-Button bleibt sichtbar */
+  }
+
+  /* Das Navigationsmenü soll in der mobilen Ansicht versteckt werden, außer dem Einstellungs-Button */
+  nav {
+    justify-content: space-between; /*Schiebt die Inhalte nach links und rechts mit Platz dazwischen. */
+    align-items: center; /* Zentriert die Inhalte in der Mitte */
+  }
+
+  /* Das Logo wird sichtbar bleiben */
+  .logo {
+    display: block;
+/* Container für die Boxen */
+  }
+
+
+
+}
+
+
+

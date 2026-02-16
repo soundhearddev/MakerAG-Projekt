@@ -1,0 +1,138 @@
+<html>
+ <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webseite</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../../css/style_lernfelder.css" /> <!-- verlinkung mit css datei-->
+  </head>
+
+  <body>
+    <nav>
+        <div class="logo">Lernfeld 16</div>
+      <ul>
+        <li>
+          <a href="../../../index.html">Home</a>
+        </li>
+
+
+        <!-- Dropdown für die lernfelder -->
+          
+        <li>
+          <ul class="dropdown">
+          <a href="../../../html/Lernfelder/lernfelder_lobby.html">Lernfelder</a>
+          <ul class="dropdown-content">
+            <li><a href="lf11.html">LF11</a></li>
+            <li><a href="lf12.html">LF12</a></li>
+            <li><a href="lf13.html">LF13</a></li>
+            <li><a href="lf14.html">LF14</a></li>
+            <li><a href="lf15.html">LF15</a></li>
+            <li><a href="lf16.html">LF16</a></li>
+            <li><a href="lf17.html">LF17</a></li>
+            <li><a href="lf18.html">LF18</a></li>
+          </ul>
+      </ul>
+    </li>
+
+
+
+        <li>
+          <a href="#settings">
+            <img
+              src="../../../img/einstellungs_icon.png"
+              alt="Einstellungen"
+            />
+          </a>
+        </li>
+        
+      </ul>
+    </nav>
+
+
+
+
+    <header>
+      <p><h2>Netzwerke projektieren, in Betrieb nehmen und warten (II)</h2></p>
+      <p><h4>Lehrer: ____ _______</h4></p>
+    </header>
+
+<main>
+
+  
+
+</main>
+
+
+
+    <div id="settings" class="settings">
+      <a href="#" class="close-btn">&times;</a>
+      <h2>Einstellungen</h2>
+      <div class="theme-switcher">
+        <input type="checkbox" id="toggle" class="theme-checkbox" />
+        <label for="toggle" class="image-button">
+          <img src="../../../img/sun.png" alt="Hellmodus" class="light-image mode-image">
+          <img src="../../../img/full-moon.png" alt="Dunkelmodus" class="dark-image mode-image">
+        </label>
+      </div>
+      <div style="height: 50px;"> <!-- Platzhalter --> </div>
+      <p>Text Größe</p>
+      <div class="slider-container">
+        <input 
+          type="range" 
+          min="10" 
+          max="32"  
+          value="16" 
+          class="slider" 
+          id="fontSlider">
+        <button class="apply-button" onclick="applyFontSize()">Anwenden</button>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <script>
+      const toggle = document.getElementById("toggle"); // Dunkelmodus
+      const body = document.body; // Body der Seite
+      const settingsPanel = document.getElementById("settings"); // Einstellungen
+  
+      // Thema (Dunkel/Hell) anwenden
+      function applyTheme(isDarkMode) {
+          if (isDarkMode) body.classList.add("dark-mode");
+          else body.classList.remove("dark-mode");
+      }
+  
+      // Schriftgröße anwenden
+      function applyFontSize() {
+          const slider = document.getElementById('fontSlider');
+          const fontSize = slider.value + 'px';
+          document.documentElement.style.setProperty('--font-size', fontSize);
+          document.documentElement.style.setProperty('--button-size', parseInt(slider.value) + 10 + 'px');
+      } 
+  
+      // Dunkelmodus
+      toggle.addEventListener("change", () => {
+          const isDarkMode = toggle.checked;
+          applyTheme(isDarkMode);
+          localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+      });
+  
+      // Beim Laden der Seite gespeichertes Thema anwenden
+      document.addEventListener("DOMContentLoaded", () => {
+          const savedTheme = localStorage.getItem("theme");
+          const isDarkMode = savedTheme === "dark";
+          toggle.checked = isDarkMode;
+          applyTheme(isDarkMode);
+      });
+  </script>
+
+  </body>
+</html>

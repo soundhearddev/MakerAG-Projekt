@@ -1,0 +1,201 @@
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT-Skills</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../css/style_IT-skills.css" /> 
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      IT-Skills
+    </div>
+    <ul>
+      <li>
+        <a href="../index.html" class="mobile-dis">
+          Home
+        </a>
+      </li>
+      <li>
+        <a href="IT-skills.html" class="mobile-dis">
+          IT-Skills
+        </a>
+      </li>
+      <li>
+        <a href="Lebenslauf.html" class="mobile-dis" data-i18n="CV">
+          Lebenslauf
+        </a>
+      </li>
+      <li>
+        <a href="../php/contact.php" class="mobile-dis" data-i18n="contact">
+          Kontakt
+        </a>
+      </li>
+
+
+
+
+      <li>
+        <ul class="dropdown">
+          <a href="Lernfelder/lernfelder_lobby.html"  data-i18n="LF">
+            Lernfelder
+          </a>
+          <ul class="dropdown-content">
+            <li>
+              <a href="Lernfelder/lf1.html">
+              LF1
+            </a>
+          </li>
+            <li>
+              <a href="Lernfelder/lf2.html">
+                LF2
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf3.html">
+                LF3
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf4.html">
+                LF4
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf5.html">
+                LF5
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf6.html">
+                LF6
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf7.html">
+                LF7
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf8.html">
+                LF8
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf9.html">
+                LF9
+              </a>
+            </li>
+            <li>
+              <a href="Lernfelder/lf10.html">
+                LF10
+              </a>
+            </li>
+          </ul>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#settings">
+          <img class="settings-icon" src="../img/settings_dunkel.png" alt="Einstellungen" />
+        </a>
+      </li>
+      
+    </ul>
+  </nav>
+
+
+
+
+  <main>
+    
+    <p class="skill-text" data-i18n="info">
+      Eine Übersicht meiner IT-skills:
+    </p>
+    <div class="container">
+      <div class="skills-card">
+        <div class="skill">
+          <h3 data-i18n="programming">
+            Programmiersprachen
+          </h3>
+          <p>
+            Python, C, SQL
+          </p>
+        </div>
+        <div class="skill">
+          <h3>
+            Web-Tools 
+          </h3>
+          <p>
+            HTML, CSS, Javascript, PHP
+          </p>
+        </div>
+        <div class="skill">
+
+          <h3>
+            Tools
+          </h3>
+          <p>
+            Pycharm, Visual Studio Code, Arduino IDE
+          </p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+
+
+  <div id="settings" class="settings"> 
+    <a href="#" class="close-btn">
+      &times;
+    </a>
+    <h2 data-i18n="settings">
+      Einstellungen
+    </h2>
+
+    <div class="theme-switcher">
+      <input type="checkbox" id="toggle" class="theme-checkbox" /> 
+      <label for="toggle" class="image-button">
+        <img src="../img/sun.png" alt="Hellmodus" class="light-image mode-image">
+        <img src="../img/full-moon.png" alt="Dunkelmodus" class="dark-image mode-image">
+      </label>
+    </div>
+
+    <div style="height: 50px;"> <!-- Platzhalter --> </div>
+
+    <p data-i18n="ts">
+      Text Größe
+    </p>
+    <div class="slider-container">
+      <input type="range" min="10" max="32" value="16" class="slider" id="fontSlider"> 
+      <button class="apply-button" onclick="applyFontSize()" data-i18n="apply">
+        Anwenden
+      </button> 
+    </div>
+
+    <div style="height: 50px;"> <!-- Platzhalter --> </div>
+
+    <div id="language-switcher">
+      <button class="lang" data-lang="de">
+        DE 
+        <img src="../img/german-flag.png">
+      </button>
+      <button class="lang" data-lang="en">
+        EN 
+        <img src="../img/usa.png">
+      </button>
+    </div>
+
+
+  <script src="/js/script.js"></script>
+  <script src="/js/translate.js"></script>
+</body>
+
+</html>

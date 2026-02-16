@@ -1,0 +1,635 @@
+
+/* das macht das scrollen angenehmer und nicht instant */
+html {
+  scroll-behavior: smooth; 
+}
+
+/* Farben */
+:root {
+  --dark-bg-alt: #001524; /* Dunkler Hintergrund (alternative Farbe) */
+  --light-bg: #f0f0f0; /* Heller Hintergrund */
+  --dark-bg: #222831; /* Dunkler Hintergrund */
+  --accent: #00adb5; /* Akzentfarbe */
+  --accent-darker: #047e85; /* Dunklere Akzentfarbe. obviously */ 
+  --dark-mode-color: #3c3d37; /* Dunkelmodus Farbe */
+  --header-dark-bg: #282A3A; /* Hintergrundfarbe des Headers im Dunkelmodus */
+  --light-text: #000000; /* Textfarbe für Hellemodus */
+  --dark-text: #f0f0f0; /* Textfarbe für Dunklelmodus  */
+  --nav-dark-bg: #0C0C0C; /* Hintergrundfarbe der Navigation im Dunkelmodus */
+  --bg-light-alt: #acacac; /* Hintergrundfarbe im Hellmodus (alternative Farbe) */
+  --font-size: 16px; /* Schriftgröße */
+  --bg-white: #eeeeee; /* Weißer hintergrund */
+  --bg-dark-mode: #121212; /* dunkler hintergrund (wirklich) */
+  --bg-apply: #007BFF; /* farbe für die apply button */
+  --hov-button: #0056b3; /* hover farbe für die button */
+  --bg-white-dark: #ccc7c7; 
+  --hd-box-bg:#f4f1de;
+  --slider: #666; /* farbe für die slider */
+  --slider-bg: #ccc; /* farbe für den slider background */
+  --bg-dropdown: #f9f9f9;
+  --bg-box: #434a52; 
+  --glow:#0000ff;
+  --bg-box-hd: #77a6d3; 
+  --bg-box-hd-hov: #608cb4; 
+
+}
+
+
+/* ================================================================================================= */
+/*                                          Body                                                     */
+/* ================================================================================================= */
+body {
+  margin: 0; /* entfernt den Abstand rund um ein Element. */
+  color: var(--text-color-light); /* Textfarbe */
+  background-color: var(--bg-white); /* Hintergrundfarbe */
+  transition: background-color 0.3s, color 0.3s; /* Übergangseffekte für Hintergrund und Textfarbe */
+  font-size: var(--font-size); /* Schriftgröße */
+  font-family: "Ubuntu", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* ================================================================================================= */
+/*                                          Navigation                                               */
+/* ================================================================================================= */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex; 
+  justify-content: space-between; 
+  box-sizing: border-box; 
+  padding: 10px 20px; 
+  background-color: var(--light-bg); 
+  box-shadow: 0 4px 2px -2px gray; 
+  transition: background-color 0.3s, color 0.1s;
+  z-index: 1000; /* Damit es immer oben bleibt */
+}
+
+/* logo = groß */
+nav .logo {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+nav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-top: 5px;
+}
+  
+nav ul li {
+  margin-right: 20px; /* Abstand zwischen den Punkten */
+}
+
+nav ul li a {
+  color: inherit; /* gleiche farbe wie text */
+  font-weight: bold; /* Fett */
+  text-decoration: none; /* damit kein Strich unter Home steht (das sieht nicht schön aus) */
+
+}
+
+
+  /* hover effect für Home und Portfolio */
+  nav ul li a:hover { /* wenn maus daruf liegt verändert sich die Farbe */
+    color: var(--accent);
+  }
+
+/* ================================================================================================= */
+/*                                          Settings                                                 */
+/* ================================================================================================= */
+
+
+/* Stil für den Einstellungsknopf von hell und dunkel */
+.image-button {
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  width: 50px; 
+  height: 50px; 
+  border-radius: 25px; 
+  background-color: var(--dark-mode-color); 
+  cursor: pointer; 
+  transition: background-color 0.3s; 
+}
+
+.settings-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.settings-icon:hover {
+  transform: scale(1.1); /* Vergrößert das Icon leicht */
+  transition: transform 0.2s ease-in-out;
+}
+
+body.dark-mode .settings-icon {
+  content: url('../img/settings_hell.png'); /* Weißes Bild im Dunkelmodus */
+}
+
+body.dark-mode .settings-icon {
+  filter: brightness(0) invert(1);
+}
+
+
+/* Einstellungens-fenster */
+.settings {
+  position: fixed; 
+  z-index: 2000; 
+  top: 0;
+  right: -400px; 
+  width: 300px;
+  height: 100%; 
+  padding: 20px; 
+  border: 1px solid var(--light-text);
+  color: var(--light-text);
+  background-color: var(--light-bg); 
+  box-shadow: -3px 0 5px #00000033; 
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.settings:target {
+  animation: move 0.6s ease-in-out forwards; 
+}
+
+
+@keyframes move {
+  0% {
+    right: -400px; /* Startposition außerhalb des Bildschirms */
+  }
+  100% {
+    right: 0; /* Endposition sichtbar */
+  }
+}
+
+
+
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.close-btn:target {
+  animation: reverse_move 1s ease-in-out forwards; /* Animation für das Schließen */
+}
+
+@keyframes reverse_move {
+  0% {
+    right: 0px; /* Startposition außerhalb des Bildschirms */
+  }
+  100% {
+    right: -400px; /* Endposition sichtbar */
+  }
+}
+
+
+
+.mode-image {
+  width: 25px;
+  height: 25px;
+  transition: opacity 0.3s;
+}
+
+/* Wenn die Checkbox akitviert ist, mach das hell modi bild unsichtbar */
+input[type="checkbox"]:checked + .image-button .light-image {
+  display: none; /* Verstecke hell, wenn die Checkbox aktiviert ist */
+}
+  
+  /* Wenn die Checkbox aktiviert ist, mach das dunkel modi bild sichtbar */
+  input[type="checkbox"]:checked + .image-button .dark-image {
+    display: block; /* Zeige dunkel, wenn die Checkbox aktiviert ist */
+  }
+  
+  /* Die Checkbox selbst bleibt unsichtbar, aber funktioniert trotzdem */
+  input[type="checkbox"] {
+    display: none; /* Die Checkbox ist unsichtbar */
+  }
+  
+  /* Zeige sonne icon, wenn die Checkbox nicht aktiviert ist */
+  .light-image {
+    display: block;
+  }
+  
+  /* Verstecke das mond icon, wenn die Checkbox nicht aktiviert ist */
+  .dark-image {
+    display: none; 
+  }
+
+  .apply-button {
+    position: relative; /* Für den Fortschrittsbalken */
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    color: var(--dark-text);
+    background-color: var(--bg-apply);
+    cursor: pointer;
+    font-size: 16px;
+    overflow: hidden; /* Verhindert, dass der Fortschrittsbalken über den Button hinausgeht */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Sanfter Übergang */
+  }
+  
+  .apply-button:hover {
+    background-color: var(--hov-button);
+    transform: scale(1.05); /* Leichtes Vergrößern beim Hover */
+  }
+  
+  .apply-button:active {
+    transform: scale(0.95); /* Button wird leicht verkleinert */
+    animation: press-bounce 0.3s ease-in-out; /* Bounce-Effekt */
+  }
+  
+  .apply-button:active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.8));
+    animation: load-progress 1s linear infinite; /* Fortschrittsanimation */
+    z-index: 0;
+  }
+  
+  .apply-button span {
+    position: relative;
+    z-index: 1; /* Text bleibt über der Animation sichtbar */
+  }
+  
+  @keyframes press-bounce {
+    0% {
+      transform: scale(0.95);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  @keyframes load-progress {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+
+/* Styling des Sliders */
+.slider {
+  width: 100%;
+  max-width: 170px;
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling in Webkit-Browsern (z. B. Chrome, Opera) */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  height: 5px; 
+  background: var(--slider-bg);
+  border-radius: 5px;
+  cursor: pointer; /* Zeigt an, dass der Slider klickbar ist */
+}
+
+/* Styling des sliders (für Webkit-Browser) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  width: 15px; 
+  height: 15px; 
+  border-radius: 50%; /* Macht den slider kreisförmig */
+  background: var(--slider);
+  cursor: pointer;
+}
+
+
+#language-switcher {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px; 
+}
+
+#language-switcher .lang {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: 2px solid #C4E1F6;
+  border-radius: 25px;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(27, 24, 24, 0.1);
+  transition: all 0.3s ease, transform 0.2s ease;
+}
+
+#language-switcher .lang img {
+  border-radius: 20%;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 4px rgba(43, 35, 35, 0.2);
+}
+
+#language-switcher .lang:hover {
+  background-color: #EDDFE0;
+  color: var(--light-text);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+#language-switcher .lang:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+#language-switcher .lang:not(:hover) {
+  animation: bounce 0.5s ease-out; 
+  background-color: var(--light-bg); 
+  color: var(--light-text); 
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(-10px);
+  }
+  20% {
+    transform: translateY(0px);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  70% {
+    transform: translateY(0px);
+  }
+  90% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Dunkelmodus                                              */
+/* ================================================================================================= */
+body.dark-mode {
+  color: var(--dark-text);
+  background-color: var(--dark-bg);
+}
+
+body.dark-mode nav {
+  color: var(--dark-text);
+  background-color: var(--nav-dark-bg);
+}
+
+body.dark-mode header {
+  color: var(--dark-text);
+  background-color: var(--header-dark-bg);
+}
+
+body.dark-mode .box {
+  color: var(--dark-text); 
+  background-color: var(--bg-box); 
+}
+
+body.dark-mode .settings {
+  color: var(--dark-text); 
+  background-color: var(--dark-bg); 
+}
+
+body.dark-mode .service {
+  color: var(--dark-text)
+}
+
+/* ================================================================================================= */
+/*                                          Dropdown                                                 */
+/* ================================================================================================= */
+.dropdown {
+  position: relative; 
+  display: inline-block; 
+  bottom: 5px;
+}
+
+.nav-drop {
+  color: inherit; /* gleiche farbe wie text */
+  transition: color 0.3s;
+  font-weight: bold;
+  text-decoration: none; /* damit kein strich unter Home steht (das sieht nicht schön aus) */
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dropdown-content {
+  display: none; 
+  position: absolute; 
+  background-color: var(--bg-dropdown);
+  min-width: 120px; 
+  z-index: 1; 
+  padding: 0; 
+  margin: 0;
+}
+
+.dropdown-content li { 
+  list-style: none; 
+}
+
+.dropdown-content a {
+  color: black; 
+  padding: 8px 12px; 
+  text-decoration: none; /* Keine Unterstreichung */
+  display: block; 
+  font-size: 14px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block; /* Dropdown anzeigen beim Hover über das Dropdown */
+  animation: animate__backInDown 0.4s ease-in-out; /* Animation für das Dropdown */
+}
+
+.dropdown-content a:hover {
+  background-color: var(--bg-white-dark); /* Hintergrundfarbe beim Hover */
+}
+
+@keyframes fadeIn {
+0% {
+    opacity: 0; /* Start mit unsichtbar */
+    top: 10px;
+  }
+
+  90% {
+    opacity: 0.5; /* Halbtransparent */
+    top: 5px;
+  }
+  100% {
+    opacity: 1; /* Endet sichtbar */
+    top: 5px;
+  }
+}
+
+
+
+
+
+
+.feedback-message {
+    width: 200px;
+    margin: 0 auto;
+  }
+  
+
+  .container {
+    width: 200px;
+    margin: 0 auto;
+  }
+  
+  .formbox {
+    z-index: 0;
+    width: 50px;
+    height: 50px;
+    margin: 20px;
+    display: fixed;
+    background-color: gray;
+    position: absolute;
+    transition: all 0.3s ease;
+    cursor: pointer; 
+    animation: fadein 1s ease-in-out; /* Fade-in-Effekt */
+  }
+
+
+  .kreis {
+    border-radius: 50%;
+  }
+  
+  .viereck {
+    /* default */
+    border-radius: 0; /* keine abgerundeten Ecken */
+  }
+  
+  .dreieck {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 40px solid red;
+    background-color: transparent;
+  }
+
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .start_button {
+    background-color: var(--bg-apply); /* Hintergrundfarbe */
+    color: var(--dark-text); /* Textfarbe */
+    padding: 10px 20px; /* Innenabstand */
+    border: none; /* Kein Rahmen */
+    border-radius: 5px; /* Abgerundete Ecken */
+    cursor: pointer; /* Zeigt an, dass es klickbar ist */
+    font-size: 16px; /* Schriftgröße */
+    transition: background-color 0.3s, color 0.3s; /* Übergangseffekte für Hintergrund und Textfarbe */
+  }
+
+  .back {
+    background-color: var(--bg-apply); /* Hintergrundfarbe */
+    color: var(--dark-text); /* Textfarbe */
+    padding: 10px 20px; /* Innenabstand */
+    border: none; /* Kein Rahmen */
+    border-radius: 5px; /* Abgerundete Ecken */
+    cursor: pointer; /* Zeigt an, dass es klickbar ist */
+    font-size: 16px; /* Schriftgröße */
+    transition: background-color 0.3s, color 0.3s; /* Übergangseffekte für Hintergrund und Textfarbe */
+  }
+
+
+
+  .g-container {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .g-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+  }
+
+  /* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a blue background */
+.-gcontainer input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.g-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.g-container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid rgb(97, 88, 88);
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}

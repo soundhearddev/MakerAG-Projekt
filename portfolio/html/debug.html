@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug</title>
+    <link rel="stylesheet" href="../css/contact.css" />
+    <script type="module" src="../js/debug.js"></script>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          transition: background-color 0.3s, color 0.3s;
+          margin: 20px;
+        }
+        nav {
+          padding: 10px;
+          background-color: #333;
+          color: white;
+          transition: background-color 0.3s;
+        }
+        .picker-container {
+          margin-top: 20px;
+        }
+        label {
+          margin-right: 5px;
+        }
+
+        #rightDiv {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 200px;
+          padding: 10px;
+
+        }
+        .template-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .template-item img {
+          margin-right: 10px;
+        }
+        .template-item button {
+          padding: 10px 15px;
+          font-size: 14px;
+          cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+  <div id="rightDiv">
+    <p>Dies ist ein Text zum Testen von Vorlagen</p>
+  </div>
+  <div style="height: 50px;"> <!-- Platzhalter --> </div>
+    
+  <button>
+    <p><a href="../php/messages.php">Gespeicherte Nachrichten anzeigen</a></p>
+  </button>
+
+  <div style="height: 50px;"> <!-- Platzhalter --> </div>
+
+  <div id="root"></div>
+  <nav>Navigation</nav>
+  <h1>Farbpicker</h1>
+  <div class="picker-container">
+    <label for="colorPicker">Wähle eine Farbe:</label>
+    <input type="color" id="colorPicker" value="#ff0000">
+  </div>
+  <div class="picker-container">
+    <label for="elementSelect">Welches Element ändern?</label>
+    <select id="elementSelect">
+      <option value="body-bg">Hintergrund</option>
+      <option value="nav-bg">Nav Hintergrund</option>
+      <option value="body-text">Textfarbe</option>
+    </select>
+  </div>
+
+  <button id="applyColor">Farbe anwenden</button>
+  
+  <div style="height: 50px;"> <!-- Platzhalter --> </div>
+
+  <div>
+    <label>Vorlagen</label><br>
+    <div class="template-item">
+      <img src="../img/vorlage1.png" alt="Vorlage 1" width="200" height="200">
+      <button id="template1">Vorlage 1</button>
+    </div>
+    <div class="template-item">
+      <img src="../img/Vorlage2.png" alt="Vorlage 2" width="200" height="200">
+      <button id="template2">Vorlage 2</button>
+    </div>
+    <div class="template-item">
+      <img src="../img/Vorlage3.png" alt="Vorlage 3" width="200" height="200">
+      <button id="template3">Vorlage 3</button>
+    </div>
+    <div class="template-item">
+      <img src="../img/Vorlage4.png" alt="Vorlage 4" width="200" height="200">
+      <button id="template4">Vorlage 4</button>
+    </div>
+  </div>
+
+  <!-- Der Zurücksetzen-Button wird dynamisch über JavaScript hinzugefügt -->
+  <script src="../js/debug.js"></script>
+
+</body>
+</html>

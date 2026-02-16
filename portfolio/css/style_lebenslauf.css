@@ -1,0 +1,582 @@
+/* Farben */
+:root {
+    --dark-bg-alt: #121212; /* Dunkler Hintergrund (alternative Farbe) */
+    --light-bg: #f0f0f0; /* Heller Hintergrund */
+    --dark-bg: #222831; /* Dunkler Hintergrund */
+    --accent: #00adb5; /* Akzentfarbe */
+    --bg-color-light: #f0f0f0; /* Hintergrundfarbe im Hellmodus */
+    --text-color-light: #333; /* Textfarbe im Hellmodus */
+    --bg-color-dark: #333; /* Hintergrundfarbe im Dunkelmodus */
+    --text-color-dark: #f0f0f0; /* Textfarbe im Dunkelmodus */
+    --dark-text-color: #000000; /* Dunkle Textfarbe */
+    --bg-color: var(--bg-color-light); /* Standard Hintergrundfarbe */
+    --text-color: var(--text-color-light); /* Standard Textfarbe */
+    --dark-mode-color: #3c3d37; /* Dunkelmodus Farbe */
+    --header-dark-bg: #282A3A; /* Hintergrundfarbe des Headers im Dunkelmodus */
+    --light-text: #000000; /* Helle Textfarbe */
+    --dark-text: #f0f0f0; /* Dunkle Textfarbe */
+    --nav-dark-bg: #0C0C0C; /* Hintergrundfarbe der Navigation im Dunkelmodus */
+    --bg-light-alt: #acacac; /* Hintergrundfarbe im Hellmodus (alternative Farbe) */
+    --font-size: 16px; /* Schriftgröße */
+    --button-size: 25px; /* Größe der Schaltflächen */
+    --bg-box: #ced4da; 
+
+  }
+  
+  body {
+    margin: 0;
+    color: var(--text-color-light); 
+    background-color: var(--bg-white); 
+    transition: background-color 0.3s, color 0.3s; 
+    font-size: var(--font-size); 
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+  
+  
+/* ================================================================================================= */
+/*                                          Navigation                                               */
+/* ================================================================================================= */
+nav {
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  display: flex; 
+  justify-content: space-between; 
+  box-sizing: border-box; 
+  padding: 10px 20px; 
+  background-color: var(--light-bg); 
+  box-shadow: 0 4px 2px -2px gray; 
+  transition: background-color 0.3s, color 0.1s;
+  z-index: 1000; /* Damit es immer oben bleibt */
+  animation-duration: 1s;
+  animation-delay: 0.5s;
+  animation-name: NavslideInDown; /* Animation für das Einblenden */
+  animation-fill-mode: forwards; /* Animation bleibt am Ende stehen */
+}
+
+nav .logo {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+
+nav ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-top: 5px;
+}
+
+nav ul li {
+  margin-right: 20px;
+}
+
+
+
+nav ul li a {
+  color: inherit;
+  transition: color 0.3s;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+
+
+nav ul li a:hover {
+  color: var(--accent);
+}
+
+.settings-icon {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.settings-icon:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+body.dark-mode .settings-icon {
+  content: url('../img/settings_hell.png');
+}
+
+body.dark-mode .settings-icon {
+  filter: brightness(0) invert(1);
+}
+
+
+/* ================================================================================================= */
+/*                                          header                                                   */
+/* ================================================================================================= */
+header {
+  padding: 100px 20px; 
+  color: var(--light-text); 
+  background-color: var(--light-bg); 
+  transition: background-color 0.3s, color 0.3s; 
+  text-align: center; 
+}
+
+/* Buttons im Header */
+header .button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: var(--dark-bg); 
+  background-color: var(--accent); 
+  transition: background-color 0.3s;
+  text-decoration: none; 
+}
+
+
+/* ================================================================================================= */
+/*                                          Settings                                                 */
+/* ================================================================================================= */
+
+
+
+/* Einstellungens-fenster */
+.settings {
+  position: fixed; 
+  z-index: 2000; /* Setzt den z-index höher als der der Navigation */
+  top: 0; 
+  right: -400px; /* Versteckt das Panel außerhalb des Bildschirms */
+  width: 300px; 
+  height: 100%; 
+  padding: 20px; 
+  border: 1px solid var(--light-text);
+  color: var(--light-text);
+  background-color: var(--light-bg); 
+  box-shadow: -3px 0 5px #00000033; 
+  transition: right 0.3s; 
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+
+.settings:target {
+  right: 0; /* Panel sichtbar machen */
+}
+
+
+/* zum schließen des einstllungsfenster */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Das ist der wechsel von bildern im hell und dunkel modus und für die größe der bilder */
+.mode-image {
+  width: 25px;
+  height: 25px;
+  transition: opacity 0.3s;
+}
+
+/* Wenn die Checkbox akitviert ist, mach das hell modi bild unsichtbar */
+input[type="checkbox"]:checked + .image-button .light-image {
+  display: none; /* Verstecke hell, wenn die Checkbox aktiviert ist */
+}
+
+/* Wenn die Checkbox aktiviert ist, mach das dunkel modi bild sichtbar */
+input[type="checkbox"]:checked + .image-button .dark-image {
+  display: block; /* Zeige dunkel, wenn die Checkbox aktiviert ist */
+}
+
+/* Die Checkbox selbst bleibt unsichtbar, aber funktioniert trotzdem */
+input[type="checkbox"] {
+  display: none; /* Die Checkbox ist unsichtbar */
+}
+
+/* Zeige sonne icon, wenn die Checkbox nicht aktiviert ist */
+.light-image {
+  display: block;
+}
+
+/* Verstecke das mond icon, wenn die Checkbox nicht aktiviert ist */
+.dark-image {
+  display: none; 
+}
+
+/* Stil für den Einstellungsknopf von hell und dunkel */
+.image-button {
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 50px; 
+  height: 50px; 
+  border-radius: 25px; /* Abgerundete Ecken */
+  background-color: var(--dark-mode-color); /* Hintergrundfarbe */
+  cursor: pointer; /* Zeiger-Cursor */
+  transition: background-color 0.3s; /* Übergangseffekt für Hintergrundfarbe */
+}
+
+.apply-button {
+  margin-top: 10px; /* Abstand nach oben von 10px */
+  padding: 10px 20px; /* Innenabstand: oben/unten: 10px, links/rechts: 20px */
+  background-color: #007BFF; /* Hintergrundfarbe des Buttons */
+  color: white; /* Textfarbe des Buttons */
+  border: none; /* Keine Umrandung */
+  border-radius: 5px; /* Abgerundete Ecken */
+  cursor: pointer; /* Zeiger-Cursor beim Überfahren */
+  font-size: 16px; /* Schriftgröße des Buttons */
+}
+
+.apply-button:hover {
+  background-color: #0056b3;
+}
+
+
+
+
+.slider {
+  width: 100%;
+  max-width: 170px; 
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling in Webkit-Browsern (z. B. Chrome, Opera) */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  height: 5px; 
+  background: #ccc; 
+  border-radius: 5px; 
+  outline: none; 
+  cursor: pointer; 
+}
+  
+/* Styling des sliders (für Webkit-Browser) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Entfernt Standardbrowser-Styling */
+  appearance: none; /* Entfernt Standardbrowser-Styling */
+  width: 15px; 
+  height: 15px; 
+  border-radius: 50%; 
+  background: #666; 
+  cursor: pointer; 
+}
+
+
+
+
+#language-switcher {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px; 
+}
+
+#language-switcher .lang {
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: 2px solid #C4E1F6;
+  border-radius: 25px;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(27, 24, 24, 0.1);
+  transition: all 0.3s ease, transform 0.2s ease;
+}
+
+#language-switcher .lang img {
+  border-radius: 20%;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 4px rgba(43, 35, 35, 0.2);
+}
+
+#language-switcher .lang:hover {
+  background-color: #EDDFE0;
+  color: var(--light-text);
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+#language-switcher .lang:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+#language-switcher .lang:not(:hover) {
+  animation: bounce 0.5s ease-out; 
+  background-color: var(--light-bg); 
+  color: var(--light-text); 
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(-10px);
+  }
+  20% {
+    transform: translateY(0px);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  70% {
+    transform: translateY(0px);
+  }
+  90% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Dunkelmodus                                              */
+/* ================================================================================================= */
+  body.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+  }
+  
+  body.dark-mode nav {
+    background-color: var(--nav-dark-bg);
+    color: var(--dark-text);
+  }
+  
+  body.dark-mode .settings {
+    background-color: var(--dark-bg); 
+    color: var(--dark-text); 
+  }
+
+  body.dark-mode .schulbildung {
+    background-color: var(--dark-mode-color); /* Dunklerer Hintergrund für Boxen im Dunkelmodus */
+    color: var(--bg-white); /* Heller Text im Dunkelmodus */
+    border-color: var(--bg-white); /* Heller Rand im Dunkelmodus */
+  }
+
+  body.dark-mode .box {
+    background-color: var(--dark-mode-color); /* Dunklerer Hintergrund für Boxen im Dunkelmodus */
+    color: var(--bg-white); /* Heller Text im Dunkelmodus */
+    border-color: var(--bg-white); /* Heller Rand im Dunkelmodus */
+  }
+
+/* ================================================================================================= */
+/*                                          Box                                                      */
+/* ================================================================================================= */
+  .box {
+    border: 2px solid var(--rand-box); 
+    border-radius: 15px; 
+    padding: 20px; 
+    background-color: var(--bg-box); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 16px; 
+    color: var(--text-color-light); 
+    width: 950px; 
+    left: 100px; 
+     
+    margin-bottom: 20px; 
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+
+
+
+  .main-lebenslauf .box {
+    font-size: var(--font-size); /* so kann man mit dem javascript die größe verändern (glaube ich. ich habe es online gesucht und das habe ich gefudnen und ausprobiert und dann hat es funtkioniert) */
+    animation: slideInLeft;
+    animation-duration: 1s;
+    animation-fill-mode: forwards; /* Animation bleibt am Ende stehen */
+    animation-delay:0.2s;
+  }
+
+  
+
+.schulbildung {
+  border: 2px solid var(--rand-box); /* Randfarbe und -dicke */
+  border-radius: 15px; /* Rundung  */
+  padding: 20px; 
+  background-color: var(--bg-box); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  color: var(--text-color-light);
+  width: 950px; 
+  margin-left: 0; /* Box wird am linken Rand ausgerichtet */
+  margin-right: auto; /* Verhindert den rechten Abstand */
+  margin-bottom: 20px; /* Abstand nach unten zwischen den Boxen */
+  transition: background-color 0.3s, color 0.3s;
+  animation: fadeInLeft 0.5s forwards;
+}
+
+
+
+.main-lebenslauf .schulbildung {
+  font-size: var(--font-size); /* so kann man mit dem javascript die größe verändern (glaube ich. ich habe es online gesucht und das habe ich gefudnen und ausprobiert und dann hat es funtkioniert) */
+  animation: slideInLeft;
+  animation-duration: 1s;
+  animation-fill-mode: forwards; /* Animation bleibt am Ende stehen */
+  animation-delay:0.2s;
+}
+
+
+
+.schulbildung ul li {
+  display: flex;
+  margin-bottom: 10px; 
+}
+
+.schulbildung ul li .left {
+  text-align: left; 
+  flex: 1; 
+}
+
+.schulbildung ul li .right {
+  text-align: left; 
+  margin-left: 10px; 
+  flex: 2; 
+  word-wrap: break-word; 
+  max-width: 80%; 
+}
+
+.schulbildung ul {
+  list-style: none;
+  padding: 0;
+}
+
+  /* ================================================================================================= */
+/*                                          Dropdown                                                 */
+/* ================================================================================================= */
+.dropdown {
+  position: relative; 
+  display: inline-block; 
+  bottom: 5px;
+}
+
+.nav-drop {
+  color: inherit; 
+  transition: color 0.3s;
+  font-weight: bold; 
+  text-decoration: none; 
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dropdown-content {
+  display: none; 
+  position: absolute; 
+  background-color: #f9f9f9; 
+  min-width: 120px; 
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2); 
+  z-index: 1; 
+  padding: 0; 
+  margin: 0; 
+}
+
+
+.dropdown-content li {
+  list-style: none; 
+}
+
+.dropdown-content a {
+  color: black; 
+  padding: 8px 12px; 
+  text-decoration: none; 
+  display: block; 
+  font-size: 14px; 
+}
+.dropdown:hover .dropdown-content {
+  display: block; 
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1; 
+}
+
+
+
+
+
+
+
+
+/* ================================================================================================= */
+/*                                          Animation                                            */
+/* ================================================================================================= */
+
+@keyframes slideInLeft {
+  from {
+    transform: translate(-20rem);
+    scale: 200% 1;
+  }
+  to {
+    transform: translate(0);
+    scale: 100% 1;
+  }
+}
+
+
+
+
+@keyframes NavslideInDown {
+  from {
+    transform: translateY(0px); /* Startposition außerhalb des Bildschirms */
+    opacity: 0; /* Unsichtbar */
+  }
+  to {
+    transform: translateY(100px); /* Endposition */
+    opacity: 1; /* Sichtbar */
+  }
+}
+
+
+/* ================================================================================================= */
+/*                                          Handy-Ansicht                                            */
+/* ================================================================================================= */
+@media (max-width: 768px) { /* Wenn die Breite kleiner als 768px ist, dann  werden diese einstellungen genutzt */
+
+
+  /* Stellt sicher, dass nur das Logo und bestimmte Buttons angezeigt werden */
+  .mobile-dis {
+    display: none;
+  }
+  
+  .settings-icon {
+    display: block; /* der Einstellungs-Button bleibt sichtbar  */
+  }
+  
+
+  /* Das Navigationsmenü soll in der mobilen Ansicht versteckt werden, außer dem Einstellungs-Button */
+  nav {
+    justify-content: space-between; /*Schiebt die Inhalte nach links und rechts mit Platz dazwischen. */
+    align-items: left; /* Zentriert die Inhalte in der Mitte */
+  }
+  
+  .logo {
+    display: block;
+  }
+
+  .box {
+    max-width: 310px;
+  }
+  .schulbildung{
+    max-width: 310px;
+  }
+  }
