@@ -1,0 +1,264 @@
+/* ============================================
+   PAGE LOAD ANIMATIONS - HYBRID CONCEPT
+   ============================================ */
+
+/* 1. PAGE LOADER */
+.page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.page-loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-spinner {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.loader-spinner::before,
+.loader-spinner::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid transparent;
+    border-radius: 50%;
+    animation: pipeRotate 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.loader-spinner::before {
+    border-top-color: hsla(358, 100%, 70%, 0.9);
+    border-right-color: hsla(177, 62%, 60%, 0.9);
+    animation-delay: 0s;
+}
+
+.loader-spinner::after {
+    border-bottom-color: hsla(47, 100%, 71%, 0.9);
+    border-left-color: hsla(358, 100%, 70%, 0.9);
+    animation-delay: 0.3s;
+}
+
+@keyframes pipeRotate {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* 2. INITIAL STATE */
+body.loading {
+    overflow: hidden;
+}
+
+body.loading .site-header,
+body.loading nav,
+body.loading .cool-container,
+body.loading .container,
+body.loading .search {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 3. HEADER ANIMATION */
+.site-header {
+    animation: fadeSlideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+@keyframes fadeSlideDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+    }
+}
+
+/* 4. NAVIGATION ANIMATION */
+nav {
+    animation: fadeSlideRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+nav .nav-link {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: navLinkAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+nav .nav-link:nth-child(1) { animation-delay: 0.6s; }
+nav .nav-link:nth-child(2) { animation-delay: 0.7s; }
+nav .nav-link:nth-child(3) { animation-delay: 0.8s; }
+nav .nav-link:nth-child(4) { animation-delay: 0.9s; }
+nav .nav-link:nth-child(5) { animation-delay: 1s; }
+
+@keyframes fadeSlideRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        visibility: visible;
+    }
+}
+
+@keyframes navLinkAppear {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 5. CONTENT CONTAINERS */
+.cool-container,
+.container,
+.search {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeRise 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.cool-container { animation-delay: 0.8s; }
+.container:nth-of-type(1), .search { animation-delay: 1s; }
+.container:nth-of-type(2) { animation-delay: 1.1s; }
+.container:nth-of-type(3) { animation-delay: 1.2s; }
+.container:nth-of-type(4) { animation-delay: 1.3s; }
+
+@keyframes fadeRise {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
+    }
+}
+
+/* 6. INTERACTIVE ELEMENTS */
+button,
+.random-item-button,
+.btn-clear {
+    opacity: 0;
+    transform: scale(0.9);
+    animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation-delay: 1.4s;
+}
+
+.category-card,
+.locker ul li {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    animation: cardAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.locker ul li:nth-child(1) { animation-delay: 1.2s; }
+.locker ul li:nth-child(2) { animation-delay: 1.25s; }
+.locker ul li:nth-child(3) { animation-delay: 1.3s; }
+.locker ul li:nth-child(4) { animation-delay: 1.35s; }
+.locker ul li:nth-child(5) { animation-delay: 1.4s; }
+.locker ul li:nth-child(6) { animation-delay: 1.45s; }
+
+@keyframes scaleIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes cardAppear {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 7. SEARCH PAGE SPECIFIC */
+.search-bar {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    animation: searchBarAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 1.1s;
+}
+
+@keyframes searchBarAppear {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.table-wrapper {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeRise 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation-delay: 1.3s;
+}
+
+#resultsTable tbody tr {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: tableRowAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+#resultsTable tbody tr:nth-child(1) { animation-delay: 1.5s; }
+#resultsTable tbody tr:nth-child(2) { animation-delay: 1.55s; }
+#resultsTable tbody tr:nth-child(3) { animation-delay: 1.6s; }
+#resultsTable tbody tr:nth-child(4) { animation-delay: 1.65s; }
+#resultsTable tbody tr:nth-child(5) { animation-delay: 1.7s; }
+
+@keyframes tableRowAppear {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+
+
+
+/* 9. HOVER ENHANCEMENTS */
+body:not(.loading) button:hover,
+body:not(.loading) .random-item-button:hover {
+    transform: scale(1.05) translateY(-2px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body:not(.loading) .nav-link:hover {
+    transform: translateX(5px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body:not(.loading) .locker ul li:hover {
+    transform: scale(1.1) translateY(-3px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 10. ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .page-loader { display: none; }
+    body.loading .site-header,
+    body.loading nav,
+    body.loading .cool-container,
+    body.loading .container,
+    body.loading .search {
+        transform: none;
+    }
+}
