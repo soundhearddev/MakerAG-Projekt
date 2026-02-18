@@ -1,328 +1,298 @@
 <?php
-
 /**
  * API Endpoint: Background Patterns
- * Verwaltet SVG-Hintergrundmuster
+ * Pfad: /var/www/public/api/background.php
+ * SVGs: /var/www/public/images/background/
  */
 
-// Security Headers
-header("Content-Type: application/json; charset=UTF-8");
-header("X-Content-Type-Options: nosniff");
-header("X-Frame-Options: DENY");
-header("X-XSS-Protection: 1; mode=block");
+// ============================================================================
+// HEADERS
+// ============================================================================
+header('Content-Type: application/json; charset=UTF-8');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
 
-// CORS für lokale Entwicklung
 if (isset($_SERVER['HTTP_ORIGIN'])) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-    header("Access-Control-Allow-Credentials: true");
-    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-    header("Access-Control-Allow-Headers: Content-Type");
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
 }
 
-// Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Konfiguration
-define('BG_FOLDER', $_SERVER['DOCUMENT_ROOT'] . '/images/background/');
-define('WEB_PATH', '/images/background/');
-define('MAX_FILE_SIZE', 2 * 1024 * 1024); // 2MB
-define('ALLOWED_EXTENSIONS', ['svg']);
+// ============================================================================
+// KONFIGURATION
+// Dieser Script liegt in /api/ → eine Ebene hoch, dann images/background/
+// ============================================================================
+define('BG_FOLDER',   dirname(__DIR__) . '/images/background/');
+define('WEB_PATH',    '/images/background/');
+define('MAX_SIZE',    2 * 1024 * 1024);
 
-// Logging-Funktion
-function logError($message)
-{
-    $logFile = BG_FOLDER . 'error.log';
-    $timestamp = date('Y-m-d H:i:s');
-    file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
-}
-
-// JSON Response Helper
-function jsonResponse($success, $data = [], $error = null, $code = 200)
+// ============================================================================
+// HELPERS
+// ============================================================================
+function respond(bool $ok, array $data = [], string $err = '', int $code = 200): void
 {
     http_response_code($code);
     echo json_encode([
-        'success' => $success,
-        'data' => $data,
-        'error' => $error,
-        'timestamp' => time()
-    ], JSON_PRETTY_PRINT);
+        'success'   => $ok,
+        'data'      => $data,
+        'error'     => $err ?: null,
+        'timestamp' => time(),
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit();
 }
 
-// Ordner erstellen falls nicht vorhanden
-if (!is_dir(BG_FOLDER)) {
-    if (!mkdir(BG_FOLDER, 0755, true)) {
-        logError("Konnte Ordner nicht erstellen: " . BG_FOLDER);
-        jsonResponse(false, [], "Ordner konnte nicht erstellt werden", 500);
-    }
-}
-
-// .htaccess für Sicherheit erstellen
-$htaccessPath = BG_FOLDER . '.htaccess';
-if (!file_exists($htaccessPath)) {
-    $htaccessContent = <<<EOT
-# Sicherheit für Background-Ordner
-<FilesMatch "\.(svg)$">
-    Header set Content-Type "image/svg+xml"
-    Header set X-Content-Type-Options "nosniff"
-</FilesMatch>
-
-# Nur SVG-Dateien erlauben
-<Files *>
-    Order Deny,Allow
-    Deny from all
-</Files>
-
-<FilesMatch "\.(svg)$">
-    Allow from all
-</FilesMatch>
-
-# Directory Listing verhindern
-Options -Indexes
-EOT;
-    file_put_contents($htaccessPath, $htaccessContent);
-}
-
-/**
- * SVG Validierung und Sanitization
- */
-function validateSVG($filePath)
+function logMsg(string $msg): void
 {
-    $content = file_get_contents($filePath);
+    $f = dirname(__DIR__) . '/logs/php_errors.log';
+    @file_put_contents($f, '[' . date('Y-m-d H:i:s') . '] [background.php] ' . $msg . PHP_EOL, FILE_APPEND);
+}
 
-    // Prüfe ob es wirklich ein SVG ist
-    if (strpos($content, '<svg') === false) {
-        return false;
+// ============================================================================
+// ORDNER SICHERSTELLEN
+// ============================================================================
+if (!is_dir(BG_FOLDER)) {
+    if (!@mkdir(BG_FOLDER, 0755, true)) {
+        logMsg('mkdir fehlgeschlagen: ' . BG_FOLDER);
+        respond(false, [], 'Ordner konnte nicht erstellt werden', 500);
     }
+}
 
-    // Gefährliche Tags und Attribute entfernen
-    $dangerousPatterns = [
+if (!is_readable(BG_FOLDER)) {
+    logMsg('Kein Lesezugriff: ' . BG_FOLDER);
+    respond(false, [], 'Kein Lesezugriff auf den Ordner', 500);
+}
+
+// ============================================================================
+// SVG SANITIZER
+// ============================================================================
+function isSafeSVG(string $path): bool
+{
+    $content = @file_get_contents($path);
+    if ($content === false)                     return false;
+    if (stripos($content, '<svg') === false)     return false;
+
+    $bad = [
         '/<script\b[^>]*>.*?<\/script>/is',
-        '/<iframe\b[^>]*>.*?<\/iframe>/is',
-        '/<object\b[^>]*>.*?<\/object>/is',
+        '/<iframe\b[^>]*>/is',
+        '/<object\b[^>]*>/is',
         '/<embed\b[^>]*>/is',
-        '/on\w+\s*=/i', // Event-Handler wie onclick, onload, etc.
-        '/javascript:/i',
-        '/data:text\/html/i',
+        '/on\w+\s*=/i',
+        '/javascript\s*:/i',
+        '/data\s*:\s*text\/html/i',
+        '/xlink\s*:\s*href\s*=\s*["\']?\s*javascript/i',
     ];
 
-    foreach ($dangerousPatterns as $pattern) {
-        if (preg_match($pattern, $content)) {
-            return false;
-        }
+    foreach ($bad as $p) {
+        if (preg_match($p, $content)) return false;
     }
-
     return true;
 }
 
-/**
- * Sichere Dateinamen generieren
- */
-function sanitizeFilename($filename)
+function safeFilename(string $raw): string
 {
-    $filename = pathinfo($filename, PATHINFO_FILENAME);
-    $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $filename);
-    $filename = preg_replace('/_+/', '_', $filename);
-    $filename = trim($filename, '_');
-
-    if (empty($filename)) {
-        $filename = 'pattern_' . uniqid();
-    }
-
-    return $filename . '.svg';
+    $base = pathinfo($raw, PATHINFO_FILENAME);
+    $base = preg_replace('/[^a-zA-Z0-9_-]/', '_', $base);
+    $base = preg_replace('/_+/', '_', $base);
+    $base = trim($base, '_');
+    if ($base === '') $base = 'pattern_' . uniqid();
+    return $base . '.svg';
 }
 
 // ============================================================================
-// ACTION: Liste alle SVG-Patterns
+// ACTION
 // ============================================================================
-if (!isset($_POST['action']) || $_POST['action'] === 'list') {
-    try {
-        $svgs = glob(BG_FOLDER . '*.svg');
-        $patterns = [];
+$action = trim($_POST['action'] ?? $_GET['action'] ?? 'list');
 
-        if ($svgs === false) {
-            throw new Exception("Fehler beim Lesen des Ordners");
-        }
+// ============================================================================
+// LIST
+// ============================================================================
+if ($action === 'list') {
+    $files = @glob(BG_FOLDER . '*.svg');
 
-        foreach ($svgs as $file) {
-            $basename = basename($file);
-
-            // Skip versteckte Dateien
-            if ($basename[0] === '.') continue;
-
-            $patterns[] = [
-                'name' => $basename,
-                'path' => WEB_PATH . $basename,
-                'size' => filesize($file),
-                'modified' => filemtime($file)
-            ];
-        }
-
-        // Sortiere nach Name
-        usort($patterns, function ($a, $b) {
-            return strcmp($a['name'], $b['name']);
-        });
-
-        jsonResponse(true, [
-            'patterns' => $patterns,
-            'count' => count($patterns)
-        ]);
-    } catch (Exception $e) {
-        logError("List Error: " . $e->getMessage());
-        jsonResponse(false, [], $e->getMessage(), 500);
+    if ($files === false) {
+        logMsg('glob() fehlgeschlagen für: ' . BG_FOLDER);
+        respond(false, [], 'Ordner konnte nicht gelesen werden', 500);
     }
+
+    $patterns = [];
+    foreach ($files as $file) {
+        $name = basename($file);
+        if ($name[0] === '.') continue;
+
+        $patterns[] = [
+            'name'     => $name,
+            'path'     => WEB_PATH . $name,
+            'size'     => (int) @filesize($file),
+            'modified' => (int) @filemtime($file),
+        ];
+    }
+
+    usort($patterns, fn($a, $b) => strcmp($a['name'], $b['name']));
+
+    respond(true, [
+        'patterns' => $patterns,
+        'count'    => count($patterns),
+    ]);
 }
 
 // ============================================================================
-// ACTION: Upload neues SVG-Pattern
+// UPLOAD
 // ============================================================================
-if ($_POST['action'] === 'upload') {
-    try {
-        // Prüfe ob Datei vorhanden
-        if (!isset($_FILES['svg']) || $_FILES['svg']['error'] !== UPLOAD_ERR_OK) {
-            $errorMsg = isset($_FILES['svg']) ?
-                "Upload-Fehler Code: " . $_FILES['svg']['error'] :
-                "Keine Datei hochgeladen";
-            throw new Exception($errorMsg);
-        }
-
-        $file = $_FILES['svg'];
-
-        // Dateigröße prüfen
-        if ($file['size'] > MAX_FILE_SIZE) {
-            throw new Exception("Datei zu groß (max. 2MB)");
-        }
-
-        // Extension prüfen
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        if (!in_array($ext, ALLOWED_EXTENSIONS)) {
-            throw new Exception("Nur SVG-Dateien erlaubt");
-        }
-
-        // MIME-Type prüfen
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
-
-        if (!in_array($mimeType, ['image/svg+xml', 'text/xml', 'application/xml'])) {
-            throw new Exception("Ungültiger Dateityp: " . $mimeType);
-        }
-
-        // SVG Content validieren
-        if (!validateSVG($file['tmp_name'])) {
-            throw new Exception("SVG enthält unsichere Inhalte");
-        }
-
-        // Sicheren Dateinamen generieren
-        $safeName = sanitizeFilename($file['name']);
-        $targetPath = BG_FOLDER . $safeName;
-
-        // Prüfe ob Datei bereits existiert
-        if (file_exists($targetPath)) {
-            $safeName = pathinfo($safeName, PATHINFO_FILENAME) . '_' . time() . '.svg';
-            $targetPath = BG_FOLDER . $safeName;
-        }
-
-        // Upload durchführen
-        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
-            throw new Exception("Upload fehlgeschlagen");
-        }
-
-        // Dateiberechtigungen setzen
-        chmod($targetPath, 0644);
-
-        jsonResponse(true, [
-            'pattern' => [
-                'name' => $safeName,
-                'path' => WEB_PATH . $safeName,
-                'size' => filesize($targetPath)
-            ],
-            'message' => 'Pattern erfolgreich hochgeladen'
-        ]);
-    } catch (Exception $e) {
-        logError("Upload Error: " . $e->getMessage());
-        jsonResponse(false, [], $e->getMessage(), 400);
+if ($action === 'upload') {
+    if (!isset($_FILES['svg'])) {
+        respond(false, [], 'Keine Datei übermittelt', 400);
     }
-}
 
-// ============================================================================
-// ACTION: Lösche SVG-Pattern
-// ============================================================================
-if ($_POST['action'] === 'delete') {
-    try {
-        if (!isset($_POST['name']) || empty($_POST['name'])) {
-            throw new Exception("Kein Dateiname angegeben");
-        }
+    $f = $_FILES['svg'];
 
-        // Sicherheit: Nur Basename verwenden
-        $name = basename($_POST['name']);
-        $filePath = BG_FOLDER . $name;
-
-        // Prüfe ob Datei existiert
-        if (!file_exists($filePath)) {
-            throw new Exception("Datei nicht gefunden");
-        }
-
-        // Prüfe ob es wirklich eine SVG ist
-        if (pathinfo($filePath, PATHINFO_EXTENSION) !== 'svg') {
-            throw new Exception("Nur SVG-Dateien können gelöscht werden");
-        }
-
-        // Lösche Datei
-        if (!unlink($filePath)) {
-            throw new Exception("Löschen fehlgeschlagen");
-        }
-
-        jsonResponse(true, [
-            'message' => 'Pattern erfolgreich gelöscht',
-            'deleted' => $name
-        ]);
-    } catch (Exception $e) {
-        logError("Delete Error: " . $e->getMessage());
-        jsonResponse(false, [], $e->getMessage(), 400);
+    if ($f['error'] !== UPLOAD_ERR_OK) {
+        $codes = [
+            UPLOAD_ERR_INI_SIZE   => 'Datei überschreitet upload_max_filesize (php.ini)',
+            UPLOAD_ERR_FORM_SIZE  => 'Datei überschreitet MAX_FILE_SIZE im Formular',
+            UPLOAD_ERR_PARTIAL    => 'Datei wurde nur teilweise hochgeladen',
+            UPLOAD_ERR_NO_FILE    => 'Keine Datei hochgeladen',
+            UPLOAD_ERR_NO_TMP_DIR => 'Temp-Ordner fehlt',
+            UPLOAD_ERR_CANT_WRITE => 'Schreibfehler auf Disk',
+            UPLOAD_ERR_EXTENSION  => 'Upload durch PHP-Extension gestoppt',
+        ];
+        respond(false, [], $codes[$f['error']] ?? 'Upload-Fehler Code ' . $f['error'], 400);
     }
-}
 
-// ============================================================================
-// ACTION: Pattern Info
-// ============================================================================
-if ($_POST['action'] === 'info' && isset($_POST['name'])) {
-    try {
-        $name = basename($_POST['name']);
-        $filePath = BG_FOLDER . $name;
+    if ($f['size'] > MAX_SIZE) {
+        respond(false, [], 'Datei zu groß (max. 2 MB)', 400);
+    }
 
-        if (!file_exists($filePath)) {
-            throw new Exception("Datei nicht gefunden");
+    if (strtolower(pathinfo($f['name'], PATHINFO_EXTENSION)) !== 'svg') {
+        respond(false, [], 'Nur SVG-Dateien erlaubt', 400);
+    }
+
+    // MIME-Prüfung (tolerant, da Server unterschiedlich liefern)
+    if (function_exists('finfo_open')) {
+        $fi   = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($fi, $f['tmp_name']);
+        finfo_close($fi);
+        $allowed = ['image/svg+xml', 'text/xml', 'application/xml', 'text/plain'];
+        if (!in_array($mime, $allowed, true)) {
+            respond(false, [], 'Ungültiger MIME-Typ: ' . $mime, 400);
         }
+    }
 
-        $info = [
+    if (!isSafeSVG($f['tmp_name'])) {
+        respond(false, [], 'SVG enthält unsichere Inhalte', 400);
+    }
+
+    $name = safeFilename($f['name']);
+    $dest = BG_FOLDER . $name;
+
+    if (file_exists($dest)) {
+        $name = pathinfo($name, PATHINFO_FILENAME) . '_' . time() . '.svg';
+        $dest = BG_FOLDER . $name;
+    }
+
+    if (!move_uploaded_file($f['tmp_name'], $dest)) {
+        logMsg('move_uploaded_file fehlgeschlagen → ' . $dest);
+        respond(false, [], 'Speichern fehlgeschlagen – Schreibrecht prüfen', 500);
+    }
+
+    chmod($dest, 0644);
+    logMsg('Upload OK: ' . $name);
+
+    respond(true, [
+        'pattern' => [
             'name' => $name,
             'path' => WEB_PATH . $name,
-            'size' => filesize($filePath),
-            'modified' => filemtime($filePath),
-            'created' => filectime($filePath),
-            'readable' => is_readable($filePath),
-            'writable' => is_writable($filePath)
-        ];
-
-        // Lese SVG Dimensionen
-        $content = file_get_contents($filePath);
-        if (preg_match('/width=["\']([^"\']+)["\']/', $content, $matches)) {
-            $info['width'] = $matches[1];
-        }
-        if (preg_match('/height=["\']([^"\']+)["\']/', $content, $matches)) {
-            $info['height'] = $matches[1];
-        }
-
-        jsonResponse(true, ['pattern' => $info]);
-    } catch (Exception $e) {
-        logError("Info Error: " . $e->getMessage());
-        jsonResponse(false, [], $e->getMessage(), 400);
-    }
+            'size' => (int) filesize($dest),
+        ],
+        'message' => 'Pattern erfolgreich hochgeladen',
+    ]);
 }
 
-// Ungültige Action
-jsonResponse(false, [], 'Ungültige Aktion', 400);
+// ============================================================================
+// DELETE
+// ============================================================================
+if ($action === 'delete') {
+    $name = basename(trim($_POST['name'] ?? ''));
+
+    if ($name === '') {
+        respond(false, [], 'Kein Dateiname angegeben', 400);
+    }
+
+    if (pathinfo($name, PATHINFO_EXTENSION) !== 'svg') {
+        respond(false, [], 'Nur SVG-Dateien können gelöscht werden', 400);
+    }
+
+    $path = BG_FOLDER . $name;
+
+    if (!file_exists($path)) {
+        respond(false, [], 'Datei nicht gefunden: ' . $name, 404);
+    }
+
+    if (!@unlink($path)) {
+        logMsg('unlink fehlgeschlagen: ' . $path);
+        respond(false, [], 'Löschen fehlgeschlagen – Schreibrecht prüfen', 500);
+    }
+
+    logMsg('Gelöscht: ' . $name);
+    respond(true, ['deleted' => $name, 'message' => 'Pattern gelöscht']);
+}
+
+// ============================================================================
+// INFO
+// ============================================================================
+if ($action === 'info') {
+    $name = basename(trim($_POST['name'] ?? $_GET['name'] ?? ''));
+    if ($name === '') respond(false, [], 'Kein Dateiname angegeben', 400);
+
+    $path = BG_FOLDER . $name;
+    if (!file_exists($path)) respond(false, [], 'Datei nicht gefunden', 404);
+
+    $info = [
+        'name'     => $name,
+        'path'     => WEB_PATH . $name,
+        'size'     => (int) filesize($path),
+        'modified' => (int) filemtime($path),
+        'readable' => is_readable($path),
+        'writable' => is_writable($path),
+    ];
+
+    $content = @file_get_contents($path);
+    if ($content !== false) {
+        if (preg_match('/\bwidth=["\']([^"\']+)["\']/',  $content, $m)) $info['width']  = $m[1];
+        if (preg_match('/\bheight=["\']([^"\']+)["\']/', $content, $m)) $info['height'] = $m[1];
+        if (preg_match('/\bviewBox=["\']([^"\']+)["\']/', $content, $m)) $info['viewBox'] = $m[1];
+    }
+
+    respond(true, ['pattern' => $info]);
+}
+
+// ============================================================================
+// DEBUG – Aufruf mit ?action=debug
+// ============================================================================
+if ($action === 'debug') {
+    $files = @glob(BG_FOLDER . '*.svg') ?: [];
+    respond(true, [
+        'bg_folder'      => BG_FOLDER,
+        'web_path'       => WEB_PATH,
+        'folder_exists'  => is_dir(BG_FOLDER),
+        'is_readable'    => is_readable(BG_FOLDER),
+        'is_writable'    => is_writable(BG_FOLDER),
+        'svg_count'      => count($files),
+        'svg_files'      => array_map('basename', $files),
+        'document_root'  => $_SERVER['DOCUMENT_ROOT'] ?? '(nicht gesetzt)',
+        'script_dir'     => __DIR__,
+        'php_version'    => PHP_VERSION,
+        'upload_max'     => ini_get('upload_max_filesize'),
+        'post_max'       => ini_get('post_max_size'),
+    ]);
+}
+
+// ============================================================================
+// FALLBACK
+// ============================================================================
+respond(false, [], "Unbekannte Aktion: '$action'", 400);
