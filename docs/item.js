@@ -1,91 +1,160 @@
-// Beispiel: Laptop-ID aus URL holen (?id=1)
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id") || 0;
+(function () {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id") || 0;
 
-fetch(`/api/get_item.php?id=${id}`)
-  .then((res) => res.json())
-  .then((data) => {
-    if (data.error) {
-      document.getElementById(
-        "itemContainer"
-      ).innerHTML = `<p>Fehler: ${data.message}</p>`;
-      return;
+    // ── Hilfsfunktionen ──────────────────────────────────────────────────────
+
+    function specItem(label, value) {
+        if (!value) return null;
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${label}:</strong> ${value}`;
+        return li;
     }
 
-    const container = document.getElementById("status");
+    function infoLine(label, value) {
+        if (!value) return null;
+        const p = document.createElement("p");
+        p.innerHTML = `<strong>${label}:</strong> ${value}`;
+        return p;
+    }
 
-    // Titel + Marke + Modell
-    const title = document.createElement("h2");
-    title.textContent = `${data.brand} ${data.model}`;
-    container.appendChild(title);
+    function appendAll(parent, elements) {
+        elements.forEach(el => el && parent.appendChild(el));
+    }
 
-    // Kategorie + Subkategorie
-    const cat = document.createElement("p");
-    cat.innerHTML = `<strong>Kategorie:</strong> ${data.category} / ${data.subcategory}`;
-    container.appendChild(cat);
+    function makePdfBlock(label, url) {
+        const btnId = `pdfBtn_${Math.random().toString(36).slice(2)}`;
+        const wrapId = `pdfWrap_${Math.random().toString(36).slice(2)}`;
 
-    // Status + Zustand
-    const status = document.createElement("p");
-    status.innerHTML = `<strong>Status:</strong> ${data.status} | <strong>Zustand:</strong> ${data.item_condition}`;
-    container.appendChild(status);
-
-    // Standort
-    const location = document.createElement("p");
-    location.innerHTML = `<strong>Standort:</strong> Schrank ${data.location_schrank}, Regal ${data.location_regal}, Position ${data.location_position}`;
-    container.appendChild(location);
-
-    // Specs
-    const specs = document.createElement("ul");
-    specs.innerHTML = `
-            <li><strong>Interfaces:</strong> ${data.interfaces}</li>
-            <li><strong>Power:</strong> ${data.power}</li>
-            <li><strong>Firmware:</strong> ${data.firmware_version}</li>
+        const wrapper = document.createElement("p");
+        wrapper.innerHTML = `
+            <button id="${btnId}">${label}</button>
+            <div id="${wrapId}" style="display: none; margin-top: 20px;">
+                <embed src="${url}" type="application/pdf" width="100%" height="1080px" />
+                <p>Falls das PDF nicht angezeigt wird,
+                    <a href="${url}" target="_blank">hier öffnen</a> oder
+                    <a href="${url}" download>herunterladen</a>.
+                </p>
+            </div>
         `;
-    container.appendChild(specs);
 
-    // Tags
-    if (data.tags) {
-      const tags = document.createElement("p");
-      tags.innerHTML = `<strong>Tags:</strong> ${data.tags}`;
-      container.appendChild(tags);
+        wrapper.querySelector(`#${btnId}`).addEventListener("click", () => {
+            const div = document.getElementById(wrapId);
+            div.style.display = div.style.display === "none" ? "block" : "none";
+        });
+
+        return wrapper;
     }
 
-    // Notes
-    if (data.notes) {
-      const notes = document.createElement("p");
-      notes.innerHTML = `<strong>Notizen:</strong> ${data.notes}`;
-      container.appendChild(notes);
-    }
+    // ── 1. Item-Daten laden ──────────────────────────────────────────────────
 
-    // Thumbnail
-    if (data.thumbnail) {
-      const img = document.createElement("img");
-      img.src = data.thumbnail;
-      img.style.height = "200px";
-      container.appendChild(img);
-    }
+    fetch(`/api/get_item.php?id=${encodeURIComponent(id)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById("item-title").textContent = "Fehler: " + data.message;
+                return;
+            }
 
-    // PDF Dokumente
-    if (data.docs_link) {
-      const pdf = document.createElement("div");
-      pdf.innerHTML = `
-                <button onclick="togglePdf(this)">Dokumente anzeigen</button>
-                <div style="display:none; margin-top:10px;">
-                    <embed src="${data.docs_link}" type="application/pdf" width="100%" height="600px" />
-                    <p>Falls das PDF nicht angezeigt wird, <a href="${data.docs_link}" target="_blank">hier öffnen</a> oder <a href="${data.docs_link}" download>herunterladen</a>.</p>
-                </div>
-            `;
-      container.appendChild(pdf);
-    }
-  })
-  .catch((err) => {
-    document.getElementById(
-      "itemContainer"
-    ).innerHTML = `<p>Fehler beim Laden: ${err}</p>`;
-  });
+            // Seitentitel
+            document.title = `${data.brand} ${data.model}`;
+            document.getElementById("item-title").textContent = `${data.brand} ${data.model}`;
 
-// PDF Toggle Funktion
-function togglePdf(btn) {
-  const div = btn.nextElementSibling;
-  div.style.display = div.style.display === "none" ? "block" : "none";
-}
+            // Beschreibung
+            if (data.description) {
+                document.getElementById("item-description").textContent = data.description;
+            }
+
+            // Status / Meta-Infos
+            const statusDiv = document.getElementById("status");
+
+            if (data.status) {
+                const h = document.createElement("h2");
+                h.textContent = data.status;
+                statusDiv.appendChild(h);
+            }
+
+            if (data.item_condition) {
+                statusDiv.appendChild(infoLine("Zustand", data.item_condition));
+            }
+
+            if (data.category) {
+                const kat = data.subcategory ? `${data.category} / ${data.subcategory}` : data.category;
+                statusDiv.appendChild(infoLine("Kategorie", kat));
+            }
+
+            if (data.location_schrank || data.location_regal || data.location_position) {
+                const loc = `Schrank ${data.location_schrank ?? "–"}, Regal ${data.location_regal ?? "–"}, Position ${data.location_position ?? "–"}`;
+                statusDiv.appendChild(infoLine("Standort", loc));
+            }
+
+            if (data.tags) statusDiv.appendChild(infoLine("Tags", data.tags));
+            if (data.notes) statusDiv.appendChild(infoLine("Notizen", data.notes));
+
+            
+            // Specs
+            const specsList = document.getElementById("specs-list");
+            appendAll(specsList, [
+                specItem("Prozessor", data.cpu || data.processor),
+                specItem("Grafikkarte", data.gpu),
+                specItem("RAM", data.ram),
+                specItem("Bildschirm", data.display || data.screen),
+                specItem("Mainboard", data.mainboard),
+                specItem("Massenspeicher", data.storage),
+                specItem("Gewicht", data.weight ? data.weight + " kg" : null),
+                specItem("Interfaces", data.interfaces),
+                specItem("Power", data.power),
+                specItem("Firmware", data.firmware_version),
+                specItem("Erscheinungsjahr", data.year),
+            ]);
+
+            // Bilder
+            const images = data.images || (data.thumbnail ? [data.thumbnail] : []);
+            if (images.length > 0) {
+                const gallery = document.getElementById("image-gallery");
+                images.forEach((src, i) => {
+                    const img = document.createElement("img");
+                    img.src = src;
+                    img.alt = `Bild ${i + 1}`;
+                    img.style.height = "300px";
+                    gallery.appendChild(img);
+                });
+            } else {
+                document.getElementById("images-container").style.display = "none";
+            }
+        })
+        .catch(err => {
+            document.getElementById("item-title").textContent = "Fehler beim Laden";
+            console.error("item fetch error:", err);
+        });
+
+    // ── 2. PDFs aus <id>/pdf/ dynamisch laden ───────────────────────────────
+    //
+    // Benötigt: /api/list_files.php?path=<id>/pdf/
+    // Gibt zurück: { "files": ["Handbuch.pdf", "Datenblatt.pdf", ...] }
+
+    fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/pdf/")}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.files || data.files.length === 0) return;
+
+            const docsContainer = document.getElementById("docs-container");
+
+            // Abschnitts-Überschrift nur einmal
+            const heading = document.createElement("p");
+            heading.innerHTML = "<strong>Sonstige Dokumente:</strong>";
+            docsContainer.appendChild(heading);
+
+            data.files.forEach(filename => {
+                const url = `/${id}/pdf/${filename}`;
+                // Dateiname ohne Endung als Label
+                const label = filename.replace(/\.pdf$/i, "");
+                docsContainer.appendChild(makePdfBlock(label, url));
+            });
+        })
+        .catch(err => {
+            // Kein PDF-Ordner vorhanden → Container einfach leer lassen
+            console.warn("PDF-Liste konnte nicht geladen werden:", err);
+        });
+
+})();

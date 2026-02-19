@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Detail</title>
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/docs.css">
+</head>
+
+<body>
+
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+    <div class="container">
+        <div>
+            <h1 id="item-title">Lädt…</h1>
+            <div id="status"></div>
+        </div>
+        <p id="item-description"></p>
+    </div>
+
+    <div class="container">
+        <h2>Specs:</h2>
+        <ul id="specs-list">
+            <li>Lädt…</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <p><strong>Bilder:</strong></p>
+        <div id="image-gallery" style="display: flex; overflow-x: auto; gap: 10px;"></div>
+    </div>
+
+    <div class="container" id="docs-container">
+        
+    </div>
+
+    <script src="/js/loader.js"></script>
+    <script src="../item.js"></script>
+
+</body>
+
+</html>
