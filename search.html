@@ -7,13 +7,15 @@
     <title>Suche - Inventarverwaltung</title>
     <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/search.css">
+    <link rel="stylesheet" href="/styles/animation.css">
+
 </head>
 
-<body>
-    <!-- Page Loader -->
-    <div class="page-loader">
-        <div class="loader-spinner"></div>
-    </div>
+
+<body class="loading">
+
+
+
 
     <div id="header"></div>
     <div id="nav"></div>
@@ -28,10 +30,10 @@
         <div class="search-bar">
             <div class="search-input-wrapper">
                 <input type="text" id="searchInput"
-                    placeholder="Suche nach ID, Name, Marke, Kategorie, Locker, Seriennummer..." 
-                    autocomplete="off"
+                    placeholder="Suche nach ID, Name, Marke, Kategorie, Locker, Seriennummer..." autocomplete="off"
                     aria-label="Suchfeld">
-                <button id="clearSearch" class="btn-clear" title="Suche zurücksetzen" aria-label="Suche löschen">✕</button>
+                <button id="clearSearch" class="btn-clear" title="Suche zurücksetzen"
+                    aria-label="Suche löschen">✕</button>
             </div>
 
             <div class="search-options">
@@ -105,12 +107,13 @@
             </table>
         </div>
 
-    <!-- Toast Notifications -->
-    <div id="toastContainer" class="toast-container"></div>
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
 
-    <!-- Scripts -->
-    <script src="/js/search.js"></script>
-    <script src="/js/loader.js"></script>
+        <!-- Scripts -->
+        <script src="/js/search.js"></script>
+        <script src="/js/loader.js"></script>
+
 </body>
 
 </html>
