@@ -1,7 +1,9 @@
 # [Docs](./docs/1/Dokumentation.html)
 
 # Maker AG
-![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=JetBrains+Mono&owner=1&pattern=Solid&theme=Dark)
+[[![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=Raleway&issues=1&pattern=Transparent&theme=Dark)
+
+
 ## Organisationssystem
 ### *ja ich habe immernoch keinen richtigen Namen für das Projekt gefunden*
 
@@ -41,6 +43,7 @@ Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. 
 - **Verbindung:** haubtsächtlich SSH
 
 - **IDE:** VS Code
+
 
 
 
