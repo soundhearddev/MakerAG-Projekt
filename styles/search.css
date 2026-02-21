@@ -42,7 +42,6 @@ body {
     padding: 1rem 3rem 1rem 1rem;
     font-size: 1rem;
     border: 2px solid var(--cat-extra);
-    border-radius: 8px;
     background: var(--cat-primary);
     color: var(--cat-text);
     font-family: 'Montserrat', sans-serif;
@@ -100,7 +99,6 @@ body {
 .option-group select {
     padding: 0.5rem 1rem;
     border: 2px solid var(--cat-extra);
-    border-radius: 6px;
     background: var(--cat-primary);
     color: var(--cat-text);
     font-family: 'Montserrat', sans-serif;
@@ -119,7 +117,6 @@ body {
 .search-info {
     padding: 0.75rem 1rem;
     background: var(--cat-extra);
-    border-radius: 6px;
     margin-bottom: 1rem;
     display: flex;
     gap: 1rem;
@@ -141,7 +138,6 @@ body {
 ============================================== */
 .table-wrapper {
     overflow-x: auto;
-    border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -199,7 +195,6 @@ tr:hover {
     background: var(--cat-accent);
     color: var(--cat-primary) !important;
     text-decoration: none;
-    border-radius: 6px;
     font-weight: 600;
     font-size: 0.85rem;
     transition: all 0.3s ease;
@@ -229,7 +224,6 @@ tr:hover {
 
 .editor-mode .cell {
     border: 1px dashed var(--cat-accent);
-    border-radius: 4px;
     cursor: text;
     transition: all 0.3s ease;
 }
@@ -264,7 +258,6 @@ tr:hover {
     margin-top: 2rem;
     padding: 1rem;
     background: var(--cat-extra);
-    border-radius: 8px;
 }
 
 .btn-save {
@@ -273,7 +266,6 @@ tr:hover {
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -293,7 +285,6 @@ tr:hover {
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;

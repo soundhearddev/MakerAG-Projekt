@@ -1,45 +1,39 @@
 <?php
-declare(strict_types=1);
+/**
+ * API Endpoint: list_files.php
+ * Listet alle PDF-Dateien in einem Unterordner unterhalb von BASE_DIR.
+ *
+ * GET ?path=some/folder → { files: ["doc1.pdf", "doc2.pdf"] }
+ */
 
-header('Content-Type: application/json; charset=utf-8');
+require_once __DIR__ . './init.php';
 
-define('BASE_DIR', realpath(__DIR__ . '/../docs'));
 
-if (BASE_DIR === false) {
-    http_response_code(500);
-    echo json_encode(['error' => true, 'message' => 'BASE_DIR existiert nicht']);
-    exit;
+
+define('BASE_DIR', realpath(__DIR__ . '/../'));
+
+$requestedPath = getStringParam('path');
+
+// Nur sichere Zeichen erlauben
+if ($requestedPath !== '' && !preg_match('/^[\w\-\/\.]+$/', $requestedPath)) {
+    sendError('Ungültiger Pfad', 400);
 }
 
-$requestedPath = urldecode($_GET['path'] ?? '');
-$requestedPath = trim($requestedPath, '/');
+$fullPath = realpath(BASE_DIR . '/' . $requestedPath);
 
-if ($requestedPath !== '' && !preg_match('#^[a-zA-Z0-9_\-/]+$#', $requestedPath)) {
-    http_response_code(400);
-    echo json_encode(['error' => true, 'message' => 'Ungültiger Pfad']);
-    exit;
+// Path-Traversal-Schutz
+if (!$fullPath || strpos($fullPath, BASE_DIR) !== 0) {
+    sendError('Zugriff verweigert', 403);
 }
 
-$targetPath = realpath(BASE_DIR . '/' . $requestedPath);
-
-if ($targetPath === false || strpos($targetPath, BASE_DIR) !== 0) {
-    http_response_code(403);
-    echo json_encode(['error' => true, 'message' => 'Zugriff verweigert']);
-    exit;
-}
-
-if (!is_dir($targetPath)) {
-    echo json_encode(['files' => []]);
-    exit;
+if (!is_dir($fullPath)) {
+    sendSuccess([], ['files' => []]);
 }
 
 $files = array_values(array_filter(
-    scandir($targetPath),
-    fn($f) =>
-        is_file($targetPath . '/' . $f) &&
-        strtolower(pathinfo($f, PATHINFO_EXTENSION)) === 'pdf'
+    scandir($fullPath),
+    fn($f) => is_file($fullPath . '/' . $f)
+           && strtolower(pathinfo($f, PATHINFO_EXTENSION)) === 'pdf'
 ));
 
-sort($files, SORT_NATURAL | SORT_FLAG_CASE);
-
-echo json_encode(['files' => $files]);
+sendSuccess([], ['files' => $files, 'count' => count($files)]);

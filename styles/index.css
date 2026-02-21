@@ -69,7 +69,6 @@
     background: #222;
     color: #fff;
     border: 1px solid var(--cat-accent);
-    border-radius: 5px;
 
     white-space: nowrap;
     text-align: center;
@@ -85,7 +84,7 @@
     border: none;
     font-size: 18px;
     padding: 8px 12px;
-    border-radius: 50%;
+
     cursor: pointer;
 }
 
@@ -118,7 +117,7 @@
     color: var(--cat-primary);
     background-color: var(--cat-text);
     border: none;
-    border-radius: 1em;
+
     cursor: pointer;
     transition: all 0.2s;
     user-select: none;
@@ -140,7 +139,7 @@
     display: inline-block;
     height: 100%;
     width: 100%;
-    border-radius: 1rem;
+
     position: absolute;
     top: 0;
     left: 0;
@@ -176,7 +175,7 @@
     padding: 1.5rem;
     background: var(--cat-secondary);
     border: 2px solid var(--cat-extra);
-    border-radius: 12px;
+
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -192,7 +191,7 @@
     width: 120px;
     height: 120px;
     object-fit: cover;
-    border-radius: 8px;
+
     border: 2px solid var(--cat-accent);
     flex-shrink: 0;
 }
@@ -205,7 +204,6 @@
     justify-content: center;
     font-size: 3rem;
     background: var(--cat-primary);
-    border-radius: 8px;
     border: 2px solid var(--cat-accent);
     flex-shrink: 0;
 }
@@ -233,7 +231,6 @@
 .item-meta .brand {
     padding: 0.3rem 0.8rem;
     background: var(--cat-extra);
-    border-radius: 3px;
     font-size: 0.85rem;
     font-weight: 600;
 }
@@ -280,7 +277,6 @@
     font-weight: 500;
     color: var(--cat-primary);
     border: 3px solid var(--cat-accent);
-    border-radius: 8px;
     box-shadow: 0 0 0 rgba(141, 169, 196, 0.5);
     transition: all 0.3s ease-in-out;
     cursor: pointer;
@@ -438,7 +434,6 @@ button:hover .star-6 {
     padding: 2rem;
     background: var(--cat-secondary);
     border: 2px solid var(--cat-accent);
-    border-radius: 12px;
     margin-top: 1.5rem;
     text-align: left;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
@@ -448,7 +443,6 @@ button:hover .star-6 {
     width: 200px;
     height: 200px;
     object-fit: cover;
-    border-radius: 12px;
     border: 3px solid var(--cat-accent);
     flex-shrink: 0;
 }
@@ -461,7 +455,6 @@ button:hover .star-6 {
     justify-content: center;
     font-size: 5rem;
     background: var(--cat-primary);
-    border-radius: 12px;
     border: 3px solid var(--cat-accent);
     flex-shrink: 0;
 }
@@ -489,7 +482,6 @@ button:hover .star-6 {
 .random-meta .badge {
     padding: 0.4rem 1rem;
     background: var(--cat-extra);
-    border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
 }
@@ -547,7 +539,6 @@ button:hover .star-6 {
     appearance: none;
     background-color: transparent;
     border: 0.125em solid var(--cat-extra);
-    border-radius: 0.9375em;
     box-sizing: border-box;
     color: var(--cat-text);
     cursor: pointer;
