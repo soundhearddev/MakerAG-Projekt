@@ -1,38 +1,39 @@
 <?php
+/**
+ * API Endpoint: list_files.php
+ * Listet alle PDF-Dateien in einem Unterordner unterhalb von BASE_DIR.
+ *
+ * GET ?path=some/folder → { files: ["doc1.pdf", "doc2.pdf"] }
+ */
 
-// Gibt alle Dateien in einem Unterordner als JSON zurück.
-// Erlaubte Basis-Pfade sind nur unterhalb von BASE_DIR.
+require_once __DIR__ . './init.php';
 
-header("Content-Type: application/json");
 
-define("BASE_DIR", realpath(__DIR__ . "/../"));   // Passe diesen Pfad ggf. an
 
-$requestedPath = $_GET["path"] ?? "";
+define('BASE_DIR', realpath(__DIR__ . '/../'));
 
-// Sicherheits-Check: Nur alphanumerische Zeichen, Slash und Punkt erlaubt
-if (!preg_match('/^[\w\-\/\.]+$/', $requestedPath)) {
-    http_response_code(400);
-    echo json_encode(["error" => true, "message" => "Ungültiger Pfad"]);
-    exit;
+$requestedPath = getStringParam('path');
+
+// Nur sichere Zeichen erlauben
+if ($requestedPath !== '' && !preg_match('/^[\w\-\/\.]+$/', $requestedPath)) {
+    sendError('Ungültiger Pfad', 400);
 }
 
-$fullPath = realpath(BASE_DIR . "/" . $requestedPath);
+$fullPath = realpath(BASE_DIR . '/' . $requestedPath);
 
-// Sicherstellen, dass der Pfad wirklich innerhalb von BASE_DIR liegt (Path-Traversal-Schutz)
+// Path-Traversal-Schutz
 if (!$fullPath || strpos($fullPath, BASE_DIR) !== 0) {
-    http_response_code(403);
-    echo json_encode(["error" => true, "message" => "Zugriff verweigert"]);
-    exit;
+    sendError('Zugriff verweigert', 403);
 }
 
 if (!is_dir($fullPath)) {
-    echo json_encode(["files" => []]);
-    exit;
+    sendSuccess([], ['files' => []]);
 }
 
 $files = array_values(array_filter(
     scandir($fullPath),
-    fn($f) => is_file($fullPath . "/" . $f) && strtolower(pathinfo($f, PATHINFO_EXTENSION)) === "pdf"
+    fn($f) => is_file($fullPath . '/' . $f)
+           && strtolower(pathinfo($f, PATHINFO_EXTENSION)) === 'pdf'
 ));
 
-echo json_encode(["files" => $files]);
+sendSuccess([], ['files' => $files, 'count' => count($files)]);

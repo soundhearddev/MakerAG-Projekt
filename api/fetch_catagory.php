@@ -1,20 +1,20 @@
 <?php
-header("Content-Type: application/json");
-require_once "/var/www/html/secure/config.php";
+/**
+ * API Endpoint: fetch_catagory.php
+ * Gibt alle vorhandenen Kategorien aus der Datenbank zurück.
+ *
+ * GET → Liste aller Kategorien
+ */
+
+require_once __DIR__ . './init.php';
 
 
-// alle kategorien aus der datenbank holen
 try {
-    $db = Database::connect();
+    $result     = $db->query("SELECT DISTINCT category FROM items WHERE category IS NOT NULL ORDER BY category ASC");
+    $categories = $result->fetch_all(MYSQLI_ASSOC);
 
-    $res = $db->query("SELECT DISTINCT category FROM items");
-
-
-
-    echo json_encode($res->fetch_all(MYSQLI_ASSOC));
+    sendSuccess($categories, ['count' => count($categories)]);
 } catch (Exception $e) {
-    echo json_encode([
-        "error" => true,
-        "message" => $e->getMessage()
-    ]);
+    error_log('fetch_catagory.php: ' . $e->getMessage());
+    sendError('Datenbankfehler', 500);
 }

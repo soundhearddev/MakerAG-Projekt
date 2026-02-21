@@ -1,65 +1,37 @@
 <?php
-// NUTZUNG FÜR docs items
+/**
+ * API Endpoint: fetch_id_paths.php
+ * Gibt Item-IDs mit zugehörigen Pfaden (docs_link, thumbnail) zurück.
+ *
+ * GET ?id=42   → Pfade für ein Item
+ * GET          → Pfade für alle Items
+ */
 
-header("Content-Type: application/json");
-require_once "/var/www/html/secure/config.php";
+require_once __DIR__ . './init.php';
+
+
+
+$id = getIntParam('id');
 
 try {
-    $db = Database::connect();
-
-    // ID per GET abfragen, wenn vorhanden
-    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
     if ($id > 0) {
         $stmt = $db->prepare("SELECT id FROM items WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $item = $result->fetch_assoc();
+        $item = $stmt->get_result()->fetch_assoc();
 
-        if ($item) {
-            // Pfade hinzufügen
-            $item['docs_link'] = "/docs/{$item['id']}";
-            $item['thumbnail'] = getThumbnailPath($item['id']);
+        if (!$item) {
+            sendError("Item mit ID {$id} nicht gefunden", 404);
         }
 
-        echo json_encode($item ?: []);
+        sendSuccess(enrichItem($item));
     } else {
-        // Alle Items abfragen
-        $res = $db->query("SELECT id FROM items");
-        $items = $res->fetch_all(MYSQLI_ASSOC);
+        $result = $db->query("SELECT id FROM items ORDER BY id DESC");
+        $items  = $result->fetch_all(MYSQLI_ASSOC);
 
-        foreach ($items as &$item) {
-            $item['docs_link'] = "/docs/{$item['id']}";
-            $item['thumbnail'] = getThumbnailPath($item['id']);
-        }
-
-        echo json_encode($items);
+        sendSuccess(enrichItems($items), ['count' => count($items)]);
     }
-
 } catch (Exception $e) {
-    echo json_encode([
-        "error" => true,
-        "message" => $e->getMessage()
-    ]);
+    error_log('fetch_id_paths.php: ' . $e->getMessage());
+    sendError('Datenbankfehler', 500);
 }
-
-/**
- * Prüft, ob ein Thumbnail existiert und gibt den Pfad zurück.
- * Priorität: jpg > png > webp
- */
-function getThumbnailPath($id) {
-    $basePath = __DIR__ . "/docs/{$id}/images/thumb";
-    $webPath  = "/docs/{$id}/images/thumb";
-
-    $extensions = ['jpg', 'png', 'webp'];
-    foreach ($extensions as $ext) {
-        if (file_exists("{$basePath}.{$ext}")) {
-            return "{$webPath}.{$ext}";
-        }
-    }
-
-    // Falls kein Thumbnail existiert
-    return null;
-}
-

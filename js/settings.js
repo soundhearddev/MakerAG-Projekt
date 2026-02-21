@@ -791,8 +791,6 @@
       const select = document.getElementById("bg-pattern-select");
       const size = document.getElementById("bg-pattern-size");
       const repeat = document.getElementById("bg-pattern-repeat");
-      const uploadBtn = document.getElementById("bg-pattern-upload-btn");
-      const uploadInput = document.getElementById("bg-pattern-upload");
       const controls = document.getElementById("bg-pattern-controls");
 
       if (enabled) {
@@ -834,17 +832,6 @@
           this.saveSettings();
         });
       }
-
-
-
-      if (uploadBtn && uploadInput) {
-        uploadBtn.addEventListener("click", () => uploadInput.click());
-        uploadInput.addEventListener("change", (e) => {
-          if (e.target.files.length > 0) {
-            this.uploadPattern(e.target.files[0]);
-          }
-        });
-      }
     },
 
     applyPattern: function () {
@@ -879,64 +866,6 @@
 
     },
 
-    uploadPattern: async function (file) {
-      const status = document.getElementById("bg-pattern-upload-status");
-      if (!status) return;
-
-      status.textContent = "Lädt hoch...";
-      status.className = "upload-status loading";
-
-      // Validierung
-      if (file.size > 2 * 1024 * 1024) {
-        status.textContent = "Datei zu groß (max. 2MB)";
-        status.className = "upload-status error";
-        return;
-      }
-
-      if (!file.name.toLowerCase().endsWith(".svg")) {
-        status.textContent = "Nur SVG-Dateien erlaubt";
-        status.className = "upload-status error";
-        return;
-      }
-
-      try {
-        const formData = new FormData();
-        formData.append("action", "upload");
-        formData.append("svg", file);
-
-        const res = await fetch("/api/background.php", {
-          method: "POST",
-          body: formData,
-        });
-
-        const response = await res.json();
-
-        if (response.success && response.data && response.data.pattern) {
-          status.textContent = "✓ Erfolgreich hochgeladen";
-          status.className = "upload-status success";
-
-          await this.loadPatterns();
-
-          this.settings.pattern = response.data.pattern.path;
-          const select = document.getElementById("bg-pattern-select");
-          if (select) select.value = response.data.pattern.path;
-
-          this.applyPattern();
-          this.updatePreview();
-          this.saveSettings();
-
-          const uploadInput = document.getElementById("bg-pattern-upload");
-          if (uploadInput) uploadInput.value = "";
-        } else {
-          status.textContent = response.error || "Upload fehlgeschlagen";
-          status.className = "upload-status error";
-        }
-      } catch (err) {
-        console.error("Upload-Fehler:", err);
-        status.textContent = "Upload fehlgeschlagen";
-        status.className = "upload-status error";
-      }
-    },
   };
 
   // Background Patterns nach kurzer Verzögerung initialisieren
@@ -960,7 +889,7 @@ function showThemeConfirmation(themeName) {
 
   overlay.innerHTML = `
         <div class="theme-confirm-box">
-            <div class="theme-confirm-title">⚠️☢️ Cyberpunk Theme ⚠️☢️</div>
+            <div class="theme-confirm-title">Cyberpunk Theme</div>
             <div class="theme-confirm-message">
                 Bist du sicher, dass du fortfahren möchtest?
             </div>

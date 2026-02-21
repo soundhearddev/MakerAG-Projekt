@@ -1072,34 +1072,7 @@ input.settings-icon[type="checkbox"] {
     }
 }
 
-.upload-container {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
 
-.upload-status {
-    font-size: 0.9rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    font-weight: 500;
-}
-
-.upload-status.loading {
-    color: var(--cat-text);
-    background: rgba(141, 169, 196, 0.15);
-}
-
-.upload-status.success {
-    color: #4caf50;
-    background: rgba(76, 175, 80, 0.15);
-}
-
-.upload-status.error {
-    color: #f44336;
-    background: rgba(244, 67, 54, 0.15);
-}
 
 .bg-pattern-preview {
     width: 100%;
@@ -1320,10 +1293,7 @@ body.no-animations * {
         height: 150px;
     }
 
-    .upload-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
+
 }
 
 @media (max-width: 480px) {

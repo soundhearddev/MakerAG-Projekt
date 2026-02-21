@@ -1,22 +1,30 @@
 <?php
-header("Content-Type: application/json");
-require_once "/var/www/secure/config.php";
+/**
+ * API Endpoint: fetch_from_id.php
+ * Gibt alle Felder eines Items per ID zurück.
+ *
+ * GET ?id=42   → ein Item (als Array mit einem Element)
+ */
+
+require_once __DIR__ . './init.php';
 
 
-// verbindung mit datenbank und info von id her nehmen also input id und output namen und so von der id
+
+
+$id = getIntParam('id');
+
+if ($id <= 0) {
+    sendError('Gültige id (> 0) erforderlich');
+}
+
 try {
-    $db = Database::connect();
-
-    // id von get parameter holen
-    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
     $stmt = $db->prepare("SELECT * FROM items WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
-    $res = $stmt->get_result();
-    echo json_encode($res->fetch_all(MYSQLI_ASSOC));
+    $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    sendSuccess(enrichItems($items), ['count' => count($items)]);
 } catch (Exception $e) {
-    echo json_encode([
-        "error" => true,
-        "message" => $e->getMessage()
-    ]);
+    error_log('fetch_from_id.php: ' . $e->getMessage());
+    sendError('Datenbankfehler', 500);
 }

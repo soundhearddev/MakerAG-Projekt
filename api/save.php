@@ -1,49 +1,65 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-header("Content-Type: application/json");
+/**
+ * API Endpoint: save.php
+ * Aktualisiert ein oder mehrere Items in der Datenbank.
+ *
+ * POST body (JSON):
+ * {
+ *   "42": { "name": "Neuer Name", "notes": "..." },
+ *   "99": { "brand": "Dell" }
+ * }
+ */
 
-require_once "/var/www/html/secure/config.php";
+require_once __DIR__ . './init.php';
+
+
+
+$input = json_decode(file_get_contents('php://input'), true);
+
+if (!$input || !is_array($input)) {
+    sendError('Keine gültigen JSON-Daten empfangen');
+}
+
+// Erlaubte Spalten – verhindert SQL-Injection über Spaltennamen
+$ALLOWED_COLUMNS = [
+    'name', 'category', 'subcategory', 'brand', 'model',
+    'serial', 'quantity', 'locker', 'notes', 'docs_link',
+];
 
 try {
-    $input = json_decode(file_get_contents('php://input'), true);
-    if (!$input)
-        throw new Exception("Keine Daten empfangen");
-
-    $db = Database::connect();
+    $updated = 0;
 
     foreach ($input as $id => $fields) {
-        $sets = [];
+        $id = intval($id);
+        if ($id <= 0 || !is_array($fields) || empty($fields)) continue;
+
+        $sets   = [];
         $params = [];
-        $types = '';
+        $types  = '';
 
         foreach ($fields as $col => $val) {
-            $sets[] = "$col = ?";
+            if (!in_array($col, $ALLOWED_COLUMNS, true)) continue; // unbekannte Spalten ignorieren
+            $sets[]   = "`{$col}` = ?";
             $params[] = $val;
-            $types .= 's'; // alle Werte als String behandeln
+            $types   .= 's';
         }
 
-        if (empty($sets))
-            continue;
+        if (empty($sets)) continue;
 
-        $sql = "UPDATE items SET " . implode(',', $sets) . " WHERE id = ?";
+        $sql  = "UPDATE items SET " . implode(', ', $sets) . " WHERE id = ?";
         $stmt = $db->prepare($sql);
-        if (!$stmt)
-            throw new Exception("Fehler beim vorbereiten: " . $db->error);
+        if (!$stmt) throw new Exception("Prepare fehlgeschlagen: " . $db->error);
 
-        $types .= 'i'; // id als Integer
+        $types   .= 'i';
         $params[] = $id;
-
         $stmt->bind_param($types, ...$params);
         $stmt->execute();
         $stmt->close();
+        $updated++;
     }
 
-    echo json_encode(["success" => true]);
+    sendSuccess([], ['updated' => $updated]);
 } catch (Exception $e) {
-    echo json_encode([
-        "success" => false,
-        "message" => $e->getMessage()
-    ]);
+    error_log('save.php: ' . $e->getMessage());
+    sendError('Datenbankfehler beim Speichern', 500);
 }
