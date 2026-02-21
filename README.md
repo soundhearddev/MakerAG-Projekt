@@ -1,7 +1,7 @@
 # [Docs](./docs/1/Dokumentation.html)
 
 # Maker AG
-[[![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=Raleway&issues=1&pattern=Transparent&theme=Dark)
+![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=Raleway&issues=1&pattern=Transparent&theme=Dark)
 
 
 ## Organisationssystem
@@ -43,6 +43,7 @@ Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. 
 - **Verbindung:** haubtsächtlich SSH
 
 - **IDE:** VS Code
+
 
 
 
