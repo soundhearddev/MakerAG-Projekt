@@ -10,7 +10,7 @@
  * GET ?latest=true     → neueste zuerst (Standard)
  */
 
-require_once __DIR__ . './init.php';
+require_once __DIR__ . '/init.php';
 
 $limit    = max(1, min(getIntParam('limit', 100), 1000));
 $offset   = max(0, getIntParam('offset', 0));

@@ -6,7 +6,7 @@
  * GET ?path=some/folder → { files: ["doc1.pdf", "doc2.pdf"] }
  */
 
-require_once __DIR__ . './init.php';
+require_once __DIR__ . '/init.php';
 
 
 

@@ -10,7 +10,7 @@
  * GET ?limit=50         → Max. Ergebnisse (1–200, Standard: 50)
  */
 
-require_once __DIR__ . './init.php';
+require_once __DIR__ . '/init.php';
 
 
 

@@ -6,7 +6,7 @@
  * GET ?id=42   → ein Item (als Array mit einem Element)
  */
 
-require_once __DIR__ . './init.php';
+require_once __DIR__ . '/init.php';
 
 
 

@@ -6,7 +6,7 @@
  * GET → { count, statistics: { total_items, categories, brands } }
  */
 
-require_once __DIR__ . './init.php';
+require_once __DIR__ . '/init.php';
 
 try {
     $total = (int) $db->query("SELECT COUNT(*) as c FROM items")->fetch_assoc()['c'];
