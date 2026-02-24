@@ -8,31 +8,40 @@
 
 require_once __DIR__ . '/init.php';
 
-
-
 define('BASE_DIR', realpath(__DIR__ . '/../'));
 
 $requestedPath = getStringParam('path');
 
-// Nur sichere Zeichen erlauben
-if ($requestedPath !== '' && !preg_match('/^[\w\-\/\.]+$/', $requestedPath)) {
+// Leerer Pfad → leeres Ergebnis
+if ($requestedPath === '') {
+    sendSuccess([], ['files' => [], 'count' => 0]);
+    exit;
+}
+
+// Nur sichere Zeichen erlauben (keine ..)
+if (!preg_match('/^[\w\-\/]+$/', $requestedPath)) {
     sendError('Ungültiger Pfad', 400);
 }
 
-$fullPath = realpath(BASE_DIR . '/' . $requestedPath);
+$fullPath = BASE_DIR . '/' . $requestedPath;
+
+// Ordner existiert nicht → leeres Array, kein Fehler
+if (!is_dir($fullPath)) {
+    sendSuccess([], ['files' => [], 'count' => 0]);
+    exit;
+}
+
+// Nur jetzt realpath, da Ordner garantiert existiert
+$resolvedPath = realpath($fullPath);
 
 // Path-Traversal-Schutz
-if (!$fullPath || strpos($fullPath, BASE_DIR) !== 0) {
+if (!$resolvedPath || !str_starts_with($resolvedPath, BASE_DIR)) {
     sendError('Zugriff verweigert', 403);
 }
 
-if (!is_dir($fullPath)) {
-    sendSuccess([], ['files' => []]);
-}
-
 $files = array_values(array_filter(
-    scandir($fullPath),
-    fn($f) => is_file($fullPath . '/' . $f)
+    scandir($resolvedPath),
+    fn($f) => is_file($resolvedPath . '/' . $f)
            && strtolower(pathinfo($f, PATHINFO_EXTENSION)) === 'pdf'
 ));
 
