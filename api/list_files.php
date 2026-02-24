@@ -25,6 +25,11 @@ if (!preg_match('/^[\w\-\/]+$/', $requestedPath)) {
 
 $fullPath = BASE_DIR . '/' . $requestedPath;
 
+error_log("BASE_DIR: " . BASE_DIR);
+error_log("fullPath: " . $fullPath);
+error_log("exists: " . (is_dir($fullPath) ? 'yes' : 'no'));
+
+
 // Ordner existiert nicht → leeres Array, kein Fehler
 if (!is_dir($fullPath)) {
     sendSuccess([], ['files' => [], 'count' => 0]);
@@ -46,3 +51,5 @@ $files = array_values(array_filter(
 ));
 
 sendSuccess([], ['files' => $files, 'count' => count($files)]);
+
+
