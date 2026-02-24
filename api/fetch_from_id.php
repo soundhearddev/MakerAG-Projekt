@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Endpoint: fetch_from_id.php
  * Gibt alle Felder eines Items per ID zurück.
@@ -18,7 +19,7 @@ if ($id <= 0) {
 }
 
 try {
-    $stmt = $db->prepare("SELECT * FROM items WHERE id = ?");
+    $stmt = $db->prepare("SELECT * FROM items WHERE id = ? ORDER BY name ASC");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
