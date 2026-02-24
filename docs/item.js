@@ -106,10 +106,10 @@
                 statusDiv.appendChild(infoLine("Notizen", item.notes));
             }
 
-            // Specs (dynamisch aus Array)
+            // Specs (dynamisch aus Objekt oder Array)
             const specsList = document.getElementById("specs-list");
             specsList.innerHTML = "";
-            
+
             const specs = item.specs;
 
             if (specs && typeof specs === 'object' && !Array.isArray(specs) && Object.keys(specs).length > 0) {
@@ -129,35 +129,36 @@
             } else {
                 const li = document.createElement("li");
                 li.textContent = "Keine Specs vorhanden.";
-                specs
+                specsList.appendChild(li);
+            }
 
-                // Bilder
-                const images = item.images || (item.thumbnail ? [item.thumbnail] : []);
-                if (images.length > 0) {
-                    const gallery = document.getElementById("image-gallery");
-                    images.forEach((src, i) => {
-                        const img = document.createElement("img");
-                        img.src = src;
-                        img.alt = `Bild ${i + 1}`;
-                        img.style.height = "300px";
-                        gallery.appendChild(img);
-                    });
-                } else {
-                    document.getElementById("image-gallery").closest(".container").style.display = "none";
-                }
+            // Bilder
+            const images = item.images || (item.thumbnail ? [item.thumbnail] : []);
+            if (images.length > 0) {
+                const gallery = document.getElementById("image-gallery");
+                images.forEach((src, i) => {
+                    const img = document.createElement("img");
+                    img.src = src;
+                    img.alt = `Bild ${i + 1}`;
+                    img.style.height = "300px";
+                    gallery.appendChild(img);
+                });
+            } else {
+                document.getElementById("image-gallery").closest(".container").style.display = "none";
+            }
 
-                // Documents aus API (falls vorhanden)
-                if (item.documents && item.documents.length > 0) {
-                    const docsContainer = document.getElementById("docs-container");
-                    const heading = document.createElement("p");
-                    heading.innerHTML = "<strong>Dokumente:</strong>";
-                    docsContainer.appendChild(heading);
+            // Documents aus API (falls vorhanden)
+            if (item.documents && item.documents.length > 0) {
+                const docsContainer = document.getElementById("docs-container");
+                const heading = document.createElement("p");
+                heading.innerHTML = "<strong>Dokumente:</strong>";
+                docsContainer.appendChild(heading);
 
-                    item.documents.forEach(doc => {
-                        docsContainer.appendChild(makePdfBlock(doc.label || doc.name, doc.url));
-                    });
-                }
-            })
+                item.documents.forEach(doc => {
+                    docsContainer.appendChild(makePdfBlock(doc.label || doc.name, doc.url));
+                });
+            }
+        })
         .catch(err => {
             document.getElementById("item-title").textContent = "Fehler beim Laden";
             console.error("item fetch error:", err);
