@@ -32,10 +32,10 @@ function makePdfBlock(label, url) {
     const wrapper = document.createElement("p");
 
     wrapper.innerHTML = `
-        <button href="${url}" target="_blank">${label}</button>
+        <a href="${url}" target="_blank">${label}</a>
     `;
 
-    const btn = wrapper.querySelector(`#${btnId}`);
+    const btn = wrapper.querySelector(`a`);
     const div = wrapper.querySelector(`#${wrapId}`);
     
     btn.addEventListener("click", () => {
