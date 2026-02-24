@@ -1,22 +1,19 @@
 <?php
 /**
  * API Endpoint: search.php
- * Durchsucht alle relevanten Spalten der items-Tabelle.
+ * Durchsucht Items über mehrere Tabellen (items, categories, locations, specs, tags).
  *
  * GET ?query=Dell       → Suche nach "Dell"
  * GET ?query=           → Alle Items (neueste zuerst)
- * GET ?sort=name        → Sortierung nach Feld (id, name, category, …)
+ * GET ?sort=name        → Sortierung nach Feld
  * GET ?order=ASC        → Sortierreihenfolge (ASC | DESC, Standard: DESC)
  * GET ?limit=50         → Max. Ergebnisse (1–200, Standard: 50)
  */
 
 require_once __DIR__ . '/init.php';
 
-
-
-// ─── Erlaubte Sortierfelder ────────────────────────────────────────────────────
-const SORT_FIELDS = ['id', 'name', 'category', 'subcategory', 'brand', 'model', 'quantity', 'locker'];
-const SEARCH_FIELDS = ['id', 'name', 'category', 'subcategory', 'brand', 'model', 'serial', 'quantity', 'locker', 'notes'];
+// ─── Erlaubte Sortierfelder (nur echte Spalten aus items) ─────────────────────
+const SORT_FIELDS = ['id', 'name', 'brand', 'model', 'serial_number', 'status', 'item_condition', 'created_at', 'updated_at'];
 
 // ─── Input ────────────────────────────────────────────────────────────────────
 $query     = mb_substr(strip_tags(trim(getStringParam('query'))), 0, 500, 'UTF-8');
@@ -26,45 +23,64 @@ $sortOrder = strtoupper(getStringParam('order', 'DESC')) === 'ASC' ? 'ASC' : 'DE
 
 try {
     if ($query === '') {
-        // ── Kein Suchbegriff: alle Items holen ────────────────────────────────
-        $sql  = "SELECT * FROM items ORDER BY `{$sortField}` {$sortOrder} LIMIT ?";
+        // ── Kein Suchbegriff: alle Items mit JOINs ────────────────────────────
+        $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
+                       l.room, l.schrank AS locker, l.regal AS shelf, l.position
+                FROM items i
+                LEFT JOIN categories c ON c.id = i.category_id
+                LEFT JOIN categories p ON p.id = c.parent_id
+                LEFT JOIN locations l ON l.id = i.location_id
+                ORDER BY i.`{$sortField}` {$sortOrder}
+                LIMIT ?";
         $stmt = $db->prepare($sql);
         $stmt->bind_param('i', $limit);
+
     } else {
-        // ── Suche: nur existierende Spalten berücksichtigen ────────────────────
-        $existingColumns = [];
-        $colResult = $db->query("SHOW COLUMNS FROM items");
-        while ($col = $colResult->fetch_assoc()) {
-            $existingColumns[] = $col['Field'];
-        }
+        // ── Suche über mehrere Tabellen ───────────────────────────────────────
+        //
+        // Gesucht wird in:
+        //   items:      id, name, brand, model, serial_number, notes, status
+        //   categories: name (category_name)
+        //   locations:  schrank (locker), regal, room
+        //   specs:      value
+        //   tags:       name
+        //
+        // Subquery-Ansatz für specs und tags, damit keine Duplikate entstehen.
 
-        $clauses = [];
-        $params  = [];
-        $types   = '';
+        $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
+                       l.room, l.schrank AS locker, l.regal AS shelf, l.position
+                FROM items i
+                LEFT JOIN categories c ON c.id = i.category_id
+                LEFT JOIN categories p ON p.id = c.parent_id
+                LEFT JOIN locations l ON l.id = i.location_id
+                LEFT JOIN specs s ON s.item_id = i.id
+                LEFT JOIN item_tags it ON it.item_id = i.id
+                LEFT JOIN tags t ON t.id = it.tag_id
+                WHERE
+                    CAST(i.id AS CHAR)  LIKE CONCAT('%', ?, '%') OR
+                    i.name              LIKE CONCAT('%', ?, '%') OR
+                    i.brand             LIKE CONCAT('%', ?, '%') OR
+                    i.model             LIKE CONCAT('%', ?, '%') OR
+                    i.serial_number     LIKE CONCAT('%', ?, '%') OR
+                    i.notes             LIKE CONCAT('%', ?, '%') OR
+                    i.status            LIKE CONCAT('%', ?, '%') OR
+                    c.name              LIKE CONCAT('%', ?, '%') OR
+                    l.schrank           LIKE CONCAT('%', ?, '%') OR
+                    l.regal             LIKE CONCAT('%', ?, '%') OR
+                    l.room              LIKE CONCAT('%', ?, '%') OR
+                    s.value             LIKE CONCAT('%', ?, '%') OR
+                    t.name              LIKE CONCAT('%', ?, '%')
+                ORDER BY i.`{$sortField}` {$sortOrder}
+                LIMIT ?";
 
-        foreach (SEARCH_FIELDS as $field) {
-            if (!in_array($field, $existingColumns, true)) continue;
-
-            // Integer-Felder müssen erst in CHAR gecastet werden
-            $clauses[] = in_array($field, ['id', 'quantity'])
-                ? "CAST(`{$field}` AS CHAR) LIKE CONCAT('%', ?, '%')"
-                : "`{$field}` LIKE CONCAT('%', ?, '%')";
-
-            $params[] = $query;
-            $types   .= 's';
-        }
-
-        if (empty($clauses)) {
-            sendError('Keine durchsuchbaren Spalten gefunden', 500);
-        }
-
-        $sql  = "SELECT * FROM items WHERE " . implode(' OR ', $clauses)
-              . " ORDER BY `{$sortField}` {$sortOrder} LIMIT ?";
         $stmt = $db->prepare($sql);
-
-        $params[] = $limit;
-        $types   .= 'i';
-        $stmt->bind_param($types, ...$params);
+        // 13 String-Parameter + 1 Int für LIMIT
+        $stmt->bind_param(
+            'sssssssssssss' . 'i',
+            $query, $query, $query, $query, $query, $query, $query,
+            $query, $query, $query, $query, $query, $query,
+            $limit
+        );
     }
 
     $stmt->execute();

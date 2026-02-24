@@ -3,24 +3,14 @@
  * init.php
  * ─────────────────────────────────────────────────────────────────────────────
  * Gemeinsame Basis für alle API-Endpunkte.
- * Einfach am Anfang jeder PHP-Datei einbinden:
- *
- *   require_once __DIR__ . '/init.php';
- *
- * Was diese Datei übernimmt:
- *   • Error-Logging (nie im Browser, immer ins Log)
- *   • Sicherheits-Header
- *   • CORS-Header
- *   • JSON Content-Type
- *   • Datenbank-Verbindung (via Database::connect())
- *   • Hilfsfunktionen: sendSuccess(), sendError(), getIntParam(), getStringParam()
- *   • Thumbnail- und Docs-Pfad-Generierung
+ * Angepasst für die normalisierte Datenbankstruktur mit:
+ *   items, categories, locations, specs, tags, item_tags, documents
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 // ─── 1. ERROR REPORTING ───────────────────────────────────────────────────────
 error_reporting(E_ALL);
-ini_set('display_errors', 0);           // Fehler NIE im Browser anzeigen
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', '/var/www/logs/php_errors.log');
 
@@ -29,7 +19,6 @@ header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 
-// CORS – erlaubt alle Origins (für Intranet/Dev-Setup ausreichend)
 if (isset($_SERVER['HTTP_ORIGIN'])) {
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
     header('Access-Control-Allow-Credentials: true');
@@ -37,7 +26,6 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// OPTIONS-Preflight sofort beantworten
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
@@ -63,7 +51,6 @@ if (!$_configLoaded) {
     sendError('Konfigurationsfehler: config.php nicht gefunden', 500);
 }
 
-// Globale $db-Variable für alle Endpunkte
 try {
     $db = Database::connect();
     $db->set_charset('utf8mb4');
@@ -74,13 +61,6 @@ try {
 
 // ─── 4. HILFSFUNKTIONEN ───────────────────────────────────────────────────────
 
-/**
- * Sendet eine erfolgreiche JSON-Antwort und beendet das Skript.
- *
- * @param array $data    Payload (wird unter "data" ausgegeben)
- * @param array $extra   Optionale Top-Level-Felder (z. B. count, total, …)
- * @param int   $code    HTTP-Status (Standard: 200)
- */
 function sendSuccess(array $data = [], array $extra = [], int $code = 200): void
 {
     http_response_code($code);
@@ -91,13 +71,6 @@ function sendSuccess(array $data = [], array $extra = [], int $code = 200): void
     exit();
 }
 
-/**
- * Sendet eine Fehler-JSON-Antwort und beendet das Skript.
- *
- * @param string $message  Fehlermeldung
- * @param int    $code     HTTP-Status (Standard: 400)
- * @param array  $extra    Optionale zusätzliche Felder
- */
 function sendError(string $message, int $code = 400, array $extra = []): void
 {
     http_response_code($code);
@@ -108,32 +81,18 @@ function sendError(string $message, int $code = 400, array $extra = []): void
     exit();
 }
 
-/**
- * Liest einen GET/POST-Parameter als Integer.
- * Gibt $default zurück, wenn der Parameter fehlt oder ungültig ist.
- */
 function getIntParam(string $key, int $default = 0): int
 {
     $val = $_GET[$key] ?? $_POST[$key] ?? null;
     return ($val !== null && is_numeric($val)) ? intval($val) : $default;
 }
 
-/**
- * Liest einen GET/POST-Parameter als bereinigten String.
- */
 function getStringParam(string $key, string $default = ''): string
 {
     $val = $_GET[$key] ?? $_POST[$key] ?? null;
     return ($val !== null) ? trim((string)$val) : $default;
 }
 
-/**
- * Gibt den Web-Pfad zum Thumbnail einer Item-ID zurück.
- * Priorität: thumb.png → thumb.jpg → thumb.jpeg → thumb.webp → erstes Bild
- *
- * @param  int|string $id  Item-ID
- * @return string|null     Web-Pfad oder null
- */
 function findThumbnail($id): ?string
 {
     if (empty($id)) return null;
@@ -152,7 +111,6 @@ function findThumbnail($id): ?string
             }
         }
 
-        // Fallback: erstes beliebiges Bild
         foreach (scandir($dir) as $file) {
             if (in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), ['png', 'jpg', 'jpeg', 'gif', 'webp'])) {
                 return "/docs/{$id}/images/{$file}";
@@ -163,12 +121,6 @@ function findThumbnail($id): ?string
     return null;
 }
 
-/**
- * Prüft ob eine Docs-Seite für eine Item-ID existiert und gibt den Link zurück.
- *
- * @param  int|string $id  Item-ID
- * @return string|null     Web-Pfad oder null
- */
 function findDocsLink($id): ?string
 {
     if (empty($id)) return null;
@@ -186,13 +138,130 @@ function findDocsLink($id): ?string
 }
 
 /**
- * Reichert ein einzelnes Item-Array mit thumbnail und docs_link an.
+ * Lädt Specs für ein Item aus der specs-Tabelle.
+ * Gibt ein assoziatives Array zurück: ['RAM' => '2 GB', 'Anzahl' => '3']
+ */
+function fetchSpecs(int $itemId): array
+{
+    global $db;
+    $stmt = $db->prepare("SELECT `key`, `value` FROM specs WHERE item_id = ? ORDER BY id ASC");
+    $stmt->bind_param('i', $itemId);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $specs = [];
+    foreach ($rows as $row) {
+        $specs[$row['key']] = $row['value'];
+    }
+    return $specs;
+}
+
+/**
+ * Lädt Tags für ein Item aus item_tags + tags.
+ * Gibt ein Array von Tag-Namen zurück: ['laptop', 'vintage']
+ */
+function fetchTags(int $itemId): array
+{
+    global $db;
+    $stmt = $db->prepare(
+        "SELECT t.name FROM tags t
+         INNER JOIN item_tags it ON it.tag_id = t.id
+         WHERE it.item_id = ?
+         ORDER BY t.name ASC"
+    );
+    $stmt->bind_param('i', $itemId);
+    $stmt->execute();
+    $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    return array_column($rows, 'name');
+}
+
+/**
+ * Lädt Documents für ein Item.
+ */
+function fetchDocuments(int $itemId): array
+{
+    global $db;
+    $stmt = $db->prepare(
+        "SELECT id, type, filename, path, uploaded_at FROM documents WHERE item_id = ? ORDER BY uploaded_at ASC"
+    );
+    $stmt->bind_param('i', $itemId);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+/**
+ * Reichert ein einzelnes Item-Array mit allen verknüpften Daten an:
+ * - category_name (aus categories inkl. parent)
+ * - location (aus locations: room, schrank, regal, position)
+ * - specs (aus specs-Tabelle)
+ * - tags (aus tags-Tabelle)
+ * - documents (aus documents-Tabelle)
+ * - thumbnail + docs_link (Dateisystem)
  */
 function enrichItem(array $item): array
 {
-    $item['thumbnail'] = findThumbnail($item['id'] ?? null);
-    $item['docs_link']  = findDocsLink($item['id'] ?? null);
-    $item['has_docs']   = !empty($item['docs_link']);
+    global $db;
+
+    $id = (int)($item['id'] ?? 0);
+
+    // ── Kategorie ─────────────────────────────────────────────────────────────
+    if (!empty($item['category_id'])) {
+        $stmt = $db->prepare(
+            "SELECT c.name AS category_name, p.name AS parent_name
+             FROM categories c
+             LEFT JOIN categories p ON p.id = c.parent_id
+             WHERE c.id = ?"
+        );
+        $stmt->bind_param('i', $item['category_id']);
+        $stmt->execute();
+        $cat = $stmt->get_result()->fetch_assoc();
+        if ($cat) {
+            $item['category_name'] = $cat['category_name'];
+            $item['parent_category'] = $cat['parent_name'];
+        }
+    } else {
+        $item['category_name']  = null;
+        $item['parent_category'] = null;
+    }
+
+    // ── Location ──────────────────────────────────────────────────────────────
+    if (!empty($item['location_id'])) {
+        $stmt = $db->prepare("SELECT room, schrank, regal, position FROM locations WHERE id = ?");
+        $stmt->bind_param('i', $item['location_id']);
+        $stmt->execute();
+        $loc = $stmt->get_result()->fetch_assoc();
+        if ($loc) {
+            $item['location'] = $loc;
+            // Komfort-Felder direkt am Item für einfachere Nutzung im Frontend
+            $item['locker'] = $loc['schrank'];
+            $item['shelf']  = $loc['regal'];
+            $item['room']   = $loc['room'];
+        }
+    } else {
+        $item['location'] = null;
+        $item['locker']   = null;
+        $item['shelf']    = null;
+        $item['room']     = null;
+    }
+
+    // ── Specs, Tags, Documents ────────────────────────────────────────────────
+    if ($id > 0) {
+        $item['specs']     = fetchSpecs($id);
+        $item['tags']      = fetchTags($id);
+        $item['documents'] = fetchDocuments($id);
+        // quantity aus Specs holen (war früher eigene Spalte)
+        $item['quantity']  = $item['specs']['Anzahl'] ?? null;
+    } else {
+        $item['specs']     = [];
+        $item['tags']      = [];
+        $item['documents'] = [];
+        $item['quantity']  = null;
+    }
+
+    // ── Dateisystem ───────────────────────────────────────────────────────────
+    $item['thumbnail'] = findThumbnail($id);
+    $item['docs_link'] = findDocsLink($id);
+    $item['has_docs']  = !empty($item['docs_link']);
+
     return $item;
 }
 

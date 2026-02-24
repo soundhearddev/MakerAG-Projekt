@@ -278,6 +278,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Seite als geladen markieren
     document.body.classList.add("loaded");
+    document.body.classList.remove("loading");  
     document.body.style.overflow = "";
 
     // Loader ausblenden
@@ -292,6 +293,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error("Fehler beim Laden der Komponenten:", error);
     document.body.classList.add("loaded");
+    document.body.classList.remove("loading");
     document.body.style.overflow = "";
 
     const loader = document.querySelector(".page-loader");
