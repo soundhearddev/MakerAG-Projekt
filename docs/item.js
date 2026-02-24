@@ -46,10 +46,15 @@
             const item = data.data[0];
 
             // Seitentitel
-            document.title = `${item.brand} ${item.model}`;
-            document.getElementById("item-title").textContent = `${item.brand} ${item.model}`;
+            // Seitentitel
+            if (item.category_id == 4) {
+                document.title = item.name || item.model;
+                document.getElementById("item-title").textContent = item.name || item.model;
+            } else {
+                document.title = `${item.brand} ${item.model}`;
+                document.getElementById("item-title").textContent = `${item.brand} ${item.model}`;
+            }
 
-            // Beschreibung (name als Untertitel, falls vorhanden)
             // Beschreibung (name als Untertitel, falls vorhanden)
             if (item.name) {
                 const descEl = document.getElementById("item-description");
@@ -117,7 +122,7 @@
             }
 
 
-            
+
             // Specs (dynamisch aus Objekt oder Array)
             const specsList = document.getElementById("specs-list");
             specsList.innerHTML = "";
@@ -142,7 +147,7 @@
             } else {
                 // falls kine specs dann den ganzen container entfernern:
                 specsList.closest(".container").style.display = "none";
-                
+
             }
 
             // Bilder
