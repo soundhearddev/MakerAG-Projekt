@@ -32,14 +32,7 @@ function makePdfBlock(label, url) {
     const wrapper = document.createElement("p");
 
     wrapper.innerHTML = `
-        <button id="${btnId}">${label}</button>
-        <div id="${wrapId}" style="display: none; margin-top: 20px;">
-            <embed src="${url}" type="application/pdf" width="100%" height="1080px" />
-            <p>Falls das PDF nicht angezeigt wird,
-                <a href="${url}" target="_blank">hier öffnen</a> oder
-                <a href="${url}" download>herunterladen</a>.
-            </p>
-        </div>
+        <button href="${url}" target="_blank">${label}</button>
     `;
 
     const btn = wrapper.querySelector(`#${btnId}`);
