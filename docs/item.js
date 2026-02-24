@@ -157,3 +157,4 @@
         });
 
 })();
+console.log("API Response:", data);
