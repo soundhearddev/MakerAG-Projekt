@@ -132,74 +132,50 @@
                 specsList.appendChild(li);
             }
 
-            // Bilder aus /docs/{id}/images/ laden
-            fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
-                .then(res => res.json())
-                .then(imgData => {
-                    const gallery = document.getElementById("image-gallery");
-                    const files = imgData.files || [];
-                    const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
+// Bilder
+fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
+    .then(res => res.json())
+    .then(imgData => {
+        const gallery = document.getElementById("image-gallery");
+        const files = (imgData.files || []).filter(f => !/thumb/i.test(f));
 
-                    if (imageFiles.length > 0) {
-                        imageFiles.forEach((filename, i) => {
-                            const img = document.createElement("img");
-                            img.src = `/docs/${id}/images/${filename}`;
-                            img.alt = `Bild ${i + 1}`;
-                            img.style.height = "300px";
-                            gallery.appendChild(img);
-                        });
-                    } else {
-                        gallery.closest(".container").style.display = "none";
-                    }
-                })
-                .catch(() => {
-                    document.getElementById("image-gallery").closest(".container").style.display = "none";
-                });
+        if (files.length === 0) {
+            gallery.closest(".container").style.display = "none";
+            return;
+        }
 
-            // Documents aus API (falls vorhanden)
-            if (item.documents && item.documents.length > 0) {
-                const docsContainer = document.getElementById("docs-container");
-                const heading = document.createElement("p");
-                heading.innerHTML = "<strong>Dokumente:</strong>";
-                docsContainer.appendChild(heading);
-
-                item.documents.forEach(doc => {
-                    docsContainer.appendChild(makePdfBlock(doc.label || doc.name, doc.url));
-                });
-            }
-        })
-        .catch(err => {
-            document.getElementById("item-title").textContent = "Fehler beim Laden";
-            console.error("item fetch error:", err);
+        files.forEach((filename, i) => {
+            const img = document.createElement("img");
+            img.src = `/docs/${id}/images/${filename}`;
+            img.alt = `Bild ${i + 1}`;
+            img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
+            img.addEventListener("click", () => window.open(img.src, "_blank"));
+            gallery.appendChild(img);
         });
+    })
+    .catch(() => {
+        document.getElementById("image-gallery").closest(".container").style.display = "none";
+    });
 
-    // ── 2. PDFs aus <id>/pdf/ dynamisch laden ───────────────────────────────
+// PDFs
+fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/pdf/")}`)
+    .then(res => res.json())
+    .then(data => {
+        if (!data.files || data.files.length === 0) return;
 
-    fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/images/pdf/")}`)
-        .then(res => res.json())
-        .then(data => {
-            if (!data.files || data.files.length === 0) return;
+        const docsContainer = document.getElementById("docs-container");
+        const heading = document.createElement("p");
+        heading.innerHTML = "<strong>Dokumente:</strong>";
+        docsContainer.appendChild(heading);
 
-            const docsContainer = document.getElementById("docs-container");
-
-            const heading = document.createElement("p");
-            heading.innerHTML = "<strong>Sonstige Dokumente:</strong>";
-            docsContainer.appendChild(heading);
-
-            data.files.forEach(filename => {
-                const url = `/docs/${id}/images/pdf/${filename}`;
-                const label = filename.replace(/\.pdf$/i, "");
-                docsContainer.appendChild(makePdfBlock(label, url));
-            });
-        })
-        .catch(err => {
-            console.warn("PDF-Liste konnte nicht geladen werden:", err);
+        data.files.forEach(filename => {
+            const url = `/docs/${id}/pdf/${encodeURIComponent(filename)}`;
+            const label = filename.replace(/\.pdf$/i, "");
+            const p = document.createElement("p");
+            p.innerHTML = `📄 <a href="${url}" target="_blank">${label}</a>`;
+            docsContainer.appendChild(p);
         });
-    fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
-        .then(res => res.json())
-        .then(imgData => {
-            console.log("Bilder API:", imgData);
-            console.log("Pfad:", id + "/images/");
-            // ...
+    })
+    .catch(err => console.warn("PDF-Liste:", err));
         })
 })();
