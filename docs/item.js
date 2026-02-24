@@ -46,7 +46,6 @@
             const item = data.data[0];
 
             // Seitentitel
-            // Seitentitel
             if (item.category_id == 4) {
                 document.title = item.name || item.model;
                 document.getElementById("item-title").textContent = item.name || item.model;
