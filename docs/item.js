@@ -25,25 +25,25 @@
         elements.forEach(el => el && parent.appendChild(el));
     }
 
-function makePdfBlock(label, url) {
-    const btnId = `pdfBtn_${Math.random().toString(36).slice(2)}`;
-    const wrapId = `pdfWrap_${Math.random().toString(36).slice(2)}`;
+    function makePdfBlock(label, url) {
+        const btnId = `pdfBtn_${Math.random().toString(36).slice(2)}`;
+        const wrapId = `pdfWrap_${Math.random().toString(36).slice(2)}`;
 
-    const wrapper = document.createElement("p");
+        const wrapper = document.createElement("p");
 
-    wrapper.innerHTML = `
+        wrapper.innerHTML = `
         <a href="${url}" target="_blank">${label}</a>
     `;
 
-    const btn = wrapper.querySelector(`a`);
-    const div = wrapper.querySelector(`#${wrapId}`);
-    
-    btn.addEventListener("click", () => {
-        div.style.display = div.style.display === "none" ? "block" : "none";
-    });
+        const btn = wrapper.querySelector(`a`);
+        const div = wrapper.querySelector(`#${wrapId}`);
 
-    return wrapper;
-}
+        btn.addEventListener("click", () => {
+            div.style.display = div.style.display === "none" ? "block" : "none";
+        });
+
+        return wrapper;
+    }
     // ── 1. Item-Daten laden ──────────────────────────────────────────────────
 
     fetch(`/api/fetch_from_id.php?id=${encodeURIComponent(id)}`)
@@ -89,7 +89,7 @@ function makePdfBlock(label, url) {
             if (data.tags) statusDiv.appendChild(infoLine("Tags", data.tags));
             if (data.notes) statusDiv.appendChild(infoLine("Notizen", data.notes));
 
-            
+
             // Specs
             const specsList = document.getElementById("specs-list");
             appendAll(specsList, [
@@ -118,7 +118,8 @@ function makePdfBlock(label, url) {
                     gallery.appendChild(img);
                 });
             } else {
-                document.getElementById("images-container").style.display = "none";
+                document.getElementById("image-gallery").style.display = "none";
+
             }
         })
         .catch(err => {
