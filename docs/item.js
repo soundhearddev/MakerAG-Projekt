@@ -133,7 +133,7 @@
             }
 
             // Bilder aus /docs/{id}/images/ laden
-            fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/images/")}`)
+            fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
                 .then(res => res.json())
                 .then(imgData => {
                     const gallery = document.getElementById("image-gallery");
