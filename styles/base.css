@@ -56,8 +56,7 @@ body.loaded #settings {
     padding: 2rem;
     color: var(--cat-text);
     position: relative;
-    overflow-x: hidden;
-    overflow-y: visible;
+    overflow: hidden;
 }
 
 
