@@ -50,8 +50,18 @@
             document.getElementById("item-title").textContent = `${item.brand} ${item.model}`;
 
             // Beschreibung (name als Untertitel, falls vorhanden)
+            // Beschreibung (name als Untertitel, falls vorhanden)
             if (item.name) {
-                document.getElementById("item-description").textContent = item.name;
+                const descEl = document.getElementById("item-description");
+                if (item.category_id == 4 && item.brand) {
+                    const a = document.createElement("a");
+                    a.href = item.brand;
+                    a.target = "_blank";
+                    a.textContent = item.name;
+                    descEl.appendChild(a);
+                } else {
+                    descEl.textContent = item.name;
+                }
             }
 
             // Status / Meta-Infos
@@ -132,50 +142,50 @@
                 specsList.appendChild(li);
             }
 
-// Bilder
-fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
-    .then(res => res.json())
-    .then(imgData => {
-        const gallery = document.getElementById("image-gallery");
-        const files = (imgData.files || []).filter(f => !/thumb/i.test(f));
+            // Bilder
+            fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
+                .then(res => res.json())
+                .then(imgData => {
+                    const gallery = document.getElementById("image-gallery");
+                    const files = (imgData.files || []).filter(f => !/thumb/i.test(f));
 
-        if (files.length === 0) {
-            gallery.closest(".container").style.display = "none";
-            return;
-        }
+                    if (files.length === 0) {
+                        gallery.closest(".container").style.display = "none";
+                        return;
+                    }
 
-        files.forEach((filename, i) => {
-            const img = document.createElement("img");
-            img.src = `/docs/${id}/images/${filename}`;
-            img.alt = `Bild ${i + 1}`;
-            img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
-            img.addEventListener("click", () => window.open(img.src, "_blank"));
-            gallery.appendChild(img);
-        });
-    })
-    .catch(() => {
-        document.getElementById("image-gallery").closest(".container").style.display = "none";
-    });
+                    files.forEach((filename, i) => {
+                        const img = document.createElement("img");
+                        img.src = `/docs/${id}/images/${filename}`;
+                        img.alt = `Bild ${i + 1}`;
+                        img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
+                        img.addEventListener("click", () => window.open(img.src, "_blank"));
+                        gallery.appendChild(img);
+                    });
+                })
+                .catch(() => {
+                    document.getElementById("image-gallery").closest(".container").style.display = "none";
+                });
 
-// PDFs
-fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/pdf/")}`)
-    .then(res => res.json())
-    .then(data => {
-        if (!data.files || data.files.length === 0) return;
+            // PDFs
+            fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/pdf/")}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.files || data.files.length === 0) return;
 
-        const docsContainer = document.getElementById("docs-container");
-        const heading = document.createElement("p");
-        heading.innerHTML = "<strong>Dokumente:</strong>";
-        docsContainer.appendChild(heading);
+                    const docsContainer = document.getElementById("docs-container");
+                    const heading = document.createElement("p");
+                    heading.innerHTML = "<strong>Dokumente:</strong>";
+                    docsContainer.appendChild(heading);
 
-        data.files.forEach(filename => {
-            const url = `/docs/${id}/pdf/${encodeURIComponent(filename)}`;
-            const label = filename.replace(/\.pdf$/i, "");
-            const p = document.createElement("p");
-            p.innerHTML = `📄 <a href="${url}" target="_blank">${label}</a>`;
-            docsContainer.appendChild(p);
-        });
-    })
-    .catch(err => console.warn("PDF-Liste:", err));
+                    data.files.forEach(filename => {
+                        const url = `/docs/${id}/pdf/${encodeURIComponent(filename)}`;
+                        const label = filename.replace(/\.pdf$/i, "");
+                        const p = document.createElement("p");
+                        p.innerHTML = `📄 <a href="${url}" target="_blank">${label}</a>`;
+                        docsContainer.appendChild(p);
+                    });
+                })
+                .catch(err => console.warn("PDF-Liste:", err));
         })
 })();
