@@ -1195,9 +1195,9 @@ body.no-animations * {
         right: 55px;
     }
 
-    /* .settings-nav {
-        right: 30px;
-    } */
+    .settings-nav {
+        right: 10px;
+    }
 
     .settings-nav ul li a {
         font-size: 8vh;
