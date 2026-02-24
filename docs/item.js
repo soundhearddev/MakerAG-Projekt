@@ -195,4 +195,11 @@
         .catch(err => {
             console.warn("PDF-Liste konnte nicht geladen werden:", err);
         });
+    fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/images/")}&type=image`)
+        .then(res => res.json())
+        .then(imgData => {
+            console.log("Bilder API:", imgData);
+            console.log("Pfad:", id + "/images/");
+            // ...
+        })
 })();
