@@ -160,7 +160,7 @@ input.settings-icon[type="checkbox"] {
 .settings-nav {
     position: fixed;
     top: 33px;
-    right: 50px;
+    right: 40px;
     display: block;
     width: 80px;
     height: 80px;
@@ -1195,9 +1195,9 @@ body.no-animations * {
         right: 55px;
     }
 
-    .settings-nav {
+    /* .settings-nav {
         right: 30px;
-    }
+    } */
 
     .settings-nav ul li a {
         font-size: 8vh;
