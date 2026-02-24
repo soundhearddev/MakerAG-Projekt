@@ -116,9 +116,12 @@
                 statusDiv.appendChild(infoLine("Notizen", item.notes));
             }
 
+
+            
             // Specs (dynamisch aus Objekt oder Array)
             const specsList = document.getElementById("specs-list");
             specsList.innerHTML = "";
+
 
             const specs = item.specs;
 
@@ -137,9 +140,9 @@
                     specsList.appendChild(li);
                 });
             } else {
-                const li = document.createElement("li");
-                li.textContent = "Keine Specs vorhanden.";
-                specsList.appendChild(li);
+                // falls kine specs dann den ganzen container entfernern:
+                specsList.closest(".container").style.display = "none";
+                
             }
 
             // Bilder
