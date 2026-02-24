@@ -132,20 +132,29 @@
                 specsList.appendChild(li);
             }
 
-            // Bilder
-            const images = item.images || (item.thumbnail ? [item.thumbnail] : []);
-            if (images.length > 0) {
-                const gallery = document.getElementById("image-gallery");
-                images.forEach((src, i) => {
-                    const img = document.createElement("img");
-                    img.src = src;
-                    img.alt = `Bild ${i + 1}`;
-                    img.style.height = "300px";
-                    gallery.appendChild(img);
+            // Bilder aus /docs/{id}/images/ laden
+            fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/images/")}`)
+                .then(res => res.json())
+                .then(imgData => {
+                    const gallery = document.getElementById("image-gallery");
+                    const files = imgData.files || [];
+                    const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
+
+                    if (imageFiles.length > 0) {
+                        imageFiles.forEach((filename, i) => {
+                            const img = document.createElement("img");
+                            img.src = `/docs/${id}/images/${filename}`;
+                            img.alt = `Bild ${i + 1}`;
+                            img.style.height = "300px";
+                            gallery.appendChild(img);
+                        });
+                    } else {
+                        gallery.closest(".container").style.display = "none";
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("image-gallery").closest(".container").style.display = "none";
                 });
-            } else {
-                document.getElementById("image-gallery").closest(".container").style.display = "none";
-            }
 
             // Documents aus API (falls vorhanden)
             if (item.documents && item.documents.length > 0) {
@@ -166,7 +175,7 @@
 
     // ── 2. PDFs aus <id>/pdf/ dynamisch laden ───────────────────────────────
 
-    fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/pdf/")}`)
+    fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/images/pdf/")}`)
         .then(res => res.json())
         .then(data => {
             if (!data.files || data.files.length === 0) return;
@@ -178,7 +187,7 @@
             docsContainer.appendChild(heading);
 
             data.files.forEach(filename => {
-                const url = `/${id}/pdf/${filename}`;
+                const url = `/docs/${id}/images/pdf/${filename}`;
                 const label = filename.replace(/\.pdf$/i, "");
                 docsContainer.appendChild(makePdfBlock(label, url));
             });
@@ -186,5 +195,4 @@
         .catch(err => {
             console.warn("PDF-Liste konnte nicht geladen werden:", err);
         });
-
 })();
