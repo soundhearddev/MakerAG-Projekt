@@ -160,7 +160,6 @@ input.settings-icon[type="checkbox"] {
 .settings-nav {
     position: fixed;
     top: 33px;
-    right: 40px;
     display: block;
     width: 80px;
     height: 80px;
