@@ -49,6 +49,8 @@
     fetch(`/api/fetch_from_id.php?id=${encodeURIComponent(id)}`)
         .then(res => res.json())
         .then(data => {
+            console.log("API Response:", data); 
+
             if (data.error) {
                 document.getElementById("item-title").textContent = "Fehler: " + data.message;
                 return;
@@ -136,21 +138,19 @@
         .then(res => res.json())
         .then(data => {
             if (!data.files || data.files.length === 0) return;
-            console.log("API Response:", data);
+
             const docsContainer = document.getElementById("docs-container");
 
             // Abschnitts-Überschrift nur einmal
             const heading = document.createElement("p");
             heading.innerHTML = "<strong>Sonstige Dokumente:</strong>";
             docsContainer.appendChild(heading);
-            console.log("API Response:", data);
 
             data.files.forEach(filename => {
                 const url = `/${id}/pdf/${filename}`;
                 // Dateiname ohne Endung als Label
                 const label = filename.replace(/\.pdf$/i, "");
                 docsContainer.appendChild(makePdfBlock(label, url));
-                console.log("API Response:", data);
             });
             console.log("API Response:", data);
         })
