@@ -74,7 +74,7 @@ async function loadLatestEntries() {
   button.disabled = true;
 
   try {
-    const res = await fetch("/api/fetch_all_items.php?latest=true&limit=10");
+    const res = await fetch("/api/fetch_all_items.php?latest=true&limit=5");
 
     if (!res.ok) {
       throw new Error("Server Error " + res.status);
