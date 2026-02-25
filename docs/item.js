@@ -47,7 +47,7 @@
             }
 
 
-             
+
             /* die API gibt einen Array zurück:
             {
                 "success": true,
@@ -107,7 +107,6 @@
             if (item.item_condition) {
                 const cond = slug(item.item_condition);
                 appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond}">${item.item_condition}</span>`));
-                statusDiv.classList.add(`condition-${cond}`);
             }
 
             // Kategorie

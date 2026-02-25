@@ -40,7 +40,11 @@
 /* Per-Info-Klassen: kleine Unterscheidung / Hervorhebung */
 
 /* Zustand (z. B. gut / defekt) */
-.info-zustand {}
+.info-zustand {
+    /* verfügbar*/
+        
+
+}
 
 /* Kategorie */
 .info-kategorie {}
