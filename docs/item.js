@@ -81,12 +81,28 @@
             const statusDiv = document.getElementById("status");
 
             if (item.status) {
+                if (item.status.toLowerCase() === "verfügbar") {
+                    statusDiv.style.backgroundColor = "green";
+                }
                 const h = document.createElement("h2");
                 h.textContent = item.status;
                 statusDiv.appendChild(h);
             }
 
             if (item.item_condition) {
+                if (item.item_condition.toLowerCase() === "gut") {
+                    statusDiv.querySelector("h2").style.color = "green";
+                }
+                else if (item.item_condition.toLowerCase() === "akzeptabel") {
+                    statusDiv.querySelector("h2").style.color = "orange";
+                }
+                else if (item.item_condition.toLowerCase() === "neu") {
+                    statusDiv.querySelector("h2").style.color = "blue";
+                }
+                else if (item.item_condition.toLowerCase() === "defekt") {
+                    statusDiv.querySelector("h2").style.color = "red";
+                }
+
                 statusDiv.appendChild(infoLine("Zustand", item.item_condition));
             }
 
