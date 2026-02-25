@@ -61,22 +61,31 @@
 /* Zustand-Farben: condition-* Klassen für farbliche Kennzeichnung */
 .condition-gut {
   font-size: 1.5rem;
+  font-weight: 600;
   color: #157515;
 } /* grün */
 .condition-beschädigt {
   font-size: 1.5rem;
+  font-weight: 600;
+
   color: #d26b00;
 } /* orange */
 .condition-defekt {
   font-size: 1.5rem;
+  font-weight: 600;
+
   color: #b71c1c;
 } /* rot */
 .condition-neu {
   font-size: 1.5rem;
+  font-weight: 600;
+
   color: #0b63d6;
 } /* blau */
 .condition-unbekannt {
   font-size: 1.5rem;
+  font-weight: 600;
+
   color: #666;
 } /* grau */
 
