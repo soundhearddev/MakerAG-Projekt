@@ -1,4 +1,4 @@
-<html lang="en" data-theme="default" style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;" class=" yvqosqej idc0_350"><head>
+<html lang="en" data-theme="default" style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;" class=" ycwueviigr idc0_350"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fujitsu Siemens Amilo Pa1538</title>
@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/styles/docs.css">
 </head>
 
-<body style="font-size: 15px;" data-theme="default" class="loaded">
+<body style="font-size: 15px;" class="loaded" data-theme="default">
 
     <div id="header"><!-- Google Fonts -->
 
@@ -436,7 +436,7 @@
     <div class="container">
         <div>
             <h1 id="item-title">Fujitsu Siemens Amilo Pa1538</h1>
-            <div id="status"><h2>verfügbar</h2><p><strong>Zustand:</strong> gut</p><p><strong>Kategorie:</strong> Hardware / Laptop</p><p><strong>Standort:</strong> Schrank S, Regal 3</p><p><strong>Tags:</strong> laptop</p><p><strong>Seriennummer:</strong> YSMB064576</p></div>
+            <div id="status" class="status-info condition-gut"><h2 class="status-verfügbar">verfügbar</h2><p><div class="info-line"><strong>Zustand:</strong> gut</div></p><p><div class="info-line"><strong>Kategorie:</strong> Hardware / Laptop</div></p><p><div class="info-line"><strong>Standort:</strong> Schrank S, Regal 3</div></p><p><div class="info-line"><strong>Tags:</strong> laptop</div></p><p><div class="info-line"><strong>Seriennummer:</strong> YSMB064576</div></p></div>
         </div>
         <p id="item-description">FUJITSU SIEMENS Laptop</p>
     </div>
@@ -462,6 +462,45 @@
 
 
 <script>
+    (function () {
+        'use strict';
+
+        // Aktuelle Seite markieren
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('nav .nav-link');
+
+        navLinks.forEach(link => {
+            const linkPath = new URL(link.href).pathname;
+
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+                link.setAttribute('aria-current', 'page');
+            }
+        });
+
+        // Smooth Scroll für Anker-Links
+        navLinks.forEach(link => {
+            if (link.hash) {
+                link.addEventListener('click', (e) => {
+                    const targetId = link.hash.substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        e.preventDefault();
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+
+                        // URL aktualisieren ohne Seite neu zu laden
+                        history.pushState(null, '', link.hash);
+                    }
+                });
+            }
+        });
+
+    })();
+</script><script>
     (function initHeader() {
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
@@ -625,43 +664,4 @@
         }
       });
     })();
-  </script><script>
-    (function () {
-        'use strict';
-
-        // Aktuelle Seite markieren
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('nav .nav-link');
-
-        navLinks.forEach(link => {
-            const linkPath = new URL(link.href).pathname;
-
-            if (linkPath === currentPath) {
-                link.classList.add('active');
-                link.setAttribute('aria-current', 'page');
-            }
-        });
-
-        // Smooth Scroll für Anker-Links
-        navLinks.forEach(link => {
-            if (link.hash) {
-                link.addEventListener('click', (e) => {
-                    const targetId = link.hash.substring(1);
-                    const targetElement = document.getElementById(targetId);
-
-                    if (targetElement) {
-                        e.preventDefault();
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-
-                        // URL aktualisieren ohne Seite neu zu laden
-                        history.pushState(null, '', link.hash);
-                    }
-                });
-            }
-        });
-
-    })();
-</script><script type="module" src="http://172.17.17.131/docs/RNG/overlay.js"></script><script src="http://172.17.17.131/js/settings.js"></script></body></html>
+  </script><script type="module" src="http://172.17.17.131/docs/RNG/overlay.js"></script><script src="http://172.17.17.131/js/settings.js"></script></body></html>

@@ -1,3 +1,101 @@
 #status h2 {
     color: green;
 }
+
+
+
+/* Haupttitel des Items */
+#item-title {
+    font-size: 1.4rem;
+    line-height: 1.2;
+    margin: 0 0 6px 0;
+    color: #111;
+    font-weight: 600;
+}
+
+/* Status-Block (allgemein) */
+#status.status-info {
+    display: inline-block;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: #f8fff8;
+    min-width: 160px;
+}
+
+/* Status-Zustand: gut (grüne Darstellung) */
+.status-info.condition-gut {
+    background: #f0fff0;
+    border-color: #cfeed0;
+}
+
+/* Status-Text */
+.status-info h2.status-verfügbar {
+    margin: 0;
+    font-size: 1rem;
+    color: #157515; /* grün */
+}
+
+/* Absätze innerhalb des Status (Infos) */
+#status p {
+    margin: 6px 0 0 0;
+    padding: 0;
+    font-size: 0.95rem;
+    color: #222;
+}
+
+/* Einzeilige Infozeilen */
+.info-line {
+    margin: 4px 0;
+    display: block;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Hervorhebung der Labels in Infozeilen */
+.info-line strong {
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+/* Beschreibungstext des Items */
+#item-description {
+    margin-top: 8px;
+    color: #444;
+    font-size: 1rem;
+}
+
+/* Überschrift in zweiter Container-Section (Specs) */
+.container h2 {
+    font-size: 1.1rem;
+    margin: 8px 0;
+    color: #111;
+}
+
+/* Specs-Liste: grundlegendes Listen-Styling */
+#specs-list {
+    margin: 8px 0 0 0;
+    padding-left: 1.2rem;
+    color: #333;
+}
+
+/* Einzelne Punkte in der Specs-Liste */
+#specs-list li {
+    margin: 6px 0;
+    line-height: 1.35;
+    font-size: 0.95rem;
+}
+
+/* Responsive: bei kleinen Bildschirmen Spalten zu Reihen machen */
+@media (max-width: 600px) {
+    .container > div {
+        flex-direction: column;
+        gap: 8px;
+    }
+    #item-title {
+        font-size: 1.2rem;
+    }
+    #status.status-info {
+        width: 100%;
+    }
+}
