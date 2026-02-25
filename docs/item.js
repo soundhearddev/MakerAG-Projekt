@@ -12,7 +12,7 @@
     function infoLine(label, value) {
         if (!value) return null;
         const p = document.createElement("p");
-        p.innerHTML = `<div class="info-line"><strong>${label}:</strong> <span class="condition-${value.toLowerCase()}">${value}</span></div>`;
+        p.innerHTML = `<div class="info-line"><strong>${label}:</strong> ${value}</div>`;
         return p;
     }
 
@@ -92,7 +92,10 @@
 
             if (item.item_condition) {
                 const conditionClass = `condition-${item.item_condition.toLowerCase()}`;
-                statusDiv.appendChild(infoLine("Zustand", item.item_condition));
+
+                const p = document.createElement("p");
+                p.innerHTML = `<div class="info-line"><strong>Zustand:</strong> <span class="condition-${item.item_condition.toLowerCase()}">${item.item_condition}</span></div>`;
+                statusDiv.appendChild(p);
                 statusDiv.classList.add(conditionClass);
             }
 
