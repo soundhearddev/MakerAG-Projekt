@@ -19,14 +19,13 @@
     padding: 8px 10px;
     border-radius: 6px;
     border: 1px solid transparent;
-    background: #f8fff8;
     min-width: 160px;
 }
 
 /* Status-Zustand: gut (grüne Darstellung) */
 .status-info.condition-gut {
-    background: #f0fff0;
-    border-color: #cfeed0;
+    background: #00ff00;
+    border-color: #1cb421;
 }
 
 /* Status-Text */
