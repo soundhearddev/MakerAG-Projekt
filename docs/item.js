@@ -128,7 +128,9 @@
                 ].filter(Boolean).join(", ");
                 if (parts) {
                     const locationLine = infoLine("Standort", parts);
-                    locationLine.className += `THE_location`;
+                    if (loc.schrank || loc.regal) {
+                        locationLine.className += ` THE_location`;
+                    }
                     appendIf(statusDiv, locationLine);
                 }
             }
