@@ -126,7 +126,11 @@
                     loc.regal ? `Regal ${loc.regal}` : null,
                     loc.position ? `Position ${loc.position}` : null,
                 ].filter(Boolean).join(", ");
-                if (parts) appendIf(statusDiv, infoLine("Standort", parts));
+                if (parts) {
+                    const locationLine = infoLine("Standort", parts);
+                    locationLine.className += `THE_location`;
+                    appendIf(statusDiv, locationLine);
+                }
             }
 
             // Tags (Array)
