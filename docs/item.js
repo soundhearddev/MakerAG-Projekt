@@ -90,17 +90,20 @@
             }
 
             if (item.item_condition) {
-                if (item.item_condition.toLowerCase() === "gut") {
-                    statusDiv.querySelector("h2").style.color = "green";
-                }
-                else if (item.item_condition.toLowerCase() === "akzeptabel") {
-                    statusDiv.querySelector("h2").style.color = "orange";
-                }
-                else if (item.item_condition.toLowerCase() === "neu") {
-                    statusDiv.querySelector("h2").style.color = "blue";
-                }
-                else if (item.item_condition.toLowerCase() === "defekt") {
-                    statusDiv.querySelector("h2").style.color = "red";
+                const h2 = statusDiv.querySelector("h2");
+                if (h2) {
+                    if (item.item_condition.toLowerCase() === "gut") {
+                        h2.style.color = "green";
+                    }
+                    else if (item.item_condition.toLowerCase() === "akzeptabel") {
+                        h2.style.color = "orange";
+                    }
+                    else if (item.item_condition.toLowerCase() === "neu") {
+                        h2.style.color = "blue";
+                    }
+                    else if (item.item_condition.toLowerCase() === "defekt") {
+                        h2.style.color = "red";
+                    }
                 }
 
                 statusDiv.appendChild(infoLine("Zustand", item.item_condition));
