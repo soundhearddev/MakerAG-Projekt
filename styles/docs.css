@@ -35,18 +35,18 @@
   margin-right: 6px;
 }
 
-.info-kategorie {
+.item-category {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
 /* Tags */
-.info-tags {
+.item-tag {
   font-style: italic;
 }
 
 /* Seriennummer */
-.info-seriennummer {
+.item-serial {
   font-family: monospace;
 }
 
