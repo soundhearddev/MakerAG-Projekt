@@ -3,46 +3,55 @@
     const match = window.location.pathname.match(/\/docs\/(\d+)\//);
     const id = match ? match[1] : 17;
 
-    console.log("ID:", id);
+    //debug 
+    // console.log("ID:", id);
 
-    // ── Hilfsfunktionen ─────────────────────────────────────
+    // ── funktionen ─────────────────────────────────────
 
-    function specItem(label, value) {
-        if (!value) return null;
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${label}:</strong> ${value}`;
-        return li;
-    }
-
+    // diese Funktion erstellt eine Zeile mit Label und Wert, z.B "Zustand: Gut" oder so
     function infoLine(label, value) {
         if (!value) return null;
         const p = document.createElement("p");
-        p.innerHTML = `<strong>${label}:</strong> ${value}`;
+        p.innerHTML = `<div class="info-line"><strong>${label}:</strong> ${value}</div>`;
         return p;
     }
 
-    function appendAll(parent, elements) {
-        elements.forEach(el => el && parent.appendChild(el));
-    }
-
-    function makePdfBlock(label, url) {
-        const wrapper = document.createElement("p");
-        wrapper.innerHTML = `<a href="${url}" target="_blank">${label}</a>`;
-        return wrapper;
-    }
 
     // ── 1. Item-Daten laden ──────────────────────────────────────────────────
 
     fetch(`/api/fetch_from_id.php?id=${encodeURIComponent(id)}`)
         .then(res => res.json())
         .then(data => {
-            console.log("API Response:", data);
+            //debug
+            //console.log("API Response:", data);
 
+
+            // Error Handling
             if (!data.success || !data.data || data.data.length === 0) {
                 document.getElementById("item-title").textContent = "Nicht gefunden";
                 return;
             }
 
+
+             
+            /* die API gibt einen Array zurück:
+            {
+                "success": true,
+                "count": 1,
+                "data": [
+                    {
+                        "id": 17,
+                        "name": "FUJITSU SIEMENS Laptop",
+                        ... usw. 
+                    }
+                ]
+            }
+
+            Was jetzt nicht nagezeigt wird ist dass data.data[0] entpricht. Also all diese Daten in eintrag [0] sind. Um also auf diese Daten zuzugreifen, muss man den Eintrag [0] aus dem Array nehmen. 
+
+            "console.log("API Response:", data);" hat da sehr geholfen 
+            
+            */
             const item = data.data[0];
 
             // Seitentitel
