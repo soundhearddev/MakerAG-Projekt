@@ -1,3 +1,4 @@
+// ...existing code...
 (function () {
 
     const match = window.location.pathname.match(/\/docs\/(\d+)\//);
@@ -6,15 +7,27 @@
     //debug 
     // console.log("ID:", id);
 
-    // ── funktionen ─────────────────────────────────────
+    // Hilfs-Funktion: Slug für CSS-Klassen
+    function slug(str) {
+        if (!str && str !== 0) return '';
+        return String(str).toLowerCase().trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-_]/g, '');
+    }
 
-    // diese Funktion erstellt eine Zeile mit Label und Wert, z.B "Zustand: Gut" oder so
+    // diese Funktion erstellt eine Info-Zeile als DIV mit passenden Klassen und data-label
     function infoLine(label, value) {
         if (!value) return null;
-        const p = document.createElement("p");
-        const labelClass = label.toLowerCase().replace(/\s+/g, '-');
-        p.innerHTML = `<div class="info-line" data-label="${labelClass}"><strong>${label}:</strong> ${value}</div>`;
-        return p;
+        const labelClass = slug(label);
+        const div = document.createElement("div");
+        div.className = `info-line info-${labelClass}`;
+        div.setAttribute("data-label", labelClass);
+        div.innerHTML = `<strong>${label}:</strong> ${value}`;
+        return div;
+    }
+
+    function appendIf(el, child) {
+        if (child) el.appendChild(child);
     }
 
 
@@ -87,13 +100,14 @@
             if (item.status) {
                 h2 = document.createElement("h2");
                 h2.textContent = item.status;
-                h2.className = `status-${item.status.toLowerCase().replace(/\s+/g, '-')}`;
+                h2.className = `status-${slug(item.status)}`;
                 statusDiv.appendChild(h2);
             }
 
             if (item.item_condition) {
-                statusDiv.appendChild(infoLine("Zustand", `<span class="condition-${item.item_condition.toLowerCase()}">${item.item_condition}</span>`));
-                statusDiv.classList.add(`condition-${item.item_condition.toLowerCase()}`);
+                const cond = slug(item.item_condition);
+                appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond}">${item.item_condition}</span>`));
+                statusDiv.classList.add(`condition-${cond}`);
             }
 
             // Kategorie
@@ -101,7 +115,7 @@
                 const kat = item.parent_category
                     ? `${item.parent_category} / ${item.category_name}`
                     : item.category_name;
-                statusDiv.appendChild(infoLine("Kategorie", kat));
+                appendIf(statusDiv, infoLine("Kategorie", kat));
             }
 
             // Standort aus location-Objekt
@@ -113,26 +127,26 @@
                     loc.regal ? `Regal ${loc.regal}` : null,
                     loc.position ? `Position ${loc.position}` : null,
                 ].filter(Boolean).join(", ");
-                if (parts) statusDiv.appendChild(infoLine("Standort", parts));
+                if (parts) appendIf(statusDiv, infoLine("Standort", parts));
             }
 
             // Tags (Array)
             if (item.tags && item.tags.length > 0) {
-                statusDiv.appendChild(infoLine("Tags", item.tags.join(", ")));
+                appendIf(statusDiv, infoLine("Tags", item.tags.join(", ")));
             }
 
             // Seriennummer
             if (item.serial_number) {
-                statusDiv.appendChild(infoLine("Seriennummer", item.serial_number));
+                appendIf(statusDiv, infoLine("Seriennummer", item.serial_number));
             }
 
             // Anzahl
             if (item.quantity) {
-                statusDiv.appendChild(infoLine("Anzahl", item.quantity));
+                appendIf(statusDiv, infoLine("Anzahl", item.quantity));
             }
 
             if (item.notes) {
-                statusDiv.appendChild(infoLine("Notizen", item.notes));
+                appendIf(statusDiv, infoLine("Notizen", item.notes));
             }
 
 
@@ -159,9 +173,9 @@
                     specsList.appendChild(li);
                 });
             } else {
-                // falls kine specs dann den ganzen container entfernern:
-                specsList.closest(".container").style.display = "none";
-
+                // falls keine specs dann den ganzen container entfernen:
+                const c = specsList.closest(".container");
+                if (c) c.style.display = "none";
             }
 
             // Bilder
@@ -172,7 +186,8 @@
                     const files = (imgData.files || []).filter(f => !/thumb/i.test(f));
 
                     if (files.length === 0) {
-                        gallery.closest(".container").style.display = "none";
+                        const c = gallery.closest(".container");
+                        if (c) c.style.display = "none";
                         return;
                     }
 
@@ -186,7 +201,8 @@
                     });
                 })
                 .catch(() => {
-                    document.getElementById("image-gallery").closest(".container").style.display = "none";
+                    const g = document.getElementById("image-gallery");
+                    if (g && g.closest(".container")) g.closest(".container").style.display = "none";
                 });
 
             // PDFs
