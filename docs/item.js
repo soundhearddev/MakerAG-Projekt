@@ -121,18 +121,14 @@
             if (item.location) {
                 const loc = item.location;
                 const parts = [
-                    loc.room ? `Raum ${loc.room}` : null,
-                    loc.schrank ? `Schrank ${loc.schrank}` : null,
-                    loc.regal ? `Regal ${loc.regal}` : null,
-                    loc.position ? `Position ${loc.position}` : null,
+                    loc.room ? `<span class="THE_location">Raum ${loc.room}</span>` : null,
+                    loc.schrank ? `<span class="THE_location">Schrank ${loc.schrank}</span>` : null,
+                    loc.regal ? `<span class="THE_location">Regal ${loc.regal}</span>` : null,
+                    loc.position ? `<span class="THE_location">Position ${loc.position}</span>` : null,
                 ].filter(Boolean).join(", ");
 
                 if (parts) {
                     const line = infoLine("Standort", parts);
-                    // Einzelne Felder mit Klasse markieren
-                    [loc.schrank, loc.regal, loc.room, loc.position]
-                        .filter(Boolean)
-                        .forEach(() => line.classList.add("THE_location"));
                     appendIf(statusDiv, line);
                 }
             }
