@@ -21,7 +21,6 @@
     margin: 0 0 6px 0;
     font-size: 1rem;
     font-weight: 600;
-    color: #1a7f37; /* grün für verfügbar */
 }
 
 /* Info-Zeile: Basis-Styling für alle Info-Einträge */
@@ -40,17 +39,35 @@
 /* Per-Info-Klassen: kleine Unterscheidung / Hervorhebung */
 
 /* Zustand (z. B. gut / defekt) */
-.info-zustand {
-    /* verfügbar*/
-        
 
+    .condition-gut {
+        color: #157515;
+    }
+
+    .condition-akzeptabel {
+        color: #d26b00;
+    }
+
+    .condition-neu {
+        color: #0b63d6; 
+    }
+    .condition-defekt {
+        color: #b71c1c; 
+    }
+    .condition-unbekannt {
+        color: #666; 
+    }
+
+
+
+
+
+.info-kategorie {
+    font-weight: 600;
+    color: #0b63d6; /* blau */
 }
 
-/* Kategorie */
-.info-kategorie {}
 
-/* Standort */
-.info-standort {}
 
 /* Tags */
 .info-tags {
