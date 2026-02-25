@@ -23,6 +23,32 @@
 }
 
 
+
+.condition-verfügbar {
+    color: green;
+}
+.condition-beschädigt {
+    color: orange;
+}
+.condition-defekt {
+    color: red;
+}
+.condition-neu {
+    color: blue;
+}
+.condition.unbekannt {
+    color: gray;
+}
+.condition-akzeptabel {
+    color: darkorange;
+}
+
+
+
+
+
+
+
 /* Status-Text */
 .status-info h2.status-verfügbar {
     margin: 0;

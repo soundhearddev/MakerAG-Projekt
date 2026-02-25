@@ -12,7 +12,7 @@
     function infoLine(label, value) {
         if (!value) return null;
         const p = document.createElement("p");
-        p.innerHTML = `<div class="info-line"><strong>${label}:</strong> ${value}</div>`;
+        p.innerHTML = `<div class="info-line"><strong>${label}:</strong> <span class="condition-${value.toLowerCase()}">${value}</span></div>`;
         return p;
     }
 
