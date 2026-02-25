@@ -103,12 +103,3 @@
   line-height: 1.3;
 }
 
-/* Kleine Hilfsregeln für Responsive */
-@media (max-width: 640px) {
-  .container > div {
-    flex-direction: column;
-  }
-  #status.status-info {
-    width: 100%;
-  }
-}
