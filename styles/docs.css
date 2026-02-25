@@ -27,7 +27,6 @@
 .status-info h2.status-verfügbar {
     margin: 0;
     font-size: 1rem;
-    color: #157515; /* grün */
 }
 
 /* Absätze innerhalb des Status (Infos) */
@@ -35,7 +34,6 @@
     margin: 6px 0 0 0;
     padding: 0;
     font-size: 0.95rem;
-    color: #222;
 }
 
 /* Einzeilige Infozeilen */
@@ -43,7 +41,6 @@
     margin: 4px 0;
     display: block;
     font-size: 0.95rem;
-    color: #333;
 }
 
 /* Hervorhebung der Labels in Infozeilen */
@@ -55,7 +52,6 @@
 /* Beschreibungstext des Items */
 #item-description {
     margin-top: 8px;
-    color: #444;
     font-size: 1rem;
 }
 
@@ -63,14 +59,12 @@
 .container h2 {
     font-size: 1.1rem;
     margin: 8px 0;
-    color: #111;
 }
 
 /* Specs-Liste: grundlegendes Listen-Styling */
 #specs-list {
     margin: 8px 0 0 0;
     padding-left: 1.2rem;
-    color: #333;
 }
 
 /* Einzelne Punkte in der Specs-Liste */
