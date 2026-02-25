@@ -79,35 +79,21 @@
 
             // Status / Meta-Infos
             const statusDiv = document.getElementById("status");
+            statusDiv.className = "status-info";
 
             let h2 = null;
 
             if (item.status) {
-                if (item.status.toLowerCase() === "verfügbar") {
-                    statusDiv.style.backgroundColor = "green";
-                }
                 h2 = document.createElement("h2");
                 h2.textContent = item.status;
+                h2.className = `status-${item.status.toLowerCase().replace(/\s+/g, '-')}`;
                 statusDiv.appendChild(h2);
             }
 
             if (item.item_condition) {
-                if (h2) {
-                    if (item.item_condition.toLowerCase() === "gut") {
-                        h2.style.color = "green";
-                    }
-                    else if (item.item_condition.toLowerCase() === "akzeptabel") {
-                        h2.style.color = "orange";
-                    }
-                    else if (item.item_condition.toLowerCase() === "neu") {
-                        h2.style.color = "blue";
-                    }
-                    else if (item.item_condition.toLowerCase() === "defekt") {
-                        h2.style.color = "red";
-                    }
-                }
-
+                const conditionClass = `condition-${item.item_condition.toLowerCase()}`;
                 statusDiv.appendChild(infoLine("Zustand", item.item_condition));
+                statusDiv.classList.add(conditionClass);
             }
 
             // Kategorie
