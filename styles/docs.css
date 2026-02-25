@@ -1,112 +1,83 @@
-#status h2 {
-    color: green;
-}
 
-
-
-/* Haupttitel des Items */
 #item-title {
-    font-size: 1.4rem;
-    line-height: 1.2;
-    margin: 0 0 6px 0;
-    font-weight: 600;
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.1;
+    font-weight: 700;
+    color: #111;
 }
 
-/* Status-Block (allgemein) */
 #status.status-info {
     display: inline-block;
-    padding: 8px 10px;
-    border-radius: 6px;
+    min-width: 180px;
+    padding: 8px 12px;
+    border-radius: 8px;
     border: 1px solid transparent;
-    min-width: 160px;
+    background: #f7f9fb;
 }
 
-
-
-.condition-gut {
-    color: green;
-}
-.condition-beschädigt {
-    color: orange;
-}
-.condition-defekt {
-    color: red;
-}
-.condition-neu {
-    color: blue;
-}
-.condition.unbekannt {
-    color: gray;
-}
-.condition-akzeptabel {
-    color: darkorange;
-}
-
-
-
-
-
-
-
-/* Status-Text */
-.status-info h2.status-verfügbar {
-    margin: 0;
+/* Spezifische Status-Überschrift (klasse wie im HTML) */
+.status-verfgbar,
+.status-verfügbar,
+#status h2 {
+    margin: 0 0 6px 0;
     font-size: 1rem;
+    font-weight: 600;
+    color: #1a7f37; /* grün für verfügbar */
 }
 
-/* Absätze innerhalb des Status (Infos) */
-#status p {
-    margin: 6px 0 0 0;
-    padding: 0;
-    font-size: 0.95rem;
-}
-
-/* Einzeilige Infozeilen */
+/* Info-Zeile: Basis-Styling für alle Info-Einträge */
 .info-line {
-    margin: 4px 0;
     display: block;
+    margin: 6px 0;
     font-size: 0.95rem;
 }
 
-/* Hervorhebung der Labels in Infozeilen */
+/* Label-Teil (fett) innerhalb der Info-Zeile */
 .info-line strong {
     font-weight: 700;
     margin-right: 6px;
 }
 
-/* Beschreibungstext des Items */
+/* Per-Info-Klassen: kleine Unterscheidung / Hervorhebung */
+
+/* Zustand (z. B. gut / defekt) */
+.info-zustand {}
+
+/* Kategorie */
+.info-kategorie {}
+
+/* Standort */
+.info-standort {}
+
+/* Tags */
+.info-tags {
+    font-style: italic;
+}
+
+/* Seriennummer */
+.info-seriennummer {
+    font-family: monospace;
+}
+
+/* Zustand-Farben: condition-* Klassen für farbliche Kennzeichnung */
+.condition-gut { color: #157515; }         /* grün */
+.condition-beschädigt { color: #d26b00; }  /* orange */
+.condition-defekt { color: #b71c1c; }      /* rot */
+.condition-neu { color: #0b63d6; }         /* blau */
+.condition-unbekannt { color: #666; }     /* grau */
+
+/* Beschreibungstext unter dem Header */
 #item-description {
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 1rem;
+    line-height: 1.3;
 }
 
-/* Überschrift in zweiter Container-Section (Specs) */
-.container h2 {
-    font-size: 1.1rem;
-    margin: 8px 0;
-}
-
-/* Specs-Liste: grundlegendes Listen-Styling */
-#specs-list {
-    margin: 8px 0 0 0;
-    padding-left: 1.2rem;
-}
-
-/* Einzelne Punkte in der Specs-Liste */
-#specs-list li {
-    margin: 6px 0;
-    line-height: 1.35;
-    font-size: 0.95rem;
-}
-
-/* Responsive: bei kleinen Bildschirmen Spalten zu Reihen machen */
-@media (max-width: 600px) {
+/* Kleine Hilfsregeln für Responsive */
+@media (max-width: 640px) {
     .container > div {
         flex-direction: column;
-        gap: 8px;
-    }
-    #item-title {
-        font-size: 1.2rem;
     }
     #status.status-info {
         width: 100%;

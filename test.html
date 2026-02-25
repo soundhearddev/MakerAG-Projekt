@@ -1,6 +1,6 @@
 <html lang="en" data-theme="default"
     style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;"
-    class=" lkobeyex idc0_350">
+    class=" lmiedpoim idc0_350">
 
 <head>
     <meta charset="UTF-8">
@@ -24,7 +24,7 @@
         <header role="banner" class="site-header">
             <div class="head">
 
-                <canvas id="canvas" width="1414" height="176"></canvas>
+                <canvas id="canvas" width="1414" height="244"></canvas>
 
                 <div id="maker" class="title">
                     <h1>Maker AG</h1>
@@ -460,23 +460,16 @@
         <div>
             <h1 id="item-title">Fujitsu Siemens Amilo Pa1538</h1>
             <div id="status" class="status-info condition-gut">
-                <h2 class="status-verfügbar">verfügbar</h2>
-                <p>
-                <div class="info-line" data-label="zustand"><strong>Zustand:</strong> <span
+                <h2 class="status-verfgbar">verfügbar</h2>
+                <div class="info-line info-zustand" data-label="zustand"><strong>Zustand:</strong> <span
                         class="condition-gut">gut</span></div>
-                </p>
-                <p>
-                <div class="info-line" data-label="kategorie"><strong>Kategorie:</strong> Hardware / Laptop</div>
-                </p>
-                <p>
-                <div class="info-line" data-label="standort"><strong>Standort:</strong> Schrank S, Regal 3</div>
-                </p>
-                <p>
-                <div class="info-line" data-label="tags"><strong>Tags:</strong> laptop</div>
-                </p>
-                <p>
-                <div class="info-line" data-label="seriennummer"><strong>Seriennummer:</strong> YSMB064576</div>
-                </p>
+                <div class="info-line info-kategorie" data-label="kategorie"><strong>Kategorie:</strong> Hardware /
+                    Laptop</div>
+                <div class="info-line info-standort" data-label="standort"><strong>Standort:</strong> Schrank S, Regal 3
+                </div>
+                <div class="info-line info-tags" data-label="tags"><strong>Tags:</strong> laptop</div>
+                <div class="info-line info-seriennummer" data-label="seriennummer"><strong>Seriennummer:</strong>
+                    YSMB064576</div>
             </div>
         </div>
         <p id="item-description">FUJITSU SIEMENS Laptop</p>
@@ -525,46 +518,6 @@
 
 
 
-    <script>
-        (function () {
-            'use strict';
-
-            // Aktuelle Seite markieren
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('nav .nav-link');
-
-            navLinks.forEach(link => {
-                const linkPath = new URL(link.href).pathname;
-
-                if (linkPath === currentPath) {
-                    link.classList.add('active');
-                    link.setAttribute('aria-current', 'page');
-                }
-            });
-
-            // Smooth Scroll für Anker-Links
-            navLinks.forEach(link => {
-                if (link.hash) {
-                    link.addEventListener('click', (e) => {
-                        const targetId = link.hash.substring(1);
-                        const targetElement = document.getElementById(targetId);
-
-                        if (targetElement) {
-                            e.preventDefault();
-                            targetElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-
-                            // URL aktualisieren ohne Seite neu zu laden
-                            history.pushState(null, '', link.hash);
-                        }
-                    });
-                }
-            });
-
-        })();
-    </script>
     <script>
         (function initHeader() {
             const canvas = document.getElementById("canvas");
@@ -728,6 +681,46 @@
                     cancelAnimationFrame(animationId);
                 }
             });
+        })();
+    </script>
+    <script>
+        (function () {
+            'use strict';
+
+            // Aktuelle Seite markieren
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('nav .nav-link');
+
+            navLinks.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+
+                if (linkPath === currentPath) {
+                    link.classList.add('active');
+                    link.setAttribute('aria-current', 'page');
+                }
+            });
+
+            // Smooth Scroll für Anker-Links
+            navLinks.forEach(link => {
+                if (link.hash) {
+                    link.addEventListener('click', (e) => {
+                        const targetId = link.hash.substring(1);
+                        const targetElement = document.getElementById(targetId);
+
+                        if (targetElement) {
+                            e.preventDefault();
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+
+                            // URL aktualisieren ohne Seite neu zu laden
+                            history.pushState(null, '', link.hash);
+                        }
+                    });
+                }
+            });
+
         })();
     </script>
     <script type="module" src="http://172.17.17.131/docs/RNG/overlay.js"></script>
