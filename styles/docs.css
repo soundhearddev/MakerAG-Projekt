@@ -42,7 +42,6 @@
 /* Tags */
 .info-tags {
   font-style: italic;
-
 }
 
 /* Seriennummer */
@@ -51,34 +50,35 @@
 }
 
 .info-standort {
-    font-size: 1rem;
-    font-weight: 700;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .THE_location {
-    font-size: 2rem;
+  font-size: 2rem;
 }
-
 
 /* Zustand-Farben: condition-* Klassen für farbliche Kennzeichnung */
 .condition-gut {
+  font-size: 1.5rem;
   color: #157515;
 } /* grün */
 .condition-beschädigt {
+  font-size: 1.5rem;
   color: #d26b00;
 } /* orange */
 .condition-defekt {
+  font-size: 1.5rem;
   color: #b71c1c;
 } /* rot */
 .condition-neu {
+  font-size: 1.5rem;
   color: #0b63d6;
 } /* blau */
 .condition-unbekannt {
+  font-size: 1.5rem;
   color: #666;
 } /* grau */
-
-
-
 
 /* Beschreibungstext unter dem Header */
 #item-description {
