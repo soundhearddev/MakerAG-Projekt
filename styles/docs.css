@@ -56,6 +56,10 @@
     font-weight: 700;
 }
 
+.THE_location {
+    color: #0b63d6; /* blau */
+}
+
 
 /* Zustand-Farben: condition-* Klassen für farbliche Kennzeichnung */
 .condition-gut {
