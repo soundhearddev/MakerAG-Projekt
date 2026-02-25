@@ -43,7 +43,7 @@
 /* Tags */
 .info-tags {
   font-style: italic;
-  
+
 }
 
 /* Seriennummer */
@@ -52,7 +52,7 @@
 }
 
 .info-standort {
-    font-size: 5rem;
+    font-size: 1rem;
     font-weight: 700;
 }
 
