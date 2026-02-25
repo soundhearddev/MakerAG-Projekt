@@ -91,12 +91,8 @@
             }
 
             if (item.item_condition) {
-                const conditionClass = `condition-${item.item_condition.toLowerCase()}`;
-
-                const p = document.createElement("p");
-                p.innerHTML = `<div class="info-line"><strong>Zustand:</strong> <span class="condition-${item.item_condition.toLowerCase()}">${item.item_condition}</span></div>`;
-                statusDiv.appendChild(p);
-                statusDiv.classList.add(conditionClass);
+                statusDiv.appendChild(infoLine("Zustand", `<span class="condition-${item.item_condition.toLowerCase()}">${item.item_condition}</span>`));
+                statusDiv.classList.add(`condition-${item.item_condition.toLowerCase()}`);
             }
 
             // Kategorie
