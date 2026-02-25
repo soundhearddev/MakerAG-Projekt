@@ -80,17 +80,18 @@
             // Status / Meta-Infos
             const statusDiv = document.getElementById("status");
 
+            let h2 = null;
+
             if (item.status) {
                 if (item.status.toLowerCase() === "verfügbar") {
                     statusDiv.style.backgroundColor = "green";
                 }
-                const h = document.createElement("h2");
-                h.textContent = item.status;
-                statusDiv.appendChild(h);
+                h2 = document.createElement("h2");
+                h2.textContent = item.status;
+                statusDiv.appendChild(h2);
             }
 
             if (item.item_condition) {
-                const h2 = statusDiv.querySelector("h2");
                 if (h2) {
                     if (item.item_condition.toLowerCase() === "gut") {
                         h2.style.color = "green";
