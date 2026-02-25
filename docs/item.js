@@ -127,11 +127,20 @@
                     loc.position ? `Position ${loc.position}` : null,
                 ].filter(Boolean).join(", ");
                 if (parts) {
-                    const locationLine = infoLine("Standort", parts);
-                    if (loc.schrank || loc.regal) {
-                        locationLine.className += ` THE_location`;
-                    }
-                    appendIf(statusDiv, locationLine);
+                    appendIf(statusDiv, infoLine("Standort", parts));
+                }
+                
+                // Separate div für Schrank/Regal mit CLASS
+                const cabinetParts = [
+                    loc.schrank ? `Schrank ${loc.schrank}` : null,
+                    loc.regal ? `Regal ${loc.regal}` : null,
+                ].filter(Boolean).join(", ");
+                
+                if (cabinetParts) {
+                    const div = document.createElement("div");
+                    div.className = "THE_location";
+                    div.innerHTML = cabinetParts;
+                    statusDiv.appendChild(div);
                 }
             }
 
