@@ -4,7 +4,6 @@
     font-size: 1.35rem;
     line-height: 1.1;
     font-weight: 700;
-    color: #111;
 }
 
 #status.status-info {
@@ -13,7 +12,6 @@
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid transparent;
-    background: #f7f9fb;
 }
 
 /* Spezifische Status-Überschrift (klasse wie im HTML) */
