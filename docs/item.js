@@ -98,7 +98,7 @@
             let h2 = null;
 
             if (item.status) {
-                h2 = document.createElement("h2");
+                const h2 = document.createElement("h2");
                 h2.textContent = item.status;
                 h2.className = `status-${slug(item.status)}`;
                 statusDiv.appendChild(h2);
@@ -106,7 +106,7 @@
 
             if (item.item_condition) {
                 const cond = slug(item.item_condition);
-                appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond}">${item.item_condition}</span>`));
+                appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond} item-condition">${item.item_condition}</span>`));
             }
 
             // Kategorie
@@ -114,42 +114,45 @@
                 const kat = item.parent_category
                     ? `${item.parent_category} / ${item.category_name}`
                     : item.category_name;
-                appendIf(statusDiv, infoLine("Kategorie", kat));
+                appendIf(statusDiv, infoLine("Kategorie", `<span class="item-category">${kat}</span>`));
             }
 
             // Standort aus location-Objekt
             if (item.location) {
                 const loc = item.location;
                 const parts = [
-                    loc.room ? `<span class="THE_location">Raum ${loc.room}</span>` : null,
-                    loc.schrank ? `<span class="THE_location">Schrank ${loc.schrank}</span>` : null,
-                    loc.regal ? `<span class="THE_location">Regal ${loc.regal}</span>` : null,
-                    loc.position ? `<span class="THE_location">Position ${loc.position}</span>` : null,
+                    loc.room ? `<span class="THE_location location-room">Raum ${loc.room}</span>` : null,
+                    loc.schrank ? `<span class="THE_location location-schrank">Schrank ${loc.schrank}</span>` : null,
+                    loc.regal ? `<span class="THE_location location-regal">Regal ${loc.regal}</span>` : null,
+                    loc.position ? `<span class="THE_location location-position">Position ${loc.position}</span>` : null,
                 ].filter(Boolean).join(", ");
 
                 if (parts) {
-                    const line = infoLine("Standort", parts);
-                    appendIf(statusDiv, line);
+                    appendIf(statusDiv, infoLine("Standort", parts));
                 }
             }
 
             // Tags (Array)
+
             if (item.tags && item.tags.length > 0) {
-                appendIf(statusDiv, infoLine("Tags", item.tags.join(", ")));
+                const tagSpans = item.tags.map(t => `<span class="item-tag">${t}</span>`).join(", ");
+                appendIf(statusDiv, infoLine("Tags", tagSpans));
             }
+
 
             // Seriennummer
             if (item.serial_number) {
-                appendIf(statusDiv, infoLine("Seriennummer", item.serial_number));
+                appendIf(statusDiv, infoLine("Seriennummer", `<span class="item-serial">${item.serial_number}</span>`));
             }
 
             // Anzahl
             if (item.quantity) {
-                appendIf(statusDiv, infoLine("Anzahl", item.quantity));
+                appendIf(statusDiv, infoLine("Anzahl", `<span class="item-quantity">${item.quantity}</span>`));
             }
 
+
             if (item.notes) {
-                appendIf(statusDiv, infoLine("Notizen", item.notes));
+                appendIf(statusDiv, infoLine("Notizen", `<span class="item-notes">${item.notes}</span>`));
             }
 
 
