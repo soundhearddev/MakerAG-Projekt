@@ -185,7 +185,7 @@
             }
 
             // Bilder
-            fetch(`/api/list_files.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
+            fetch(`/api/get_data.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
                 .then(res => res.json())
                 .then(imgData => {
                     const gallery = document.getElementById("image-gallery");
