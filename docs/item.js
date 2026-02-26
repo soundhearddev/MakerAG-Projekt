@@ -212,7 +212,7 @@
                 });
 
             // PDFs
-            fetch(`/api/list_files.php?id=${id}&type=pdf`)
+            fetch(`/api/get_data.php?id=${id}&type=pdf`)
                 .then(res => res.json())
                 .then(data => {
                     if (!data.files || data.files.length === 0) return;
