@@ -185,11 +185,11 @@
             }
 
             // Bilder
-            fetch(`/api/get_data.php?path=${encodeURIComponent("docs/" + id + "/images/")}&type=image`)
+            fetch(`/api/get_data.php?id=${id}&type=image`)
                 .then(res => res.json())
                 .then(imgData => {
                     const gallery = document.getElementById("image-gallery");
-                    const files = (imgData.files || []).filter(f => !/thumb/i.test(f));
+                    const files = (imgData.data || []).filter(f => !/thumb/i.test(f.filename));
 
                     if (files.length === 0) {
                         const c = gallery.closest(".container");
@@ -199,7 +199,7 @@
 
                     files.forEach((filename, i) => {
                         const img = document.createElement("img");
-                        img.src = `/docs/${id}/images/${filename}`;
+                        img.src = f.path;
                         img.alt = `Bild ${i + 1}`;
                         img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
                         img.addEventListener("click", () => window.open(img.src, "_blank"));
