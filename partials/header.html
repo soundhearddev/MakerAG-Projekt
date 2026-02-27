@@ -31,9 +31,32 @@
         return;
       }
 
-      const CELL = 8;
-      const SPEED = 60;
-      const PIPE_COUNT = 20;
+      // ============================================================
+      //  KONFIGURATION
+      // ============================================================
+      const CONFIG = {
+        CELL: 8,      // Zellgröße in Pixeln
+        SPEED: 60,     // ms pro Frame (kleiner = schneller)
+        PIPE_COUNT: 10,     // Anzahl gleichzeitiger Pipes
+        TURN_CHANCE: 0.2,    // Richtungswechsel-Wahrscheinlichkeit (0–1)
+        GLOW_BLUR: 10,     // Leuchteffekt-Stärke (0 = kein Glühen)
+
+        // Wie viele Frames ein gezeichneter Block sichtbar bleibt
+        // bevor er wieder verschwindet (höher = länger sichtbar)
+        TRAIL_LIFETIME: 400,
+
+        // Farben (beliebig viele)
+        COLORS: [
+          'hsla(358, 100%, 70%, 0.9)',
+          'hsla(177,  62%, 60%, 0.9)',
+          'hsla( 47, 100%, 71%, 0.9)'
+        ],
+
+        // Spawn: 'edges' = nur Ränder | 'random' = überall
+        SPAWN_MODE: 'edges',
+      };
+      // ============================================================
+
       const DIRS = [
         { x: 1, y: 0 },
         { x: -1, y: 0 },
@@ -41,146 +64,137 @@
         { x: 0, y: -1 }
       ];
 
-      let COLS = 0;
-      let ROWS = 0;
+      let COLS = 0, ROWS = 0;
       let pipes = [];
       let running = false;
       let lastFrame = 0;
       let animationId = null;
+      let frameCount = 0;
+
+      // Speichert für jede Zelle: { color, dieAt } oder null
+      let cells = [];
 
       function resize() {
         const rect = head.getBoundingClientRect();
         canvas.width = rect.width;
         canvas.height = rect.height;
-        COLS = Math.floor(canvas.width / CELL);
-        ROWS = Math.floor(canvas.height / CELL);
-
-        if (running) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        COLS = Math.floor(canvas.width / CONFIG.CELL);
+        ROWS = Math.floor(canvas.height / CONFIG.CELL);
+        cells = new Array(COLS * ROWS).fill(null);
+        if (running) ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
 
       window.addEventListener("resize", resize);
       resize();
 
-      function getTextCell() {
-        const h1 = maker.querySelector("h1");
-        if (!h1) return { x: Math.floor(COLS / 2), y: Math.floor(ROWS / 2) };
+      function rand(max) { return Math.floor(Math.random() * max); }
+      function cellIdx(x, y) { return y * COLS + x; }
 
-        const textRect = h1.getBoundingClientRect();
-        const headRect = head.getBoundingClientRect();
-
-        return {
-          x: Math.floor((textRect.left + textRect.width / 2 - headRect.left) / CELL),
-          y: Math.floor((textRect.top + textRect.height / 2 - headRect.top) / CELL)
-        };
-      }
-
-      function rand(max) {
-        return Math.floor(Math.random() * max);
-      }
-
+      // --- Pipe ---
       class Pipe {
-        constructor() {
-          this.reset();
-        }
+        constructor() { this.reset(); }
 
         reset() {
-          // Zufällige Startposition im gesamten Canvas
-          const spawnMode = rand(4);
-
-          if (spawnMode === 0) {
-            // Von links
-            this.x = 0;
-            this.y = rand(ROWS);
-          } else if (spawnMode === 1) {
-            // Von rechts
-            this.x = COLS - 1;
-            this.y = rand(ROWS);
-          } else if (spawnMode === 2) {
-            // Von oben
+          if (CONFIG.SPAWN_MODE === 'random') {
             this.x = rand(COLS);
-            this.y = 0;
+            this.y = rand(ROWS);
           } else {
-            // Von unten oder Mitte
-            this.x = rand(COLS);
-            this.y = ROWS - 1;
+            const side = rand(4);
+            if (side === 0) { this.x = 0; this.y = rand(ROWS); }
+            else if (side === 1) { this.x = COLS - 1; this.y = rand(ROWS); }
+            else if (side === 2) { this.x = rand(COLS); this.y = 0; }
+            else { this.x = rand(COLS); this.y = ROWS - 1; }
           }
-
           this.dir = DIRS[rand(4)];
-
-          // Zufällige Farbe aus den drei Hauptfarben
-          const colors = [
-            'hsla(358, 100%, 70%, 0.9)',  // rot/pink
-            'hsla(177, 62%, 60%, 0.9)',   // türkis
-            'hsla(47, 100%, 71%, 0.9)'    // gelb
-          ];
-          this.color = colors[rand(3)];
-
-
+          this.color = CONFIG.COLORS[rand(CONFIG.COLORS.length)];
         }
 
         step() {
-          // Richtungswechsel mit höherer Wahrscheinlichkeit
-          if (Math.random() < 0.2) {
+          if (Math.random() < CONFIG.TURN_CHANCE) {
             this.dir = DIRS[rand(4)];
           }
 
           const nx = this.x + this.dir.x;
           const ny = this.y + this.dir.y;
 
-          // Wenn außerhalb der Grenzen, neu starten
           if (nx < 0 || ny < 0 || nx >= COLS || ny >= ROWS) {
             this.reset();
             return;
           }
 
-          // Zeichne nur die aktuelle Position
-          ctx.fillStyle = this.color;
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = this.color;
-          ctx.fillRect(this.x * CELL, this.y * CELL, CELL, CELL);
-          ctx.shadowBlur = 0;
+          // Zelle mit Ablaufzeit registrieren
+          cells[cellIdx(this.x, this.y)] = {
+            color: this.color,
+            dieAt: frameCount + CONFIG.TRAIL_LIFETIME
+          };
 
-          // Bewege zur nächsten Position
           this.x = nx;
           this.y = ny;
         }
       }
 
-      function startPipes() {
-        if (running) return;
-
-        running = true;
+      // --- Render: alle lebenden Zellen zeichnen, abgelaufene löschen ---
+      function renderCells() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pipes = [];
 
-        for (let i = 0; i < PIPE_COUNT; i++) {
-          pipes.push(new Pipe());
+        for (let i = 0; i < cells.length; i++) {
+          const cell = cells[i];
+          if (!cell) continue;
+
+          const remaining = cell.dieAt - frameCount;
+
+          if (remaining <= 0) {
+            cells[i] = null;
+            continue;
+          }
+
+          // Alpha abhängig von verbleibender Lebenszeit
+          const alpha = Math.min(remaining / (CONFIG.TRAIL_LIFETIME * 0.4), 1);
+
+          const x = (i % COLS) * CONFIG.CELL;
+          const y = Math.floor(i / COLS) * CONFIG.CELL;
+
+          // Farbe mit angepasstem Alpha
+          const baseColor = cell.color.replace(/[\d.]+\)$/, `${alpha.toFixed(3)})`);
+
+          ctx.fillStyle = baseColor;
+          ctx.shadowBlur = CONFIG.GLOW_BLUR * alpha;
+          ctx.shadowColor = baseColor;
+          ctx.fillRect(x, y, CONFIG.CELL, CONFIG.CELL);
         }
 
+        ctx.shadowBlur = 0;
+      }
+
+      // --- Start ---
+      function startPipes() {
+        if (running) return;
+        running = true;
+        frameCount = 0;
+        cells = new Array(COLS * ROWS).fill(null);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pipes = Array.from({ length: CONFIG.PIPE_COUNT }, () => new Pipe());
         lastFrame = performance.now();
       }
 
-      // Nur auf Klick reagieren
       maker.addEventListener("click", startPipes);
 
+      // --- Loop ---
       function loop(ts) {
-        if (running && ts - lastFrame > SPEED) {
+        if (running && ts - lastFrame > CONFIG.SPEED) {
           pipes.forEach(p => p.step());
+          frameCount++;
           lastFrame = ts;
         }
 
+        renderCells();
         animationId = requestAnimationFrame(loop);
       }
 
       animationId = requestAnimationFrame(loop);
 
-      // Cleanup bei Seitenwechsel
       window.addEventListener("beforeunload", () => {
-        if (animationId) {
-          cancelAnimationFrame(animationId);
-        }
+        if (animationId) cancelAnimationFrame(animationId);
       });
     })();
   </script>
