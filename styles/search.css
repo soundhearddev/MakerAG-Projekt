@@ -322,7 +322,7 @@ tr:hover {
 
 
 
-tr.td {
+tr.exact-id-match td  {
     color: var(--cat-primary)
 }
 
