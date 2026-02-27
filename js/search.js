@@ -50,6 +50,7 @@ const state = {
   searchTimeout: null,
   sortField: "id",
   sortOrder: "DESC",
+  searchFor: "ID",
   limit: 50,
   isLoading: false,
   activeRequest: null,
@@ -171,6 +172,7 @@ async function searchItems(query) {
       sort: state.sortField,
       order: state.sortOrder,
       limit: state.limit,
+      searchFor: state.searchFor,   
     });
 
     // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
@@ -274,12 +276,10 @@ function renderTable(data, query) {
 
   data.forEach((item, index) => {
     const row = document.createElement("tr");
-    
+
     // hier wird dann das wegählte such nach angewanht als markeiretes ding gemacht
     row.dataset.itemId = item.id;
-    const searchFor = document.getElementById("searchFor");
-    const field = searchFor ? searchFor.value : "Name";
-    const isExactIdMatch = query !== "" && String(item[field]) === String(query).trim();
+    const isExactIdMatch = query !== "" && String(item.id) === String(query).trim();
     if (isExactIdMatch) {
       row.classList.add("exact-match");
     }
@@ -410,15 +410,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-  const searchFor = document.getElementById("searchFor");
-  if (searchFor) {
-    searchFor.addEventListener("change", (e) => {
-      const field = e.target.value;
-      // also wenn suchen nach ID, dann wird das ID feld mit diesem mariereten föed gemacht werden wenn es halt die exakte ID ist, welche gesucht wird.
-      log.debug("Suchfeld geändert zu:", field);
-      
-    });
-  }
+const searchFor = document.getElementById("searchFor");
+if (searchFor) {
+  searchFor.addEventListener("change", (e) => {
+    state.searchFor = e.target.value;
+    searchItems(state.currentQuery);
+  });
+}
 
 
 // =============================================================================
