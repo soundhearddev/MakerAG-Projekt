@@ -313,18 +313,13 @@ tr:hover {
     padding: 3rem;
 }
 
-.item-id {
-    font-size: 1.5rem;
-    font-weight: 700;
-    
-}
 
 
 
 
 tr.exact-id-match td  {
     color: var(--cat-primary);
-    font-size: 1rem;
+    font-size: 2rem;
     font-weight: 600;
 }
 
@@ -345,6 +340,10 @@ tr.exact-id-match td.item-id {
   font-weight: 700;
 }
 
+.item-id {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
 
 /* ==============================================
    RESPONSIVE
