@@ -133,12 +133,10 @@
             }
 
             // Tags (Array)
-
             if (item.tags && item.tags.length > 0) {
                 const tagSpans = item.tags.map(t => `<span class="item-tag">${t}</span>`).join(", ");
                 appendIf(statusDiv, infoLine("Tags", tagSpans));
             }
-
 
             // Seriennummer
             if (item.serial_number) {
@@ -150,17 +148,13 @@
                 appendIf(statusDiv, infoLine("Anzahl", `<span class="item-quantity">${item.quantity}</span>`));
             }
 
-
             if (item.notes) {
                 appendIf(statusDiv, infoLine("Notizen", `<span class="item-notes">${item.notes}</span>`));
             }
 
-
-
             // Specs (dynamisch aus Objekt oder Array)
             const specsList = document.getElementById("specs-list");
             specsList.innerHTML = "";
-
 
             const specs = item.specs;
 
@@ -184,11 +178,12 @@
                 if (c) c.style.display = "none";
             }
 
-            // Bilder
+            // ── Bilder ───────────────────────────────────────────────────────
             fetch(`/api/get_data.php?id=${id}&type=image`)
                 .then(res => res.json())
                 .then(imgData => {
                     const gallery = document.getElementById("image-gallery");
+                    // thumb-Dateien rausfiltern
                     const files = (imgData.data || []).filter(f => !/thumb/i.test(f.filename));
 
                     if (files.length === 0) {
@@ -197,9 +192,9 @@
                         return;
                     }
 
-                    files.forEach((filename, i) => {
+                    files.forEach((file, i) => {                      
                         const img = document.createElement("img");
-                        img.src = f.path;
+                        img.src = file.path;                         
                         img.alt = `Bild ${i + 1}`;
                         img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
                         img.addEventListener("click", () => window.open(img.src, "_blank"));
@@ -211,22 +206,21 @@
                     if (g && g.closest(".container")) g.closest(".container").style.display = "none";
                 });
 
-            // PDFs
+            // ── PDFs ─────────────────────────────────────────────────────────
             fetch(`/api/get_data.php?id=${id}&type=pdf`)
                 .then(res => res.json())
-                .then(data => {
-                    if (!data.files || data.files.length === 0) return;
+                .then(pdfData => {                                     
+                    const files = pdfData.data || [];                 
+                    if (files.length === 0) return;
 
                     const docsContainer = document.getElementById("docs-container");
                     const heading = document.createElement("p");
                     heading.innerHTML = "<strong>Dokumente:</strong>";
                     docsContainer.appendChild(heading);
 
-                    data.files.forEach(filename => {
-                        const url = `/docs/${id}/pdf/${encodeURIComponent(filename)}`;
-                        const label = filename.replace(/\.pdf$/i, "");
+                    files.forEach(file => {                            
                         const p = document.createElement("p");
-                        p.innerHTML = `📄 <a href="${url}" target="_blank">${label}</a>`;
+                        p.innerHTML = `📄 <a href="${file.path}" target="_blank">${file.filename.replace(/\.pdf$/i, "")}</a>`; 
                         docsContainer.appendChild(p);
                     });
                 })
