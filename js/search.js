@@ -406,6 +406,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+  const searchFor = document.getElementById("searchFor");
+  if (searchFor) {
+    searchFor.addEventListener("change", (e) => {
+      const field = e.target.value;
+      // also wenn suchen nach ID, dann wird das ID feld mit diesem mariereten föed gemacht werden wenn es halt die exakte ID ist, welche gesucht wird.
+      log.debug("Suchfeld geändert zu:", field);
+      
+    });
+  }
+
+
 // =============================================================================
 // KEYBOARD SHORTCUTS
 // =============================================================================
