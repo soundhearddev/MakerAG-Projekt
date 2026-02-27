@@ -274,8 +274,12 @@ function renderTable(data, query) {
 
   data.forEach((item, index) => {
     const row = document.createElement("tr");
+    
+    // hier wird dann das wegählte such nach angewanht als markeiretes ding gemacht
     row.dataset.itemId = item.id;
-    const isExactIdMatch = query !== "" && String(item.id) === String(query).trim();
+    const searchFor = document.getElementById("searchFor");
+    const field = searchFor ? searchFor.value : "Name";
+    const isExactIdMatch = query !== "" && String(item[field]) === String(query).trim();
     if (isExactIdMatch) {
       row.classList.add("exact-match");
     }
