@@ -313,6 +313,38 @@ tr:hover {
     padding: 3rem;
 }
 
+
+
+
+
+tr.exact-match td  {
+    color: var(--cat-primary);
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+tr.exact-match {
+  background-color: var(--cat-accent) !important;
+  color: var(--cat-primary) !important;
+  outline: 2px solid var(--cat-extra);
+  outline-offset: -2px;
+}
+
+tr.exact-match td {
+  background-color: var(--cat-accent) !important;
+  font-weight: 600;
+}
+
+tr.exact-match td.item-id {
+  color: var(--cat-primary) !important;
+  font-weight: 700;
+}
+
+tr.exact-match td.item-id {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
 /* ==============================================
    RESPONSIVE
 ============================================== */

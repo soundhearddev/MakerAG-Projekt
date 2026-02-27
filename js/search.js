@@ -3,7 +3,7 @@
 // =============================================================================
 const log = {
   success: (msg, data) => console.log(`%c[SUCCESS] ${msg}`, "color: green", data || ""),
-  info: (msg, data) => console.log(`%c[INFO] ${msg}`, "color: blue", data || ""),
+  info: (msg, data) => console.log(`%c[INFO] ${msg}`, "color: gray", data || ""),
   warning: (msg, data) => console.warn(`[WARNING] ${msg}`, data || ""),
   error: (msg, data) => console.error(`[ERROR] ${msg}`, data || ""),
   debug: (msg, data) => console.log(`%c[DEBUG] ${msg}`, "color: gray", data || ""),
@@ -50,6 +50,7 @@ const state = {
   searchTimeout: null,
   sortField: "id",
   sortOrder: "DESC",
+  searchFor: "",
   limit: 50,
   isLoading: false,
   activeRequest: null,
@@ -94,41 +95,29 @@ function debounce(func, wait) {
   };
 }
 
-function isTokenExpired(token) {
-  try {
-    const stored = localStorage.getItem('editorTokenTimestamp');
-    if (!stored) return true;
-    
-    const timestamp = parseInt(stored, 10);
-    const hoursSinceStored = (Date.now() - timestamp) / (1000 * 60 * 60);
-    
-    return hoursSinceStored > 24;
-  } catch {
-    return true;
-  }
-}
+
 
 // =============================================================================
 // INITIALIZATION
 // =============================================================================
-log.info("Seite wird geladen...");
+// log.info("Seite wird geladen...");
 
 (function initFromUrl() {
-  log.debug("URL-Parameter werden gelesen...");
+  // log.debug("URL-Parameter werden gelesen...");
   try {
     const params = new URLSearchParams(window.location.search);
     const initial =
       params.get("category") || params.get("query") || params.get("q") || "";
 
     if (initial) {
-      log.info("Initiale Suche gefunden:", initial);
+      // log.info("Initiale Suche gefunden:", initial);
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
         searchInput.value = initial;
       }
       searchItems(initial);
     } else {
-      log.debug("Keine URL-Parameter - lade alle Items");
+      // log.debug("Keine URL-Parameter - lade alle Items");
       searchItems("");
     }
   } catch (e) {
@@ -137,62 +126,8 @@ log.info("Seite wird geladen...");
   }
 })();
 
-async function checkTokenOnLoad() {
-  log.debug("Token-Check beim Seiten-Load...");
-  const token = localStorage.getItem("editorToken");
-
-  if (!token) {
-    log.debug("Kein Token im localStorage vorhanden");
-    return;
-  }
-
-  if (isTokenExpired(token)) {
-    log.warning("Token ist abgelaufen");
-    localStorage.removeItem("editorToken");
-    localStorage.removeItem("editorTokenTimestamp");
-    return;
-  }
-
-  log.info("Token gefunden, validiere...");
-  try {
-    const res = await fetch("/api/passcheck.php", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ token }),
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    if (data.success) {
-      log.success("Token ist gültig! Editor-Mode aktiviert");
-      activateEditorMode();
-    } else {
-      log.warning("Token ist ungültig, wird gelöscht");
-      localStorage.removeItem("editorToken");
-      localStorage.removeItem("editorTokenTimestamp");
-    }
-  } catch (err) {
-    log.error("Token-Validierung fehlgeschlagen", err);
-    localStorage.removeItem("editorToken");
-    localStorage.removeItem("editorTokenTimestamp");
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener("DOMContentLoaded", checkTokenOnLoad);
-} else {
-  checkTokenOnLoad();
-}
-
 window.addEventListener("load", () => {
-  log.success("Seite vollständig geladen");
+  // log.success("Seite vollständig geladen");
 });
 
 // =============================================================================
@@ -201,7 +136,7 @@ window.addEventListener("load", () => {
 async function searchItems(query) {
   if (state.activeRequest) {
     state.activeRequest.abort();
-    log.debug("Vorherige Anfrage abgebrochen");
+    // log.debug("Vorherige Anfrage abgebrochen");
   }
 
   if (state.isLoading) {
@@ -209,7 +144,7 @@ async function searchItems(query) {
     return;
   }
 
-  log.debug("Suche wird ausgeführt für:", query);
+  // log.debug("Suche wird ausgeführt für:", query);
   state.currentQuery = query;
   state.isLoading = true;
 
@@ -237,9 +172,10 @@ async function searchItems(query) {
       sort: state.sortField,
       order: state.sortOrder,
       limit: state.limit,
+      searchFor: state.searchFor,   
     });
 
-    log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
+    // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
 
     const controller = new AbortController();
     state.activeRequest = controller;
@@ -274,7 +210,7 @@ async function searchItems(query) {
     state.currentData = data;
     state.retryCount = 0;
 
-    log.success(`${response.count} Ergebnisse gefunden`);
+    // log.success(`${response.count} Ergebnisse gefunden`);
 
     updateSearchInfo(response.count, query);
     renderTable(data, query);
@@ -282,20 +218,17 @@ async function searchItems(query) {
     log.error("Suchfehler", err);
 
     if (err.name === 'AbortError') {
-      showToast("Suche abgebrochen (Timeout)", "error");
-      showError("Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.");
+      log.error("Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.");
     } else if (err.message.includes("NetworkError") || err.message.includes("Failed to fetch")) {
-      showToast("Netzwerkfehler", "error");
-      showError("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
-      
+      log.error("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
+
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
-        log.info(`Versuche erneut (${state.retryCount}/${state.maxRetries})...`);
+        // log.info(`Versuche erneut (${state.retryCount}/${state.maxRetries})...`);
         setTimeout(() => searchItems(query), 2000 * state.retryCount);
       }
     } else {
-      showToast("Fehler beim Laden der Daten", "error");
-      showError(`Fehler: ${err.message}`);
+      log.error(`Fehler: ${err.message}`);
     }
   } finally {
     state.isLoading = false;
@@ -343,22 +276,26 @@ function renderTable(data, query) {
 
   data.forEach((item, index) => {
     const row = document.createElement("tr");
+
+    // hier wird dann das wegählte such nach angewanht als markeiretes ding gemacht
     row.dataset.itemId = item.id;
+    const isExactIdMatch = query !== "" && String(item.id) === String(query).trim();
+    if (isExactIdMatch) {
+      row.classList.add("exact-match");
+    }
     row.innerHTML = `
-      <td>${escapeHtml(item.id)}</td>
+      <td class="item-id">${escapeHtml(item.id)}</td>
       <td>${renderThumbnail(item.thumbnail, item.id)}</td>
       <td>${renderCell(item.name, "name", index, query)}</td>
       <td>${renderCell(item.category, "category", index, query)}</td>
-      <td>${renderCell(item.subcategory, "subcategory", index, query)}</td>
       <td>${renderCell(item.brand, "brand", index, query)}</td>
       <td>${renderCell(item.model, "model", index, query)}</td>
       <td>${renderCell(item.serial, "serial", index, query)}</td>
       <td>${renderCell(item.quantity, "quantity", index, query)}</td>
       <td>${renderCell(item.locker, "locker", index, query)}</td>
-      <td>${
-        state.editorMode
-          ? renderEditableDocsLink(item.docs_link, index)
-          : renderDocsLink(item.docs_link, item.id)
+      <td>${state.editorMode
+        ? renderEditableDocsLink(item.docs_link, index)
+        : renderDocsLink(item.docs_link, item.id)
       }</td>
       <td>${renderCell(item.notes, "notes", index, query, true)}</td>
     `;
@@ -367,22 +304,12 @@ function renderTable(data, query) {
 
   tbody.appendChild(fragment);
 
-  if (state.editorMode) {
-    enableInlineEditing(data);
-  }
 }
 
 function renderCell(value, field, index, query, isMultiline = false) {
   const text = value === null || value === undefined ? "" : String(value);
 
-  if (state.editorMode) {
-    const escapedText = escapeHtml(text);
-    return `<span class="cell ${isMultiline ? "multiline" : ""}"
-                  data-row="${index}"
-                  data-field="${field}"
-                  contenteditable="false"
-                  tabindex="0">${escapedText}</span>`;
-  }
+
 
   const highlighted = highlightText(text, query);
   return isMultiline ? highlighted.replace(/\n/g, "<br>") : highlighted;
@@ -391,7 +318,7 @@ function renderCell(value, field, index, query, isMultiline = false) {
 function renderThumbnail(path, itemId) {
   // Fallback auf /images/uhhhh.jpg wenn kein Thumbnail gefunden wurde
   const imagePath = path || '/images/uhhhh.jpg';
-  
+
   return `<img src="${escapeHtml(imagePath)}"
               alt="Thumbnail für Item ${itemId}"
               class="thumbnail"
@@ -417,12 +344,7 @@ function renderEditableDocsLink(path, index) {
                 tabindex="0">${escapedPath}</span>`;
 }
 
-function showError(message) {
-  const tbody = document.querySelector("#resultsTable tbody");
-  if (tbody) {
-    tbody.innerHTML = `<tr><td colspan="12" class="error-message">${escapeHtml(message)}</td></tr>`;
-  }
-}
+
 
 // =============================================================================
 // SEARCH INPUT HANDLING
@@ -488,6 +410,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+const searchFor = document.getElementById("searchFor");
+if (searchFor) {
+  searchFor.addEventListener("change", (e) => {
+    state.searchFor = e.target.value;
+    searchItems(state.currentQuery);
+  });
+}
+
+
 // =============================================================================
 // KEYBOARD SHORTCUTS
 // =============================================================================
@@ -523,14 +454,14 @@ document.addEventListener("keydown", (e) => {
 // =============================================================================
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    log.debug("Seite ist nicht mehr sichtbar");
+    // log.debug("Seite ist nicht mehr sichtbar");
     if (state.activeRequest) {
       state.activeRequest.abort();
       state.activeRequest = null;
       state.isLoading = false;
     }
   } else {
-    log.debug("Seite ist wieder sichtbar");
+    // log.debug("Seite ist wieder sichtbar");
   }
 });
 
@@ -568,9 +499,9 @@ window.addEventListener("unhandledrejection", (e) => {
 // NETWORK STATUS MONITORING
 // =============================================================================
 window.addEventListener("online", () => {
-  log.success("Internetverbindung wiederhergestellt");
+  // log.success("Internetverbindung wiederhergestellt");
   showToast("Internetverbindung wiederhergestellt", "success");
-  
+
   if (state.currentQuery !== null && !state.isLoading) {
     searchItems(state.currentQuery);
   }
@@ -579,7 +510,7 @@ window.addEventListener("online", () => {
 window.addEventListener("offline", () => {
   log.warning("Internetverbindung verloren");
   showToast("Keine Internetverbindung", "warning", 5000);
-  
+
   if (state.activeRequest) {
     state.activeRequest.abort();
     state.activeRequest = null;
@@ -590,13 +521,13 @@ window.addEventListener("offline", () => {
 // =============================================================================
 // FINALIZATION
 // =============================================================================
-log.success("search.js vollständig geladen und initialisiert");
+// log.success("search.js vollständig geladen und initialisiert");
 
 window.APP_VERSION = "2.1.0";
 window.APP_INIT_TIME = new Date().toISOString();
 
-log.info("Application Info", {
-  version: window.APP_VERSION,
-  initialized: window.APP_INIT_TIME,
-  mode: "ID-basierte Pfade aktiv"
-});
+// log.info("Application Info", {
+//   version: window.APP_VERSION,
+//   initialized: window.APP_INIT_TIME,
+//   mode: "ID-basierte Pfade aktiv"
+// });

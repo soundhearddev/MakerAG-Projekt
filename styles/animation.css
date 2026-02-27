@@ -9,7 +9,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+    background: black;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -206,7 +206,7 @@ button,
     animation-delay: 1.3s;
 }
 
-#resultsTable tbody tr {
+/* #resultsTable tbody tr {
     opacity: 0;
     transform: translateX(-20px);
     animation: tableRowAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -223,7 +223,7 @@ button,
         opacity: 1;
         transform: translateX(0);
     }
-}
+} */
 
 
 

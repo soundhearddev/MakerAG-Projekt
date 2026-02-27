@@ -1193,7 +1193,7 @@ body.no-animations * {
     }
 
     .settings-nav {
-        right: 30px;
+        right: 0px;
     }
 
     .settings-nav ul li a {

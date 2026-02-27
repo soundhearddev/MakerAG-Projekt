@@ -1,0 +1,110 @@
+#item-title {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+#status.status-info {
+  display: inline-block;
+  min-width: 180px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+
+/* Spezifische Status-Überschrift (klasse wie im HTML) */
+.status-verfgbar,
+.status-verfügbar,
+#status h2 {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Info-Zeile: Basis-Styling für alle Info-Einträge */
+.info-line {
+  display: block;
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+/* Label-Teil (fett) innerhalb der Info-Zeile */
+.info-line strong {
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.item-category {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Tags */
+.item-tag {
+    display: inline-block;
+    font-size: 1.5rem;
+    font-weight: 600;
+  font-style: italic;
+}
+
+/* Seriennummer */
+.item-serial {
+    font-size: 1.25rem;
+    font-weight: 250;
+  font-family: monospace;
+}
+
+.info-standort {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.THE_location {
+  font-size: 2rem;
+}
+
+/* Zustand-Farben: condition-* Klassen für farbliche Kennzeichnung */
+.condition-gut {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #157515;
+} /* grün */
+.condition-beschädigt {
+  font-size: 1.5rem;
+  font-weight: 600;
+
+  color: #d26b00;
+} /* orange */
+.condition-defekt {
+  font-size: 1.5rem;
+  font-weight: 600;
+
+  color: #b71c1c;
+} /* rot */
+.condition-neu {
+  font-size: 1.5rem;
+  font-weight: 600;
+
+  color: #0b63d6;
+} /* blau */
+.condition-unbekannt {
+  font-size: 1.5rem;
+  font-weight: 600;
+
+  color: #666;
+} /* grau */
+
+/* Beschreibungstext unter dem Header */
+#item-description {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 200;
+  line-height: 1.3;
+}
+
+#specs-list {
+  font-weight: 600;
+  margin-top: 15px;
+  padding-left: 20px;
+}

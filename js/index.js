@@ -2,14 +2,15 @@
 // MAIN SCRIPT - Startseite
 // =============================================================================
 
-const log = {
-  info: (msg, data) =>
-    console.log(`%c[INFO] ${msg}`, "color: #0066ff", data || ""),
-  error: (msg, data) =>
-    console.error(`%c[ERROR] ${msg}`, "color: #ff4444", data || ""),
-  success: (msg, data) =>
-    console.log(`%c[SUCCESS] ${msg}`, "color: #00aa00", data || ""),
-};
+// Guard verhindert "redeclaration"-Fehler wenn loader.js die Datei mehrfach ausführt
+if (typeof window._indexLog === 'undefined') {
+  window._indexLog = {
+    info:    (msg, data) => console.log(`%c[INFO] ${msg}`, "color: #0066ff", data || ""),
+    error:   (msg, data) => console.error(`%c[ERROR] ${msg}`, "color: #ff4444", data || ""),
+    success: (msg, data) => console.log(`%c[SUCCESS] ${msg}`, "color: #00aa00", data || ""),
+  };
+}
+const log = window._indexLog;
 
 window.scrollTo(0, 0);
 
@@ -73,7 +74,7 @@ async function loadLatestEntries() {
   button.disabled = true;
 
   try {
-    const res = await fetch("/api/fetch_all_items.php?latest=true&limit=10");
+    const res = await fetch("/api/fetch_all_items.php?latest=true&limit=5");
 
     if (!res.ok) {
       throw new Error("Server Error " + res.status);
@@ -106,8 +107,7 @@ async function loadLatestEntries() {
                 <div class="item-info">
                     <h3>${item.name}</h3>
                     <p class="item-meta">
-                        <span class="category">${item.category || "Keine Kategorie"
-          }</span>
+                        <span class="category">${item.category_name || "Keine Kategorie"}</span>
                         ${item.brand
             ? `<span class="brand">${item.brand}</span>`
             : ""
@@ -179,8 +179,8 @@ async function loadRandomItem() {
                 <div class="random-item-details">
                     <h3>${item.name}</h3>
                     <div class="random-meta">
-                        ${item.category
-        ? `<span class="badge">${item.category}</span>`
+                        ${item.category_name
+        ? `<span class="badge">${item.category_name}</span>`
         : ""
       }
                         ${item.brand
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // =============================================================================
 async function loadCategories() {
   try {
-    const res = await fetch("/api/fetch_all_items.php?limit=1000");
+    const res = await fetch("/api/fetch_catagory.php");
 
     if (!res.ok) {
       throw new Error("Server Error " + res.status);
@@ -271,34 +271,22 @@ async function loadCategories() {
       throw new Error(response.message || "Unbekannter Fehler");
     }
 
-    const items = response.data || [];
-    state.allItems = items;
+    const categories = response.data || [];
 
-    // Extrahiere Kategorien
-    const categoryCounts = {};
-    items.forEach((item) => {
-      if (item.category) {
-        categoryCounts[item.category] =
-          (categoryCounts[item.category] || 0) + 1;
-      }
-    });
-
-    log.success("Kategorien geladen:", Object.keys(categoryCounts).length);
+    log.success("Kategorien geladen:", categories.length);
 
     // Render Kategorien
     const container = document.querySelector("#Kategorien .row");
     if (!container) return;
 
-    container.innerHTML = Object.entries(categoryCounts)
-      .sort((a, b) => b[1] - a[1])
+    container.innerHTML = categories
+      .sort((a, b) => b.item_count - a.item_count)
       .map(
-        ([category, count]) => `
-                <div class="category-card" onclick="window.location.href='/search.html?category=${encodeURIComponent(
-          category
-        )}'">
-                    <h3>${category}</h3>
-                    <p class="category-count">${count} ${count === 1 ? "Item" : "Items"
-          }</p>
+        (cat) => `
+                <div class="category-card" onclick="window.location.href='/search.html?category_id=${cat.id}'">
+                    <h3>${cat.name}</h3>
+                    ${cat.parent_name ? `<p class="category-parent">${cat.parent_name}</p>` : ""}
+                    <p class="category-count">${cat.item_count} ${cat.item_count === 1 ? "Item" : "Items"}</p>
                 </div>
             `
       )

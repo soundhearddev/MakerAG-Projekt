@@ -9,7 +9,7 @@
  * GET  ?action=debug             → Debug-Infos
  */
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/init.php';
 
 // ─── Konfiguration ────────────────────────────────────────────────────────────
 define('BG_FOLDER', dirname(__DIR__) . '/images/background/');

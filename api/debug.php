@@ -21,7 +21,7 @@ header('Content-Type: text/html; charset=UTF-8');
 // Bootstrap laden (für DB-Verbindung im Test-Query-Block)
 $bootstrapLoaded = false;
 try {
-    require_once __DIR__ . './init.php';
+    require_once __DIR__ . '/init.php';
     $bootstrapLoaded = true;
 } catch (Throwable $e) {
     // Wird weiter unten angezeigt

@@ -1,165 +1,233 @@
+
+
+
+
 (function () {
 
     const match = window.location.pathname.match(/\/docs\/(\d+)\//);
     const id = match ? match[1] : 17;
 
-    console.log("ID:", id);
+    //debug 
+    // console.log("ID:", id);
 
-    // ── Hilfsfunktionen ─────────────────────────────────────
-
-    function specItem(label, value) {
-        if (!value) return null;
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${label}:</strong> ${value}`;
-        return li;
+    // Hilfs-Funktion: Slug für CSS-Klassen
+    function slug(str) {
+        if (!str && str !== 0) return '';
+        return String(str).toLowerCase().trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-_]/g, '');
     }
 
+    // diese Funktion erstellt eine Info-Zeile als DIV mit passenden Klassen und data-label
     function infoLine(label, value) {
         if (!value) return null;
-        const p = document.createElement("p");
-        p.innerHTML = `<strong>${label}:</strong> ${value}`;
-        return p;
+        const labelClass = slug(label);
+        const div = document.createElement("div");
+        div.className = `info-line info-${labelClass}`;
+        div.setAttribute("data-label", labelClass);
+        div.innerHTML = `<strong>${label}:</strong> ${value}`;
+        return div;
     }
 
-    function appendAll(parent, elements) {
-        elements.forEach(el => el && parent.appendChild(el));
+    function appendIf(el, child) {
+        if (child) el.appendChild(child);
     }
 
-function makePdfBlock(label, url) {
-    const btnId = `pdfBtn_${Math.random().toString(36).slice(2)}`;
-    const wrapId = `pdfWrap_${Math.random().toString(36).slice(2)}`;
 
-    const wrapper = document.createElement("p");
-
-    wrapper.innerHTML = `
-        <button id="${btnId}">${label}</button>
-        <div id="${wrapId}" style="display: none; margin-top: 20px;">
-            <embed src="${url}" type="application/pdf" width="100%" height="1080px" />
-            <p>Falls das PDF nicht angezeigt wird,
-                <a href="${url}" target="_blank">hier öffnen</a> oder
-                <a href="${url}" download>herunterladen</a>.
-            </p>
-        </div>
-    `;
-
-    const btn = wrapper.querySelector(`#${btnId}`);
-    const div = wrapper.querySelector(`#${wrapId}`);
-    
-    btn.addEventListener("click", () => {
-        div.style.display = div.style.display === "none" ? "block" : "none";
-    });
-
-    return wrapper;
-}
     // ── 1. Item-Daten laden ──────────────────────────────────────────────────
 
     fetch(`/api/fetch_from_id.php?id=${encodeURIComponent(id)}`)
         .then(res => res.json())
         .then(data => {
-            if (data.error) {
-                document.getElementById("item-title").textContent = "Fehler: " + data.message;
+            //debug
+            //console.log("API Response:", data);
+
+
+            // Error Handling
+            if (!data.success || !data.data || data.data.length === 0) {
+                document.getElementById("item-title").textContent = "Nicht gefunden";
                 return;
             }
 
-            // Seitentitel
-            document.title = `${data.brand} ${data.model}`;
-            document.getElementById("item-title").textContent = `${data.brand} ${data.model}`;
 
-            // Beschreibung
-            if (data.description) {
-                document.getElementById("item-description").textContent = data.description;
+
+            /* die API gibt einen Array zurück:
+            {
+                "success": true,
+                "count": 1,
+                "data": [
+                    {
+                        "id": 17,
+                        "name": "FUJITSU SIEMENS Laptop",
+                        ... usw. 
+                    }
+                ]
+            }
+
+            Was jetzt nicht gezeigt wird ist dass data.data[0] entpricht. Also all diese Daten in eintrag [0] sind. Um also auf diese Daten zuzugreifen, muss man den Eintrag [0] aus dem Array nehmen. 
+
+            "console.log("API Response:", data);" hat da sehr geholfen 
+            
+            */
+            const item = data.data[0];
+
+            // Seitentitel
+            if (item.category_id == 4) {
+                document.title = item.name || item.model;
+                document.getElementById("item-title").textContent = item.name || item.model;
+            } else {
+                document.title = `${item.brand} ${item.model}`;
+                document.getElementById("item-title").textContent = `${item.brand} ${item.model}`;
+            }
+
+            // Beschreibung (name als Untertitel, falls vorhanden)
+            if (item.name) {
+                const descEl = document.getElementById("item-description");
+                if (item.category_id == 4 && item.brand) {
+                    const a = document.createElement("a");
+                    a.href = item.brand;
+                    a.target = "_blank";
+                    a.textContent = item.name;
+                    descEl.appendChild(a);
+                } else {
+                    descEl.textContent = item.name;
+                }
             }
 
             // Status / Meta-Infos
             const statusDiv = document.getElementById("status");
+            statusDiv.className = "status-info";
 
-            if (data.status) {
-                const h = document.createElement("h2");
-                h.textContent = data.status;
-                statusDiv.appendChild(h);
+            let h2 = null;
+
+            if (item.status) {
+                const h2 = document.createElement("h2");
+                h2.textContent = item.status;
+                h2.className = `status-${slug(item.status)}`;
+                statusDiv.appendChild(h2);
             }
 
-            if (data.item_condition) {
-                statusDiv.appendChild(infoLine("Zustand", data.item_condition));
+            if (item.item_condition) {
+                const cond = slug(item.item_condition);
+                appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond} item-condition">${item.item_condition}</span>`));
             }
 
-            if (data.category) {
-                const kat = data.subcategory ? `${data.category} / ${data.subcategory}` : data.category;
-                statusDiv.appendChild(infoLine("Kategorie", kat));
+            // Kategorie
+            if (item.category_name) {
+                const kat = item.parent_category
+                    ? `${item.parent_category} / ${item.category_name}`
+                    : item.category_name;
+                appendIf(statusDiv, infoLine("Kategorie", `<span class="item-category">${kat}</span>`));
             }
 
-            if (data.location_schrank || data.location_regal || data.location_position) {
-                const loc = `Schrank ${data.location_schrank ?? "–"}, Regal ${data.location_regal ?? "–"}, Position ${data.location_position ?? "–"}`;
-                statusDiv.appendChild(infoLine("Standort", loc));
+            // Standort aus location-Objekt
+            if (item.location) {
+                const loc = item.location;
+                const parts = [
+                    loc.room ? `<span class="THE_location location-room">Raum ${loc.room}</span>` : null,
+                    loc.schrank ? `<span class="THE_location location-schrank">Schrank ${loc.schrank}</span>` : null,
+                    loc.regal ? `<span class="THE_location location-regal">Regal ${loc.regal}</span>` : null,
+                    loc.position ? `<span class="THE_location location-position">Position ${loc.position}</span>` : null,
+                ].filter(Boolean).join(", ");
+
+                if (parts) {
+                    appendIf(statusDiv, infoLine("Standort", parts));
+                }
             }
 
-            if (data.tags) statusDiv.appendChild(infoLine("Tags", data.tags));
-            if (data.notes) statusDiv.appendChild(infoLine("Notizen", data.notes));
+            // Tags (Array)
+            if (item.tags && item.tags.length > 0) {
+                const tagSpans = item.tags.map(t => `<span class="item-tag">${t}</span>`).join(", ");
+                appendIf(statusDiv, infoLine("Tags", tagSpans));
+            }
 
-            
-            // Specs
+            // Seriennummer
+            if (item.serial_number) {
+                appendIf(statusDiv, infoLine("Seriennummer", `<span class="item-serial">${item.serial_number}</span>`));
+            }
+
+            // Anzahl
+            if (item.quantity) {
+                appendIf(statusDiv, infoLine("Anzahl", `<span class="item-quantity">${item.quantity}</span>`));
+            }
+
+            // Notizen
+            if (item.notes) {
+                appendIf(statusDiv, infoLine("Notizen", `<span class="item-notes">${item.notes}</span>`));
+            }
+
+            // Specs (dynamisch aus Objekt oder Array)
             const specsList = document.getElementById("specs-list");
-            appendAll(specsList, [
-                specItem("Prozessor", data.cpu || data.processor),
-                specItem("Grafikkarte", data.gpu),
-                specItem("RAM", data.ram),
-                specItem("Bildschirm", data.display || data.screen),
-                specItem("Mainboard", data.mainboard),
-                specItem("Massenspeicher", data.storage),
-                specItem("Gewicht", data.weight ? data.weight + " kg" : null),
-                specItem("Interfaces", data.interfaces),
-                specItem("Power", data.power),
-                specItem("Firmware", data.firmware_version),
-                specItem("Erscheinungsjahr", data.year),
-            ]);
+            specsList.innerHTML = "";
 
-            // Bilder
-            const images = data.images || (data.thumbnail ? [data.thumbnail] : []);
-            if (images.length > 0) {
-                const gallery = document.getElementById("image-gallery");
-                images.forEach((src, i) => {
-                    const img = document.createElement("img");
-                    img.src = src;
-                    img.alt = `Bild ${i + 1}`;
-                    img.style.height = "300px";
-                    gallery.appendChild(img);
+            const specs = item.specs;
+
+            if (specs && typeof specs === 'object' && !Array.isArray(specs) && Object.keys(specs).length > 0) {
+                // Objekt: { Prozessor: "...", Grafikkarte: "..." }
+                Object.entries(specs).forEach(([key, value]) => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<strong>${key}:</strong> ${value}`;
+                    specsList.appendChild(li);
+                });
+            } else if (Array.isArray(specs) && specs.length > 0) {
+                // Array: [{ label: "...", value: "..." }]
+                specs.forEach(spec => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<strong>${spec.key || spec.label}:</strong> ${spec.value}`;
+                    specsList.appendChild(li);
                 });
             } else {
-                document.getElementById("images-container").style.display = "none";
+                // falls keine specs dann den ganzen container entfernen:
+                const c = specsList.closest(".container");
+                if (c) c.style.display = "none";
             }
+
+            // ── Bilder ───────────────────────────────────────────────────────
+            fetch(`/api/get_data.php?id=${id}&type=image`)
+                .then(res => res.json())
+                .then(imgData => {
+                    const gallery = document.getElementById("image-gallery");
+                    // thumb-Dateien rausfiltern
+                    const files = (imgData.data || []).filter(f => !/thumb/i.test(f.filename));
+
+                    if (files.length === 0) {
+                        const c = gallery.closest(".container");
+                        if (c) c.style.display = "none";
+                        return;
+                    }
+
+                    files.forEach((file, i) => {                      
+                        const img = document.createElement("img");
+                        img.src = file.path;                         
+                        img.alt = `Bild ${i + 1}`;
+                        img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
+                        img.addEventListener("click", () => window.open(img.src, "_blank"));
+                        gallery.appendChild(img);
+                    });
+                })
+                .catch(() => {
+                    const g = document.getElementById("image-gallery");
+                    if (g && g.closest(".container")) g.closest(".container").style.display = "none";
+                });
+
+            // ── PDFs ─────────────────────────────────────────────────────────
+            fetch(`/api/get_data.php?id=${id}&type=pdf`)
+                .then(res => res.json())
+                .then(pdfData => {                                     
+                    const files = pdfData.data || [];                 
+                    if (files.length === 0) return;
+
+                    const docsContainer = document.getElementById("docs-container");
+                    const heading = document.createElement("p");
+                    heading.innerHTML = "<strong>Dokumente:</strong>";
+                    docsContainer.appendChild(heading);
+
+                    files.forEach(file => {                            
+                        const p = document.createElement("p");
+                        p.innerHTML = `📄 <a href="${file.path}" target="_blank">${file.filename.replace(/\.pdf$/i, "")}</a>`; 
+                        docsContainer.appendChild(p);
+                    });
+                })
+                .catch(err => console.warn("PDF-Liste:", err));
         })
-        .catch(err => {
-            document.getElementById("item-title").textContent = "Fehler beim Laden";
-            console.error("item fetch error:", err);
-        });
-
-    // ── 2. PDFs aus <id>/pdf/ dynamisch laden ───────────────────────────────
-    //
-    // Benötigt: /api/list_files.php?path=<id>/pdf/
-    // Gibt zurück: { "files": ["Handbuch.pdf", "Datenblatt.pdf", ...] }
-
-    fetch(`/api/list_files.php?path=${encodeURIComponent(id + "/pdf/")}`)
-        .then(res => res.json())
-        .then(data => {
-            if (!data.files || data.files.length === 0) return;
-
-            const docsContainer = document.getElementById("docs-container");
-
-            // Abschnitts-Überschrift nur einmal
-            const heading = document.createElement("p");
-            heading.innerHTML = "<strong>Sonstige Dokumente:</strong>";
-            docsContainer.appendChild(heading);
-
-            data.files.forEach(filename => {
-                const url = `/${id}/pdf/${filename}`;
-                // Dateiname ohne Endung als Label
-                const label = filename.replace(/\.pdf$/i, "");
-                docsContainer.appendChild(makePdfBlock(label, url));
-            });
-        })
-        .catch(err => {
-            // Kein PDF-Ordner vorhanden → Container einfach leer lassen
-            console.warn("PDF-Liste konnte nicht geladen werden:", err);
-        });
-
 })();
