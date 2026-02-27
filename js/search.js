@@ -50,7 +50,7 @@ const state = {
   searchTimeout: null,
   sortField: "id",
   sortOrder: "DESC",
-  searchFor: "ID",
+  searchFor: "",
   limit: 50,
   isLoading: false,
   activeRequest: null,
