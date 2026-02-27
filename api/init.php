@@ -182,20 +182,12 @@ function fetchTags(int $itemId): array
 }
 
 /**
- * Dokumente für ein Item laden.
+ * Dokumente werden über das Dateisystem geladen (get_data.php),
+ * nicht aus der Datenbank – daher immer leeres Array zurückgeben.
  */
 function fetchDocuments(int $itemId): array
 {
-    global $db;
-    $stmt = $db->prepare(
-        "SELECT id, type, filename, path, uploaded_at
-         FROM documents
-         WHERE item_id = ?
-         ORDER BY uploaded_at ASC"
-    );
-    $stmt->bind_param('i', $itemId);
-    $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    return [];
 }
 
 /**
