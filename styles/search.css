@@ -323,7 +323,9 @@ tr:hover {
 
 
 tr.exact-id-match td  {
-    color: var(--cat-primary)
+    color: var(--cat-primary);
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 tr.exact-id-match {
