@@ -111,7 +111,7 @@ function isTokenExpired(token) {
 // =============================================================================
 // INITIALIZATION
 // =============================================================================
-log.info("Seite wird geladen...");
+// log.info("Seite wird geladen...");
 
 (function initFromUrl() {
   // log.debug("URL-Parameter werden gelesen...");
@@ -121,7 +121,7 @@ log.info("Seite wird geladen...");
       params.get("category") || params.get("query") || params.get("q") || "";
 
     if (initial) {
-      log.info("Initiale Suche gefunden:", initial);
+      // log.info("Initiale Suche gefunden:", initial);
       const searchInput = document.getElementById("searchInput");
       if (searchInput) {
         searchInput.value = initial;
@@ -153,7 +153,7 @@ async function checkTokenOnLoad() {
     return;
   }
 
-  log.info("Token gefunden, validiere...");
+  // log.info("Token gefunden, validiere...");
   try {
     const res = await fetch("/api/passcheck.php", {
       method: "POST",
@@ -171,7 +171,7 @@ async function checkTokenOnLoad() {
     const data = await res.json();
 
     if (data.success) {
-      log.success("Token ist gültig! Editor-Mode aktiviert");
+      // log.success("Token ist gültig! Editor-Mode aktiviert");
       activateEditorMode();
     } else {
       log.warning("Token ist ungültig, wird gelöscht");
@@ -192,7 +192,7 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener("load", () => {
-  log.success("Seite vollständig geladen");
+  // log.success("Seite vollständig geladen");
 });
 
 // =============================================================================
@@ -274,7 +274,7 @@ async function searchItems(query) {
     state.currentData = data;
     state.retryCount = 0;
 
-    log.success(`${response.count} Ergebnisse gefunden`);
+    // log.success(`${response.count} Ergebnisse gefunden`);
 
     updateSearchInfo(response.count, query);
     renderTable(data, query);
@@ -290,7 +290,7 @@ async function searchItems(query) {
       
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
-        log.info(`Versuche erneut (${state.retryCount}/${state.maxRetries})...`);
+        // log.info(`Versuche erneut (${state.retryCount}/${state.maxRetries})...`);
         setTimeout(() => searchItems(query), 2000 * state.retryCount);
       }
     } else {
@@ -568,7 +568,7 @@ window.addEventListener("unhandledrejection", (e) => {
 // NETWORK STATUS MONITORING
 // =============================================================================
 window.addEventListener("online", () => {
-  log.success("Internetverbindung wiederhergestellt");
+  // log.success("Internetverbindung wiederhergestellt");
   showToast("Internetverbindung wiederhergestellt", "success");
   
   if (state.currentQuery !== null && !state.isLoading) {
@@ -590,13 +590,13 @@ window.addEventListener("offline", () => {
 // =============================================================================
 // FINALIZATION
 // =============================================================================
-log.success("search.js vollständig geladen und initialisiert");
+// log.success("search.js vollständig geladen und initialisiert");
 
 window.APP_VERSION = "2.1.0";
 window.APP_INIT_TIME = new Date().toISOString();
 
-log.info("Application Info", {
-  version: window.APP_VERSION,
-  initialized: window.APP_INIT_TIME,
-  mode: "ID-basierte Pfade aktiv"
-});
+// log.info("Application Info", {
+//   version: window.APP_VERSION,
+//   initialized: window.APP_INIT_TIME,
+//   mode: "ID-basierte Pfade aktiv"
+// });
