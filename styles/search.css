@@ -340,7 +340,7 @@ tr.exact-id-match td.item-id {
   font-weight: 700;
 }
 
-.item-id {
+tr.exact-id-match td.item-id {
     font-size: 2.5rem;
     font-weight: 700;
 }
