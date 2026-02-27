@@ -316,7 +316,7 @@ tr:hover {
 .item-id {
     font-size: 1.5rem;
     font-weight: 700;
-
+    
 }
 
 
@@ -326,7 +326,8 @@ tr:hover {
 
 tr.exact-id-match {
   background-color: var(--cat-accent) !important;
-  outline: 2px solid var(--cat-primary);
+  color: var(--cat-primary) !important;
+  outline: 2px solid var(--cat-extra);
   outline-offset: -2px;
 }
 
