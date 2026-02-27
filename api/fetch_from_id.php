@@ -6,9 +6,6 @@
 
 require_once __DIR__ . '/init.php';
 
-
-
-
 $id = getIntParam('id');
 
 if ($id <= 0) {
@@ -16,16 +13,19 @@ if ($id <= 0) {
 }
 
 try {
-    $stmt = $db->prepare("SELECT * FROM items WHERE id = ? ORDER BY name ASC");
+    $stmt = $db->prepare("SELECT * FROM items WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     sendSuccess(enrichItems($items), ['count' => count($items)]);
-} catch (Exception $e) {
-    error_log('fetch_from_id.php: ' . $e->getMessage());
-    sendError('Datenbankfehler', 500);
-} catch (Throwable $e) {   // ← Throwable statt Exception – fängt ALLES
+
+} catch (Throwable $e) {
     error_log('fetch_from_id.php: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
-    sendError('Datenbankfehler: ' . $e->getMessage(), 500); // temporär für Debug
+    sendError(
+        'Datenbankfehler',
+        500,
+        [],
+        $e->getMessage() . ' (' . basename($e->getFile()) . ':' . $e->getLine() . ')'
+    );
 }

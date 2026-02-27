@@ -10,7 +10,7 @@
 // ─── 0. DEBUG-FLAG ────────────────────────────────────────────────────────────
 // Auf true setzen um detaillierte Fehlermeldungen in der JSON-Antwort zu sehen.
 // NIEMALS auf einem Produktions-Server auf true lassen!
-define('API_DEBUG', false);
+define('API_DEBUG', true); // ← nach dem Debuggen wieder auf false setzen!
 
 // ─── 1. MYSQLI EXCEPTIONS AKTIVIEREN ─────────────────────────────────────────
 // MUSS vor jeder DB-Nutzung stehen – sonst gibt prepare() stillschweigend
