@@ -277,7 +277,7 @@ function renderTable(data, query) {
     row.dataset.itemId = item.id;
     const isExactIdMatch = query !== "" && String(item.id) === String(query).trim();
     if (isExactIdMatch) {
-      row.classList.add("exact-id-match");
+      row.classList.add("exact-match");
     }
     row.innerHTML = `
       <td class="item-id">${escapeHtml(item.id)}</td>
