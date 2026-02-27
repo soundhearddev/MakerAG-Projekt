@@ -94,19 +94,7 @@ function debounce(func, wait) {
   };
 }
 
-function isTokenExpired(token) {
-  try {
-    const stored = localStorage.getItem('editorTokenTimestamp');
-    if (!stored) return true;
-    
-    const timestamp = parseInt(stored, 10);
-    const hoursSinceStored = (Date.now() - timestamp) / (1000 * 60 * 60);
-    
-    return hoursSinceStored > 24;
-  } catch {
-    return true;
-  }
-}
+
 
 // =============================================================================
 // INITIALIZATION
@@ -136,60 +124,6 @@ function isTokenExpired(token) {
     showToast("Fehler beim Laden der URL-Parameter", "error");
   }
 })();
-
-async function checkTokenOnLoad() {
-  // log.debug("Token-Check beim Seiten-Load...");
-  const token = localStorage.getItem("editorToken");
-
-  if (!token) {
-    // log.debug("Kein Token im localStorage vorhanden");
-    return;
-  }
-
-  if (isTokenExpired(token)) {
-    log.warning("Token ist abgelaufen");
-    localStorage.removeItem("editorToken");
-    localStorage.removeItem("editorTokenTimestamp");
-    return;
-  }
-
-  // log.info("Token gefunden, validiere...");
-  try {
-    const res = await fetch("/api/passcheck.php", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ token }),
-    });
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-
-    if (data.success) {
-      // log.success("Token ist gültig! Editor-Mode aktiviert");
-      activateEditorMode();
-    } else {
-      log.warning("Token ist ungültig, wird gelöscht");
-      localStorage.removeItem("editorToken");
-      localStorage.removeItem("editorTokenTimestamp");
-    }
-  } catch (err) {
-    log.error("Token-Validierung fehlgeschlagen", err);
-    localStorage.removeItem("editorToken");
-    localStorage.removeItem("editorTokenTimestamp");
-  }
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener("DOMContentLoaded", checkTokenOnLoad);
-} else {
-  checkTokenOnLoad();
-}
 
 window.addEventListener("load", () => {
   // log.success("Seite vollständig geladen");
@@ -282,11 +216,9 @@ async function searchItems(query) {
     log.error("Suchfehler", err);
 
     if (err.name === 'AbortError') {
-      showToast("Suche abgebrochen (Timeout)", "error");
-      showError("Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.");
+      log.error("Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.");
     } else if (err.message.includes("NetworkError") || err.message.includes("Failed to fetch")) {
-      showToast("Netzwerkfehler", "error");
-      showError("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
+      log.error("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
       
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
@@ -294,8 +226,7 @@ async function searchItems(query) {
         setTimeout(() => searchItems(query), 2000 * state.retryCount);
       }
     } else {
-      showToast("Fehler beim Laden der Daten", "error");
-      showError(`Fehler: ${err.message}`);
+      log.error(`Fehler: ${err.message}`);
     }
   } finally {
     state.isLoading = false;
@@ -345,7 +276,7 @@ function renderTable(data, query) {
     const row = document.createElement("tr");
     row.dataset.itemId = item.id;
     row.innerHTML = `
-      <td>${escapeHtml(item.id)}</td>
+      <td class="item-id">${escapeHtml(item.id)}</td>
       <td>${renderThumbnail(item.thumbnail, item.id)}</td>
       <td>${renderCell(item.name, "name", index, query)}</td>
       <td>${renderCell(item.category, "category", index, query)}</td>
@@ -367,22 +298,12 @@ function renderTable(data, query) {
 
   tbody.appendChild(fragment);
 
-  if (state.editorMode) {
-    enableInlineEditing(data);
-  }
 }
 
 function renderCell(value, field, index, query, isMultiline = false) {
   const text = value === null || value === undefined ? "" : String(value);
 
-  if (state.editorMode) {
-    const escapedText = escapeHtml(text);
-    return `<span class="cell ${isMultiline ? "multiline" : ""}"
-                  data-row="${index}"
-                  data-field="${field}"
-                  contenteditable="false"
-                  tabindex="0">${escapedText}</span>`;
-  }
+
 
   const highlighted = highlightText(text, query);
   return isMultiline ? highlighted.replace(/\n/g, "<br>") : highlighted;
@@ -417,12 +338,7 @@ function renderEditableDocsLink(path, index) {
                 tabindex="0">${escapedPath}</span>`;
 }
 
-function showError(message) {
-  const tbody = document.querySelector("#resultsTable tbody");
-  if (tbody) {
-    tbody.innerHTML = `<tr><td colspan="12" class="error-message">${escapeHtml(message)}</td></tr>`;
-  }
-}
+
 
 // =============================================================================
 // SEARCH INPUT HANDLING

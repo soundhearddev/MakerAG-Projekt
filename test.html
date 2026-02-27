@@ -1,12 +1,20 @@
-<html lang="en" data-theme="default" style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;" class=" rqwyeymq idc0_350"><head>
+<html lang="de" data-theme="default" style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;" class=" boywvpoo idc0_350"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fujitsu Siemens Amilo Pa1538</title>
+    <title>Suche - Inventarverwaltung</title>
+
+    <link rel="stylesheet" href="/styles/animation.css">
     <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/docs.css">
+    <link rel="stylesheet" href="/styles/search.css">
+    <link rel="icon" href="/images/logo.png">
+
 </head>
 
-<body style="font-size: 15px;" data-theme="default" class="loaded">
+
+<body class="loaded" style="font-size: 15px;" data-theme="default">
+
+
+
 
     <div id="header"><!-- Google Fonts -->
 
@@ -20,7 +28,7 @@
   <header role="banner" class="site-header">
     <div class="head">
 
-      <canvas id="canvas" width="452" height="217"></canvas>
+      <canvas id="canvas" width="1562" height="245"></canvas>
 
       <div id="maker" class="title">
         <h1>Maker AG</h1>
@@ -36,7 +44,7 @@
     <a href="/index.html" class="nav-link">Startseite</a>
     <a href="/index.html#Kategorien" class="nav-link">Kategorien</a>
     <a href="/index.html#neuste-eintraege" class="nav-link">Neueste Einträge</a>
-    <a href="/search.html" class="nav-link">Suchen</a>
+    <a href="/search.html" class="nav-link active" aria-current="page">Suchen</a>
 </nav>
 
 
@@ -433,35 +441,116 @@
 
 </div>
 
-    <div class="container">
-        <div>
-            <h1 id="item-title">Fujitsu Siemens Amilo Pa1538</h1>
-            <div id="status" class="status-info"><h2 class="status-verfgbar">verfügbar</h2><div class="info-line info-zustand" data-label="zustand"><strong>Zustand:</strong> <span class="condition-gut item-condition">gut</span></div><div class="info-line info-kategorie" data-label="kategorie"><strong>Kategorie:</strong> <span class="item-category">Hardware / Laptop</span></div><div class="info-line info-standort" data-label="standort"><strong>Standort:</strong> <span class="THE_location location-schrank">Schrank S</span>, <span class="THE_location location-regal">Regal 3</span></div><div class="info-line info-tags" data-label="tags"><strong>Tags:</strong> <span class="item-tag">laptop</span></div><div class="info-line info-seriennummer" data-label="seriennummer"><strong>Seriennummer:</strong> <span class="item-serial">YSMB064576</span></div></div>
+    <div class="search">
+        <div class="search-header">
+            <h1>Inventar-Suche</h1>
+
         </div>
-        <p id="item-description">FUJITSU SIEMENS Laptop</p>
-    </div>
 
-    <div class="container">
-        <h2>Specs:</h2>
-        <ul id="specs-list"><li><strong>Prozessor (CPU):</strong> AMD Turion 64 X2 TL‑50 Dual‑Core, 1.6 GHz</li><li><strong>Grafikkarte:</strong> NVIDIA GeForce Go 7400 (128 MB VRAM, TurboCache bis 512 MB)</li><li><strong>Bildschirm:</strong> 15,4″ WXGA (1280 × 800), CrystalView TFT</li><li><strong>Mainboard:</strong> Intel 945PM</li><li><strong>Massenspeicher:</strong> Unbekannt</li><li><strong>Gewicht:</strong> 2.7 kg</li><li><strong>Erscheinungsjahr:</strong> Mai 2006</li><li><strong>Arbeitsspeicher (RAM):</strong> 1 GB (meist 1024 MB)</li><li><strong>Optisches Laufwerk:</strong> Double‑Layer DVD‑Brenner</li><li><strong>Networking:</strong> WLAN 802.11b/g, 10/100 Mbit Ethernet</li><li><strong>Ports / Anschlüsse:</strong> USB, IEEE1394, DVI‑I, S‑Video, Kartenleser, Line‑In/Mic, Headphone/S/PDIF</li><li><strong>Audio:</strong> HD Audio, 2 Lautsprecher, Mikrofon eingebaut</li></ul>
-    </div>
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Suche nach ID, Name, Marke, Kategorie, Locker, Seriennummer..." autocomplete="off" aria-label="Suchfeld">
+                <button id="clearSearch" class="btn-clear" title="Suche zurücksetzen" aria-label="Suche löschen">✕</button>
+            </div>
 
-    <div class="container">
-        <p><strong>Bilder:</strong></p>
-        <div id="image-gallery" style="display: flex; overflow-x: auto; gap: 10px;"><img src="/docs/17/images/AMILO_Pa_1538_1.jpg" alt="Bild 1" style="height: 300px; cursor: pointer; border-radius: 4px;"><img src="/docs/17/images/AMILO_Pa_1538_2.jpg" alt="Bild 2" style="height: 300px; cursor: pointer; border-radius: 4px;"><img src="/docs/17/images/AMILO_Pa_1538_3.jpg" alt="Bild 3" style="height: 300px; cursor: pointer; border-radius: 4px;"></div>
-    </div>
+            <div class="search-options">
+                <div class="option-group">
+                    <label for="sortField">Sortieren nach:</label>
+                    <select id="sortField" aria-label="Sortierfeld auswählen">
+                        <option value="id">ID</option>
+                        <option value="name">Name</option>
+                        <option value="category">Kategorie</option>
+                        <option value="brand">Marke</option>
+                        <option value="quantity">Menge</option>
+                        <option value="locker">Locker</option>
+                    </select>
+                </div>
 
-    <div class="container" id="docs-container">
-        
-    <p><strong>Dokumente:</strong></p><p>📄 <a href="/docs/17/pdf/AMILO%20Pa%201538%20-%201.pdf" target="_blank">AMILO Pa 1538 - 1</a></p><p>📄 <a href="/docs/17/pdf/AMILO%20Pa%201538.pdf" target="_blank">AMILO Pa 1538</a></p></div>
+                <div class="option-group">
+                    <label for="sortOrder">Reihenfolge:</label>
+                    <select id="sortOrder" aria-label="Sortierreihenfolge auswählen">
+                        <option value="DESC">Absteigend</option>
+                        <option value="ASC">Aufsteigend</option>
+                    </select>
+                </div>
 
-    <script src="/js/loader.js"></script>
-    <script src="../item.js"></script>
+                <div class="option-group">
+                    <label for="limitResults">Ergebnisse:</label>
+                    <select id="limitResults" aria-label="Anzahl Ergebnisse auswählen">
+                        <option value="25">25</option>
+                        <option value="50" selected="">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="searchInfo" class="search-info">
+            <span id="resultCount">2 Ergebnisse</span>
+            <span id="searchQuery" style="display: inline;">für "36"</span>
+        </div>
+
+
+        <div class="table-wrapper">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th data-sort="id">ID</th>
+                        <th>Bild</th>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="category">Kategorie</th>
+                        <th data-sort="subcategory">Subkategorie</th>
+                        <th data-sort="brand">Marke</th>
+                        <th data-sort="model">Modell</th>
+                        <th>Serial</th>
+                        <th data-sort="quantity">Menge</th>
+                        <th data-sort="locker">Locker</th>
+                        <th>Dokumentation</th>
+                        <th>Notizen</th>
+                    </tr>
+                </thead>
+                <tbody><tr data-item-id="36">
+      <td>36</td>
+      <td><img src="/images/uhhhh.jpg" alt="Thumbnail für Item 36" class="thumbnail" loading="lazy" onerror="this.src='/images/uhhhh.jpg'"></td>
+      <td>Einführung in Microsoft Windows 95</td>
+      <td></td>
+      <td></td>
+      <td>Microsoft</td>
+      <td>Windows 95</td>
+      <td></td>
+      <td>23</td>
+      <td>S</td>
+      <td><a href="/docs/36/index.html" target="_blank" rel="noopener noreferrer" class="docs-link" title="Dokumentation für Item 36">DOCS</a></td>
+      <td>Ein paar der Bücher haben zusätzlich eine Floppy Disk und eine CD mit einem Windows 95 Image.</td>
+    </tr><tr data-item-id="20">
+      <td>20</td>
+      <td><img src="/docs/20/images/thumb.jpg" alt="Thumbnail für Item 20" class="thumbnail" loading="lazy" onerror="this.src='/images/uhhhh.jpg'"></td>
+      <td>Voltcraft M‑<span class="highlight">36</span>50D Digitales Multimeter</td>
+      <td></td>
+      <td></td>
+      <td>VOLTCRAFT</td>
+      <td>M-<span class="highlight">36</span>50D</td>
+      <td></td>
+      <td></td>
+      <td>S</td>
+      <td><a href="/docs/20/index.html" target="_blank" rel="noopener noreferrer" class="docs-link" title="Dokumentation für Item 20">DOCS</a></td>
+      <td></td>
+    </tr></tbody>
+            </table>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+
+        <!-- Scripts -->
+        <script src="/js/search.js"></script>
+        <script src="/js/loader.js"></script>
 
 
 
-
-<script>
+</div><script>
     (function initHeader() {
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
