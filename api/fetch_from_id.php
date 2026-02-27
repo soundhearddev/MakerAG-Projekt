@@ -25,4 +25,7 @@ try {
 } catch (Exception $e) {
     error_log('fetch_from_id.php: ' . $e->getMessage());
     sendError('Datenbankfehler', 500);
+} catch (Throwable $e) {   // ← Throwable statt Exception – fängt ALLES
+    error_log('fetch_from_id.php: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    sendError('Datenbankfehler: ' . $e->getMessage(), 500); // temporär für Debug
 }
