@@ -322,7 +322,9 @@ tr:hover {
 
 
 
-
+tr.td {
+    color: var(--cat-primary)
+}
 
 tr.exact-id-match {
   background-color: var(--cat-accent) !important;
