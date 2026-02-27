@@ -3,7 +3,7 @@
 // =============================================================================
 const log = {
   success: (msg, data) => console.log(`%c[SUCCESS] ${msg}`, "color: green", data || ""),
-  info: (msg, data) => console.log(`%c[INFO] ${msg}`, "color: blue", data || ""),
+  info: (msg, data) => console.log(`%c[INFO] ${msg}`, "color: gray", data || ""),
   warning: (msg, data) => console.warn(`[WARNING] ${msg}`, data || ""),
   error: (msg, data) => console.error(`[ERROR] ${msg}`, data || ""),
   debug: (msg, data) => console.log(`%c[DEBUG] ${msg}`, "color: gray", data || ""),
@@ -114,7 +114,7 @@ function isTokenExpired(token) {
 log.info("Seite wird geladen...");
 
 (function initFromUrl() {
-  log.debug("URL-Parameter werden gelesen...");
+  // log.debug("URL-Parameter werden gelesen...");
   try {
     const params = new URLSearchParams(window.location.search);
     const initial =
@@ -128,7 +128,7 @@ log.info("Seite wird geladen...");
       }
       searchItems(initial);
     } else {
-      log.debug("Keine URL-Parameter - lade alle Items");
+      // log.debug("Keine URL-Parameter - lade alle Items");
       searchItems("");
     }
   } catch (e) {
@@ -138,11 +138,11 @@ log.info("Seite wird geladen...");
 })();
 
 async function checkTokenOnLoad() {
-  log.debug("Token-Check beim Seiten-Load...");
+  // log.debug("Token-Check beim Seiten-Load...");
   const token = localStorage.getItem("editorToken");
 
   if (!token) {
-    log.debug("Kein Token im localStorage vorhanden");
+    // log.debug("Kein Token im localStorage vorhanden");
     return;
   }
 
@@ -201,7 +201,7 @@ window.addEventListener("load", () => {
 async function searchItems(query) {
   if (state.activeRequest) {
     state.activeRequest.abort();
-    log.debug("Vorherige Anfrage abgebrochen");
+    // log.debug("Vorherige Anfrage abgebrochen");
   }
 
   if (state.isLoading) {
@@ -209,7 +209,7 @@ async function searchItems(query) {
     return;
   }
 
-  log.debug("Suche wird ausgeführt für:", query);
+  // log.debug("Suche wird ausgeführt für:", query);
   state.currentQuery = query;
   state.isLoading = true;
 
@@ -239,7 +239,7 @@ async function searchItems(query) {
       limit: state.limit,
     });
 
-    log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
+    // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
 
     const controller = new AbortController();
     state.activeRequest = controller;
@@ -523,14 +523,14 @@ document.addEventListener("keydown", (e) => {
 // =============================================================================
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    log.debug("Seite ist nicht mehr sichtbar");
+    // log.debug("Seite ist nicht mehr sichtbar");
     if (state.activeRequest) {
       state.activeRequest.abort();
       state.activeRequest = null;
       state.isLoading = false;
     }
   } else {
-    log.debug("Seite ist wieder sichtbar");
+    // log.debug("Seite ist wieder sichtbar");
   }
 });
 
