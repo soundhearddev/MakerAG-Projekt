@@ -1,9 +1,6 @@
 <?php
 
 /**
- * API Endpoint: fetch_from_id.php
- * Gibt alle Felder eines Items per ID zurück.
- *
  * GET ?id=42   → ein Item (als Array mit einem Element)
  */
 

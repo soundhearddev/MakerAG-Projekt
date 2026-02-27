@@ -1,4 +1,7 @@
-// ...existing code...
+
+
+
+
 (function () {
 
     const match = window.location.pathname.match(/\/docs\/(\d+)\//);
@@ -61,7 +64,7 @@
                 ]
             }
 
-            Was jetzt nicht nagezeigt wird ist dass data.data[0] entpricht. Also all diese Daten in eintrag [0] sind. Um also auf diese Daten zuzugreifen, muss man den Eintrag [0] aus dem Array nehmen. 
+            Was jetzt nicht gezeigt wird ist dass data.data[0] entpricht. Also all diese Daten in eintrag [0] sind. Um also auf diese Daten zuzugreifen, muss man den Eintrag [0] aus dem Array nehmen. 
 
             "console.log("API Response:", data);" hat da sehr geholfen 
             
@@ -148,6 +151,7 @@
                 appendIf(statusDiv, infoLine("Anzahl", `<span class="item-quantity">${item.quantity}</span>`));
             }
 
+            // Notizen
             if (item.notes) {
                 appendIf(statusDiv, infoLine("Notizen", `<span class="item-notes">${item.notes}</span>`));
             }

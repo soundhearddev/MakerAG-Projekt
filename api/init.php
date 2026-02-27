@@ -1,4 +1,5 @@
 <?php
+
 /**
  * init.php
  * ─────────────────────────────────────────────────────────────────────────────
@@ -9,6 +10,8 @@
  */
 
 // ─── 1. ERROR REPORTING ───────────────────────────────────────────────────────
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
@@ -32,6 +35,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // ─── 3. CONFIG / DATENBANK ────────────────────────────────────────────────────
+function sendSuccess(array $data = [], array $extra = [], int $code = 200): void
+{
+    http_response_code($code);
+    echo json_encode(
+        array_merge(['success' => true], $extra, ['data' => $data]),
+        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    );
+    exit();
+}
+
+function sendError(string $message, int $code = 400, array $extra = []): void
+{
+    http_response_code($code);
+    echo json_encode(
+        array_merge(['success' => false, 'error' => $message], $extra),
+        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+    );
+    exit();
+}
+
+
+
+
 $_configPaths = [
     '/var/www/secure/config.php',
     __DIR__ . '/../secure/config.php',
@@ -61,25 +87,7 @@ try {
 
 // ─── 4. HILFSFUNKTIONEN ───────────────────────────────────────────────────────
 
-function sendSuccess(array $data = [], array $extra = [], int $code = 200): void
-{
-    http_response_code($code);
-    echo json_encode(
-        array_merge(['success' => true], $extra, ['data' => $data]),
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    );
-    exit();
-}
 
-function sendError(string $message, int $code = 400, array $extra = []): void
-{
-    http_response_code($code);
-    echo json_encode(
-        array_merge(['success' => false, 'error' => $message], $extra),
-        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-    );
-    exit();
-}
 
 function getIntParam(string $key, int $default = 0): int
 {
