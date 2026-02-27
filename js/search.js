@@ -219,7 +219,7 @@ async function searchItems(query) {
       log.error("Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.");
     } else if (err.message.includes("NetworkError") || err.message.includes("Failed to fetch")) {
       log.error("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
-      
+
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
         // log.info(`Versuche erneut (${state.retryCount}/${state.maxRetries})...`);
@@ -275,21 +275,23 @@ function renderTable(data, query) {
   data.forEach((item, index) => {
     const row = document.createElement("tr");
     row.dataset.itemId = item.id;
+    const isExactIdMatch = query !== "" && String(item.id) === String(query).trim();
+    if (isExactIdMatch) {
+      row.classList.add("exact-id-match");
+    }
     row.innerHTML = `
       <td class="item-id">${escapeHtml(item.id)}</td>
       <td>${renderThumbnail(item.thumbnail, item.id)}</td>
       <td>${renderCell(item.name, "name", index, query)}</td>
       <td>${renderCell(item.category, "category", index, query)}</td>
-      <td>${renderCell(item.subcategory, "subcategory", index, query)}</td>
       <td>${renderCell(item.brand, "brand", index, query)}</td>
       <td>${renderCell(item.model, "model", index, query)}</td>
       <td>${renderCell(item.serial, "serial", index, query)}</td>
       <td>${renderCell(item.quantity, "quantity", index, query)}</td>
       <td>${renderCell(item.locker, "locker", index, query)}</td>
-      <td>${
-        state.editorMode
-          ? renderEditableDocsLink(item.docs_link, index)
-          : renderDocsLink(item.docs_link, item.id)
+      <td>${state.editorMode
+        ? renderEditableDocsLink(item.docs_link, index)
+        : renderDocsLink(item.docs_link, item.id)
       }</td>
       <td>${renderCell(item.notes, "notes", index, query, true)}</td>
     `;
@@ -312,7 +314,7 @@ function renderCell(value, field, index, query, isMultiline = false) {
 function renderThumbnail(path, itemId) {
   // Fallback auf /images/uhhhh.jpg wenn kein Thumbnail gefunden wurde
   const imagePath = path || '/images/uhhhh.jpg';
-  
+
   return `<img src="${escapeHtml(imagePath)}"
               alt="Thumbnail für Item ${itemId}"
               class="thumbnail"
@@ -486,7 +488,7 @@ window.addEventListener("unhandledrejection", (e) => {
 window.addEventListener("online", () => {
   // log.success("Internetverbindung wiederhergestellt");
   showToast("Internetverbindung wiederhergestellt", "success");
-  
+
   if (state.currentQuery !== null && !state.isLoading) {
     searchItems(state.currentQuery);
   }
@@ -495,7 +497,7 @@ window.addEventListener("online", () => {
 window.addEventListener("offline", () => {
   log.warning("Internetverbindung verloren");
   showToast("Keine Internetverbindung", "warning", 5000);
-  
+
   if (state.activeRequest) {
     state.activeRequest.abort();
     state.activeRequest = null;
