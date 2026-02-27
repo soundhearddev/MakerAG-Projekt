@@ -1,4 +1,18 @@
 <?php
+/**
+ * get_data.php
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Listet Dateien aus dem Dateisystem für ein Item auf.
+ * Liest aus:
+ *   /docs/{id}/images/   → type=image
+ *   /docs/{id}/data/     → type=pdf  (und andere Dokumente)
+ *
+ * Parameter:
+ *   id   (int)    – Item-ID
+ *   type (string) – 'image' | 'pdf' | 'all'  (Standard: 'pdf')
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 require_once __DIR__ . '/init.php';
 
 $itemId = getIntParam('id');
@@ -8,35 +22,100 @@ if ($itemId <= 0) {
     sendError('Fehlende oder ungültige id', 400);
 }
 
-// Erlaubte DB-Typen je nach Anfrage
-$allowedTypes = match ($type) {
-    'image' => ['bild'],
-    'pdf'   => ['pdf', 'rechnung', 'anleitung', 'garantie', 'sonstiges'],
-    default => ['pdf', 'rechnung', 'anleitung', 'garantie', 'sonstiges'],
+// ─── Erlaubte Erweiterungen je Typ ────────────────────────────────────────────
+$imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'];
+$pdfExts   = ['pdf'];
+$dataExts  = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'csv', 'zip'];
+
+// ─── Verzeichnisse bestimmen ─────────────────────────────────────────────────
+$docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '/var/www/public', '/');
+
+$dirs = match ($type) {
+    'image' => [
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/images/",
+            'webBase' => "/docs/{$itemId}/images/",
+            'exts'    => $imageExts,
+        ],
+    ],
+    'pdf' => [
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts'    => $pdfExts,
+        ],
+    ],
+    'all' => [
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/images/",
+            'webBase' => "/docs/{$itemId}/images/",
+            'exts'    => $imageExts,
+        ],
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts'    => $dataExts,
+        ],
+    ],
+    default => [
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts'    => $dataExts,
+        ],
+    ],
 };
 
-$placeholders = implode(',', array_fill(0, count($allowedTypes), '?'));
-$types        = str_repeat('s', count($allowedTypes));
+// ─── Dateien einlesen ─────────────────────────────────────────────────────────
+$files = [];
 
-$stmt = $db->prepare(
-    "SELECT id, filename, path, type, uploaded_at
-     FROM documents
-     WHERE item_id = ?
-       AND type IN ($placeholders)
-     ORDER BY uploaded_at ASC"
-);
+foreach ($dirs as $dir) {
+    if (!is_dir($dir['path'])) {
+        continue;
+    }
 
-// bind_param: erst 'i' für item_id, dann 's' für jeden Typ
-$stmt->bind_param('i' . $types, $itemId, ...$allowedTypes);
-$stmt->execute();
-$rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $entries = scandir($dir['path']);
+    if ($entries === false) {
+        continue;
+    }
 
-$files = array_map(fn($row) => [
-    'id'          => (int) $row['id'],
-    'filename'    => $row['filename'],
-    'path'        => rtrim($row['path'], '/') . '/' . $row['filename'],
-    'type'        => $row['type'],
-    'uploaded_at' => $row['uploaded_at'],
-], $rows);
+    foreach ($entries as $filename) {
+        // Versteckte Dateien und Verzeichnisse überspringen
+        if ($filename === '.' || $filename === '..' || str_starts_with($filename, '.')) {
+            continue;
+        }
+
+        $fullPath = $dir['path'] . $filename;
+        if (!is_file($fullPath)) {
+            continue;
+        }
+
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if (!in_array($ext, $dir['exts'], true)) {
+            continue;
+        }
+
+        // Dateityp bestimmen
+        $fileType = match (true) {
+            in_array($ext, $imageExts, true)   => 'image',
+            $ext === 'pdf'                     => 'pdf',
+            in_array($ext, ['doc', 'docx'], true) => 'document',
+            in_array($ext, ['xls', 'xlsx'], true) => 'spreadsheet',
+            default                            => 'file',
+        };
+
+        $files[] = [
+            'filename'   => $filename,
+            'path'       => $dir['webBase'] . $filename,
+            'type'       => $fileType,
+            'ext'        => $ext,
+            'size'       => filesize($fullPath),
+            'modified'   => date('Y-m-d H:i:s', filemtime($fullPath)),
+        ];
+    }
+}
+
+// Nach Dateiname sortieren
+usort($files, fn($a, $b) => strcmp($a['filename'], $b['filename']));
 
 sendSuccess($files, ['count' => count($files)]);
