@@ -332,7 +332,7 @@ tr.exact-id-match td {
 }
 
 tr.exact-id-match td.item-id {
-  color: var(--cat-text) !important;
+  color: var(--cat-primary) !important;
   font-weight: 700;
 }
 

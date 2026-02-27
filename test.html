@@ -1,4 +1,4 @@
-<html lang="de" data-theme="default" style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;" class=" boywvpoo idc0_350"><head>
+<html lang="de" data-theme="default" style="--cat-primary: #1a1a1a; --cat-secondary: #202020; --cat-accent: #FBF3D1; --cat-text: #bebebe; --cat-extra: #484655;" class=" xlocbk idc0_350"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suche - Inventarverwaltung</title>
@@ -28,7 +28,7 @@
   <header role="banner" class="site-header">
     <div class="head">
 
-      <canvas id="canvas" width="1562" height="245"></canvas>
+      <canvas id="canvas" width="292" height="314"></canvas>
 
       <div id="maker" class="title">
         <h1>Maker AG</h1>
@@ -489,7 +489,7 @@
 
         <div id="searchInfo" class="search-info">
             <span id="resultCount">2 Ergebnisse</span>
-            <span id="searchQuery" style="display: inline;">für "36"</span>
+            <span id="searchQuery" style="display: inline;">für "27"</span>
         </div>
 
 
@@ -511,32 +511,32 @@
                         <th>Notizen</th>
                     </tr>
                 </thead>
-                <tbody><tr data-item-id="36">
-      <td>36</td>
-      <td><img src="/images/uhhhh.jpg" alt="Thumbnail für Item 36" class="thumbnail" loading="lazy" onerror="this.src='/images/uhhhh.jpg'"></td>
-      <td>Einführung in Microsoft Windows 95</td>
+                <tbody><tr data-item-id="27">
+      <td class="item-id">27</td>
+      <td><img src="/images/uhhhh.jpg" alt="Thumbnail für Item 27" class="thumbnail" loading="lazy" onerror="this.src='/images/uhhhh.jpg'"></td>
+      <td>SSD SATA II 32GB</td>
       <td></td>
       <td></td>
-      <td>Microsoft</td>
-      <td>Windows 95</td>
-      <td></td>
-      <td>23</td>
-      <td>S</td>
-      <td><a href="/docs/36/index.html" target="_blank" rel="noopener noreferrer" class="docs-link" title="Dokumentation für Item 36">DOCS</a></td>
-      <td>Ein paar der Bücher haben zusätzlich eine Floppy Disk und eine CD mit einem Windows 95 Image.</td>
-    </tr><tr data-item-id="20">
-      <td>20</td>
-      <td><img src="/docs/20/images/thumb.jpg" alt="Thumbnail für Item 20" class="thumbnail" loading="lazy" onerror="this.src='/images/uhhhh.jpg'"></td>
-      <td>Voltcraft M‑<span class="highlight">36</span>50D Digitales Multimeter</td>
-      <td></td>
-      <td></td>
-      <td>VOLTCRAFT</td>
-      <td>M-<span class="highlight">36</span>50D</td>
+      <td>Mushkin Enhanced</td>
+      <td>32GB</td>
       <td></td>
       <td></td>
       <td>S</td>
-      <td><a href="/docs/20/index.html" target="_blank" rel="noopener noreferrer" class="docs-link" title="Dokumentation für Item 20">DOCS</a></td>
+      <td><a href="/docs/27/index.html" target="_blank" rel="noopener noreferrer" class="docs-link" title="Dokumentation für Item 27">DOCS</a></td>
+      <td>In dem Metall-Koffer mit dem "&lt;m" Logo. Kleine SSD, aber guter Behälter.</td>
+    </tr><tr data-item-id="23">
+      <td class="item-id">23</td>
+      <td><img src="/docs/23/images/thumb.webp" alt="Thumbnail für Item 23" class="thumbnail" loading="lazy" onerror="this.src='/images/uhhhh.jpg'"></td>
+      <td>Raspberry Pi 4 B 2GB</td>
       <td></td>
+      <td></td>
+      <td>Raspberry Pi</td>
+      <td>4 B 2GB</td>
+      <td></td>
+      <td></td>
+      <td>S</td>
+      <td><a href="/docs/23/index.html" target="_blank" rel="noopener noreferrer" class="docs-link" title="Dokumentation für Item 23">DOCS</a></td>
+      <td>In der Juwel 80 Premium Box.</td>
     </tr></tbody>
             </table>
         </div>
@@ -551,6 +551,45 @@
 
 
 </div><script>
+    (function () {
+        'use strict';
+
+        // Aktuelle Seite markieren
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('nav .nav-link');
+
+        navLinks.forEach(link => {
+            const linkPath = new URL(link.href).pathname;
+
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+                link.setAttribute('aria-current', 'page');
+            }
+        });
+
+        // Smooth Scroll für Anker-Links
+        navLinks.forEach(link => {
+            if (link.hash) {
+                link.addEventListener('click', (e) => {
+                    const targetId = link.hash.substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        e.preventDefault();
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+
+                        // URL aktualisieren ohne Seite neu zu laden
+                        history.pushState(null, '', link.hash);
+                    }
+                });
+            }
+        });
+
+    })();
+</script><script>
     (function initHeader() {
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
@@ -714,43 +753,4 @@
         }
       });
     })();
-  </script><script>
-    (function () {
-        'use strict';
-
-        // Aktuelle Seite markieren
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('nav .nav-link');
-
-        navLinks.forEach(link => {
-            const linkPath = new URL(link.href).pathname;
-
-            if (linkPath === currentPath) {
-                link.classList.add('active');
-                link.setAttribute('aria-current', 'page');
-            }
-        });
-
-        // Smooth Scroll für Anker-Links
-        navLinks.forEach(link => {
-            if (link.hash) {
-                link.addEventListener('click', (e) => {
-                    const targetId = link.hash.substring(1);
-                    const targetElement = document.getElementById(targetId);
-
-                    if (targetElement) {
-                        e.preventDefault();
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-
-                        // URL aktualisieren ohne Seite neu zu laden
-                        history.pushState(null, '', link.hash);
-                    }
-                });
-            }
-        });
-
-    })();
-</script><script type="module" src="http://172.17.17.131/docs/RNG/overlay.js"></script><script src="http://172.17.17.131/js/settings.js"></script></body></html>
+  </script><script type="module" src="http://172.17.17.131/docs/RNG/overlay.js"></script><script src="http://172.17.17.131/js/settings.js"></script></body></html>
