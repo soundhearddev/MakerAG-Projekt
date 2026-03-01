@@ -5,7 +5,34 @@
     <a href="/index.html#Kategorien" class="nav-link">Kategorien</a>
     <a href="/index.html#neuste-eintraege" class="nav-link">Neueste Einträge</a>
     <a href="/search.html" class="nav-link">Suchen</a>
+
+    <span id="fps-counter" title="Frames per Second">-- FPS</span>
 </nav>
+
+<style>
+    nav {
+        justify-content: flex-start;
+    }
+
+    #fps-counter {
+        margin-left: auto;
+        font-size: 0.75rem;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        color: var(--cat-accent, #aaa);
+        opacity: 0.6;
+        letter-spacing: 0.05em;
+        user-select: none;
+        min-width: 4.5ch;
+        text-align: right;
+        transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* Farbe je nach FPS */
+    #fps-counter.fps-good   { color: #4ecf7a; opacity: 0.8; }
+    #fps-counter.fps-medium { color: #f0c040; opacity: 0.8; }
+    #fps-counter.fps-bad    { color: #e05050; opacity: 0.8; }
+</style>
 
 <script>
     (function () {
@@ -17,7 +44,6 @@
 
         navLinks.forEach(link => {
             const linkPath = new URL(link.href).pathname;
-
             if (linkPath === currentPath) {
                 link.classList.add('active');
                 link.setAttribute('aria-current', 'page');
@@ -30,20 +56,68 @@
                 link.addEventListener('click', (e) => {
                     const targetId = link.hash.substring(1);
                     const targetElement = document.getElementById(targetId);
-
                     if (targetElement) {
                         e.preventDefault();
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-
-                        // URL aktualisieren ohne Seite neu zu laden
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         history.pushState(null, '', link.hash);
                     }
                 });
             }
         });
+
+        // ---- FPS Counter ----------------------------------------
+        const fpsEl = document.getElementById('fps-counter');
+        if (!fpsEl) return;
+
+        let frames   = 0;
+        let lastTime = performance.now();
+        let active   = true;
+
+        function updateFPS(now) {
+            frames++;
+            const delta = now - lastTime;
+
+            if (delta >= 500) {
+                if (active) {
+                    const fps = Math.round((frames / delta) * 1000);
+                    fpsEl.textContent = fps + ' FPS';
+                    fpsEl.classList.remove('fps-good', 'fps-medium', 'fps-bad');
+                    if      (fps >= 50) fpsEl.classList.add('fps-good');
+                    else if (fps >= 30) fpsEl.classList.add('fps-medium');
+                    else                fpsEl.classList.add('fps-bad');
+                }
+                frames   = 0;
+                lastTime = now;
+            }
+
+            requestAnimationFrame(updateFPS);
+        }
+
+        requestAnimationFrame(updateFPS);
+
+        // Toggle über Settings-Checkbox (auch wenn Partial später geladen wird)
+        function applyFpsToggle(checked) {
+            active = checked;
+            fpsEl.style.display = checked ? '' : 'none';
+            if (checked) {
+                frames   = 0;
+                lastTime = performance.now();
+            }
+        }
+
+        document.addEventListener('change', (e) => {
+            if (e.target.id === 'fps-display') applyFpsToggle(e.target.checked);
+        });
+
+        // Startzustand synchronisieren sobald Checkbox im DOM ist
+        const fpsObserver = new MutationObserver(() => {
+            const chk = document.getElementById('fps-display');
+            if (chk) {
+                applyFpsToggle(chk.checked);
+                fpsObserver.disconnect();
+            }
+        });
+        fpsObserver.observe(document.body, { childList: true, subtree: true });
 
     })();
 </script>

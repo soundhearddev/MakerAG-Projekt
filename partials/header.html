@@ -1,6 +1,9 @@
 <!-- Google Fonts -->
-
 <link rel="stylesheet" href="/styles/header.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet">
 
 
 </head>
@@ -15,11 +18,18 @@
       <div id="maker" class="title">
         <h1>Maker AG</h1>
       </div>
+
     </div>
   </header>
 
 
+
+
   <script>
+
+    const DEV_PIPES_OVER_TITLE = false;
+
+
     (function initHeader() {
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
@@ -27,32 +37,23 @@
       const maker = document.getElementById("maker");
 
       if (!canvas || !ctx || !head || !maker) {
-        console.error("Benötigte Elemente nicht gefunden");
+        console.error("Header-Elemente nicht gefunden");
         return;
       }
 
-      // ============================================================
-      //  KONFIGURATION
-      // ============================================================
+
       const CONFIG = {
-        CELL: 8,      // Zellgröße in Pixeln
-        SPEED: 60,     // ms pro Frame (kleiner = schneller)
-        PIPE_COUNT: 10,     // Anzahl gleichzeitiger Pipes
-        TURN_CHANCE: 0.2,    // Richtungswechsel-Wahrscheinlichkeit (0–1)
-        GLOW_BLUR: 10,     // Leuchteffekt-Stärke (0 = kein Glühen)
-
-        // Wie viele Frames ein gezeichneter Block sichtbar bleibt
-        // bevor er wieder verschwindet (höher = länger sichtbar)
+        CELL: 8,
+        SPEED: 70,
+        PIPE_COUNT: 20,
+        TURN_CHANCE: 0.2,
+        GLOW_BLUR: 10,
         TRAIL_LIFETIME: 400,
-
-        // Farben (beliebig viele)
         COLORS: [
           'hsla(358, 100%, 70%, 0.9)',
           'hsla(177,  62%, 60%, 0.9)',
           'hsla( 47, 100%, 71%, 0.9)'
         ],
-
-        // Spawn: 'edges' = nur Ränder | 'random' = überall
         SPAWN_MODE: 'edges',
       };
       // ============================================================
@@ -70,10 +71,14 @@
       let lastFrame = 0;
       let animationId = null;
       let frameCount = 0;
-
-      // Speichert für jede Zelle: { color, dieAt } oder null
       let cells = [];
 
+      // ---- DEV-Schalter sofort anwenden -------------------------
+      if (DEV_PIPES_OVER_TITLE) {
+        head.classList.add('pipes-over-title');
+      }
+
+      // ---- Resize -----------------------------------------------
       function resize() {
         const rect = head.getBoundingClientRect();
         canvas.width = rect.width;
@@ -90,7 +95,7 @@
       function rand(max) { return Math.floor(Math.random() * max); }
       function cellIdx(x, y) { return y * COLS + x; }
 
-      // --- Pipe ---
+      // ---- Pipe -------------------------------------------------
       class Pipe {
         constructor() { this.reset(); }
 
@@ -110,9 +115,7 @@
         }
 
         step() {
-          if (Math.random() < CONFIG.TURN_CHANCE) {
-            this.dir = DIRS[rand(4)];
-          }
+          if (Math.random() < CONFIG.TURN_CHANCE) this.dir = DIRS[rand(4)];
 
           const nx = this.x + this.dir.x;
           const ny = this.y + this.dir.y;
@@ -122,7 +125,6 @@
             return;
           }
 
-          // Zelle mit Ablaufzeit registrieren
           cells[cellIdx(this.x, this.y)] = {
             color: this.color,
             dieAt: frameCount + CONFIG.TRAIL_LIFETIME
@@ -133,7 +135,7 @@
         }
       }
 
-      // --- Render: alle lebenden Zellen zeichnen, abgelaufene löschen ---
+      // ---- Render -----------------------------------------------
       function renderCells() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -142,19 +144,11 @@
           if (!cell) continue;
 
           const remaining = cell.dieAt - frameCount;
+          if (remaining <= 0) { cells[i] = null; continue; }
 
-          if (remaining <= 0) {
-            cells[i] = null;
-            continue;
-          }
-
-          // Alpha abhängig von verbleibender Lebenszeit
           const alpha = Math.min(remaining / (CONFIG.TRAIL_LIFETIME * 0.4), 1);
-
           const x = (i % COLS) * CONFIG.CELL;
           const y = Math.floor(i / COLS) * CONFIG.CELL;
-
-          // Farbe mit angepasstem Alpha
           const baseColor = cell.color.replace(/[\d.]+\)$/, `${alpha.toFixed(3)})`);
 
           ctx.fillStyle = baseColor;
@@ -166,7 +160,7 @@
         ctx.shadowBlur = 0;
       }
 
-      // --- Start ---
+      // ---- Start ------------------------------------------------
       function startPipes() {
         if (running) return;
         running = true;
@@ -179,14 +173,13 @@
 
       maker.addEventListener("click", startPipes);
 
-      // --- Loop ---
+      // ---- Loop -------------------------------------------------
       function loop(ts) {
         if (running && ts - lastFrame > CONFIG.SPEED) {
           pipes.forEach(p => p.step());
           frameCount++;
           lastFrame = ts;
         }
-
         renderCells();
         animationId = requestAnimationFrame(loop);
       }
@@ -196,5 +189,65 @@
       window.addEventListener("beforeunload", () => {
         if (animationId) cancelAnimationFrame(animationId);
       });
+
+      // ============================================================
+      //  SETTINGS-PANEL ANBINDUNG
+      // ============================================================
+      function bindSetting(id, configKey, transform, displayFn, onApply) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const valEl = document.getElementById(id + '-val');
+        el.addEventListener('input', () => {
+          const v = transform(el.value);
+          CONFIG[configKey] = v;
+          if (valEl) valEl.textContent = displayFn ? displayFn(v) : v;
+          if (onApply) onApply(v);
+        });
+      }
+
+      bindSetting('pipe-count', 'PIPE_COUNT', v => parseInt(v), null, v => {
+        while (pipes.length < v) pipes.push(new Pipe());
+        pipes.length = v;
+      });
+      bindSetting('pipe-speed', 'SPEED', v => parseInt(v), v => v + ' ms');
+      bindSetting('pipe-cell', 'CELL', v => parseInt(v), v => v + ' px', () => {
+        COLS = Math.floor(canvas.width / CONFIG.CELL);
+        ROWS = Math.floor(canvas.height / CONFIG.CELL);
+        cells = new Array(COLS * ROWS).fill(null);
+        pipes.forEach(p => p.reset());
+      });
+      bindSetting('pipe-turn', 'TURN_CHANCE', v => parseInt(v) / 100, v => Math.round(v * 100) + ' %');
+      bindSetting('pipe-lifetime', 'TRAIL_LIFETIME', v => parseInt(v));
+      bindSetting('pipe-glow', 'GLOW_BLUR', v => parseInt(v));
+
+      const spawnEl = document.getElementById('pipe-spawn');
+      if (spawnEl) {
+        spawnEl.addEventListener('change', () => {
+          CONFIG.SPAWN_MODE = spawnEl.value;
+          pipes.forEach(p => p.reset());
+        });
+      }
+
+      // "Richtiger Titel" Toggle aus dem Settings-Panel
+      document.addEventListener('change', (e) => {
+        if (e.target.id !== 'REAL-mode') return;
+        head.classList.toggle('pipes-over-title', e.target.checked);
+      });
+
+      // Checkbox-Startzustand setzen sobald Settings-Partial geladen ist
+      const chkObserver = new MutationObserver(() => {
+        const chk = document.getElementById('REAL-mode');
+        if (chk) {
+          chk.checked = DEV_PIPES_OVER_TITLE;
+          chkObserver.disconnect();
+        }
+      });
+      chkObserver.observe(document.body, { childList: true, subtree: true });
+
     })();
+
+
+
+    
+
   </script>

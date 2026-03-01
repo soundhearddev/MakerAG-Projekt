@@ -7,6 +7,17 @@
   opacity: 0.8;
 }
 
+
+    /* Pipes-Modus: Titel abdunkeln damit Pipes gut sichtbar bleiben */
+    .head.pipes-over-title .title h1 {
+      opacity: 0.35;
+      animation: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .head:not(.pipes-over-title) .title h1 {
+      transition: opacity 0.4s ease;
+    }
 /* Header */
 .site-header {
   position: relative;
