@@ -1,14 +1,5 @@
 <?php
-/**
- * API Endpoint: fetch_item.php
- * Gibt ein einzelnes Item per ID zurück, oder alle Items.
- *
- * GET ?id=42   → ein Item
- * GET          → alle Items
- */
-
 require_once __DIR__ . '/init.php';
-
 
 $id = getIntParam('id');
 
@@ -17,6 +8,7 @@ try {
         $stmt = $db->prepare("SELECT * FROM items WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
+        // fetch_assoc = eine Zeile, dann mit enrichItem anreichern
         $item = $stmt->get_result()->fetch_assoc();
 
         if (!$item) {
@@ -25,6 +17,7 @@ try {
 
         sendSuccess(enrichItem($item));
     } else {
+        // Kein ID-Parameter → alle Items zurückgeben, neueste zuerst
         $result = $db->query("SELECT * FROM items ORDER BY id DESC");
         $items  = $result->fetch_all(MYSQLI_ASSOC);
 

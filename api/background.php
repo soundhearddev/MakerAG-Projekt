@@ -1,117 +1,131 @@
 <?php
 /**
- * API Endpoint: background.php
- * Verwaltet SVG-Hintergrundmuster (auflisten, hochladen, löschen, info).
+ * get_data.php
+ * Listet Dateien aus dem Dateisystem für ein Item auf.
+ * Liest aus:
+ *   /docs/{id}/images/   → type=image
+ *   /docs/{id}/data/     → type=pdf (und andere Dokumente)
  *
- * GET  ?action=list              → Alle SVGs auflisten
- * POST ?action=delete  + name    → SVG löschen
- * GET  ?action=info    + name    → Infos zu einer SVG-Datei
- * GET  ?action=debug             → Debug-Infos
+ * GET ?id=42&type=image  → alle Bilder für Item 42
+ * GET ?id=42&type=pdf    → alle PDFs für Item 42
+ * GET ?id=42&type=all    → alles
  */
 
 require_once __DIR__ . '/init.php';
 
-// ─── Konfiguration ────────────────────────────────────────────────────────────
-define('BG_FOLDER', dirname(__DIR__) . '/images/background/');
-define('WEB_PATH',  '/images/background/');
+$itemId = getIntParam('id');
+$type   = getStringParam('type', 'pdf'); // Standard: nur PDFs
 
-// ─── Ordner sicherstellen ─────────────────────────────────────────────────────
-if (!is_dir(BG_FOLDER) && !@mkdir(BG_FOLDER, 0755, true)) {
-    error_log('background.php: mkdir fehlgeschlagen – ' . BG_FOLDER);
-    sendError('Ordner konnte nicht erstellt werden', 500);
-}
-if (!is_readable(BG_FOLDER)) {
-    sendError('Kein Lesezugriff auf den Hintergrundordner', 500);
+if ($itemId <= 0) {
+    sendError('Fehlende oder ungültige id', 400);
 }
 
-// ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
+// ─── Erlaubte Dateierweiterungen je Typ ───────────────────────────────────────
+$imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'];
+$pdfExts   = ['pdf'];
+$dataExts  = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'csv', 'zip'];
 
-// ─── Action ───────────────────────────────────────────────────────────────────
-$action = getStringParam('action', 'list');
+// ─── Zu durchsuchende Verzeichnisse bestimmen ────────────────────────────────
+// rtrim entfernt den abschließenden / falls DOCUMENT_ROOT ihn hat
+$docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '/var/www/public', '/');
 
-// ─── LIST ─────────────────────────────────────────────────────────────────────
-if ($action === 'list') {
-    $files    = @glob(BG_FOLDER . '*.svg') ?: [];
-    $patterns = [];
+// match = modernes PHP 8 switch, gibt einen Wert zurück.
+// Je nach $type verschiedene Ordner mit ihren erlaubten Dateitypen definieren.
+// 'path' = absoluter Pfad auf dem Server (für is_dir, scandir, filesize usw.)
+// 'webBase' = relativer Web-Pfad der im JSON zurückgegeben wird (für den Browser)
+$dirs = match ($type) {
+    'image' => [[
+        'path'    => "{$docRoot}/docs/{$itemId}/images/",
+        'webBase' => "/docs/{$itemId}/images/",
+        'exts'    => $imageExts,
+    ]],
+    'pdf' => [[
+        'path'    => "{$docRoot}/docs/{$itemId}/data/",
+        'webBase' => "/docs/{$itemId}/data/",
+        'exts'    => $pdfExts,
+    ]],
+    'all' => [
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/images/",
+            'webBase' => "/docs/{$itemId}/images/",
+            'exts'    => $imageExts,
+        ],
+        [
+            'path'    => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts'    => $dataExts,
+        ],
+    ],
+    // default = alles was nicht 'image', 'pdf', 'all' ist → data-Ordner
+    default => [[
+        'path'    => "{$docRoot}/docs/{$itemId}/data/",
+        'webBase' => "/docs/{$itemId}/data/",
+        'exts'    => $dataExts,
+    ]],
+};
 
-    foreach ($files as $file) {
-        $name = basename($file);
-        if ($name[0] === '.') continue;
-        $patterns[] = [
-            'name'     => $name,
-            'path'     => WEB_PATH . $name,
-            'size'     => (int) @filesize($file),
-            'modified' => (int) @filemtime($file),
+// ─── Dateien einlesen ─────────────────────────────────────────────────────────
+$files = [];
+
+foreach ($dirs as $dir) {
+    // is_dir = prüft ob der Ordner existiert (nicht jedes Item hat Dateien)
+    if (!is_dir($dir['path'])) {
+        continue; // Ordner nicht vorhanden → nächsten Ordner probieren
+    }
+
+    // scandir liest alle Einträge im Ordner (inkl. '.' und '..')
+    $entries = scandir($dir['path']);
+    if ($entries === false) {
+        continue; // Keine Leserechte oder anderer Fehler
+    }
+
+    foreach ($entries as $filename) {
+        // '.' = aktueller Ordner, '..' = übergeordneter Ordner → überspringen
+        // str_starts_with = versteckte Dateien ignorieren (.htaccess, .DS_Store usw.)
+        if ($filename === '.' || $filename === '..' || str_starts_with($filename, '.')) {
+            continue;
+        }
+
+        $fullPath = $dir['path'] . $filename;
+        // is_file = sicherstellen dass es keine Unterordner sind
+        if (!is_file($fullPath)) {
+            continue;
+        }
+
+        // pathinfo mit PATHINFO_EXTENSION gibt nur die Dateiendung zurück: "PDF" → "pdf"
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        // in_array(..., true) = strikter Vergleich (kein Typ-Coercing)
+        if (!in_array($ext, $dir['exts'], true)) {
+            continue; // Dateiendung nicht erlaubt → überspringen
+        }
+
+        // ─── Dateityp bestimmen ────────────────────────────────────────────────
+        // match(true) = der erste case der true ergibt wird genommen
+        // in_array für Listen, direkter Vergleich für einzelne Werte
+        $fileType = match (true) {
+            in_array($ext, $imageExts, true)           => 'image',
+            $ext === 'pdf'                             => 'pdf',
+            in_array($ext, ['doc', 'docx'], true)      => 'document',
+            in_array($ext, ['xls', 'xlsx'], true)      => 'spreadsheet',
+            default                                    => 'file',
+        };
+
+        $files[] = [
+            'filename'   => $filename,
+            'path'       => $dir['webBase'] . $filename,  // Web-Pfad für den Browser
+            'type'       => $fileType,
+            'ext'        => $ext,
+            'size'       => filesize($fullPath),           // Dateigröße in Bytes
+            // date() mit filemtime() = letzte Änderungszeit als lesbaren String
+            'modified'   => date('Y-m-d H:i:s', filemtime($fullPath)),
         ];
     }
-
-    usort($patterns, fn($a, $b) => strcmp($a['name'], $b['name']));
-    sendSuccess($patterns, ['count' => count($patterns)]);
 }
 
-// ─── DELETE ───────────────────────────────────────────────────────────────────
-if ($action === 'delete') {
-    $name = basename(getStringParam('name'));
+// ─── Alphabetisch sortieren ───────────────────────────────────────────────────
+// usort = sortieren mit eigener Vergleichsfunktion
+// fn($a, $b) = Arrow Function (PHP 7.4+), strcmp vergleicht zwei Strings alphabetisch
+// strcmp gibt negativ/0/positiv zurück – genau was usort braucht
+usort($files, fn($a, $b) => strcmp($a['filename'], $b['filename']));
 
-    if ($name === '') sendError('Kein Dateiname angegeben', 400);
-    if (pathinfo($name, PATHINFO_EXTENSION) !== 'svg') sendError('Nur SVG-Dateien können gelöscht werden', 400);
-
-    $path = BG_FOLDER . $name;
-    if (!file_exists($path)) sendError('Datei nicht gefunden: ' . $name, 404);
-
-    if (!@unlink($path)) {
-        error_log('background.php: unlink fehlgeschlagen – ' . $path);
-        sendError('Löschen fehlgeschlagen – Schreibrecht prüfen', 500);
-    }
-
-    error_log('background.php: Gelöscht – ' . $name);
-    sendSuccess(['deleted' => $name], ['message' => 'Pattern gelöscht']);
-}
-
-// ─── INFO ─────────────────────────────────────────────────────────────────────
-if ($action === 'info') {
-    $name = basename(getStringParam('name'));
-    if ($name === '') sendError('Kein Dateiname angegeben', 400);
-
-    $path = BG_FOLDER . $name;
-    if (!file_exists($path)) sendError('Datei nicht gefunden: ' . $name, 404);
-
-    $info = [
-        'name'     => $name,
-        'path'     => WEB_PATH . $name,
-        'size'     => (int) filesize($path),
-        'modified' => (int) filemtime($path),
-        'readable' => is_readable($path),
-        'writable' => is_writable($path),
-    ];
-
-    $content = @file_get_contents($path);
-    if ($content) {
-        if (preg_match('/\bwidth=["\']([^"\']+)["\']/',   $content, $m)) $info['width']   = $m[1];
-        if (preg_match('/\bheight=["\']([^"\']+)["\']/',  $content, $m)) $info['height']  = $m[1];
-        if (preg_match('/\bviewBox=["\']([^"\']+)["\']/', $content, $m)) $info['viewBox'] = $m[1];
-    }
-
-    sendSuccess(['pattern' => $info]);
-}
-
-// ─── DEBUG ────────────────────────────────────────────────────────────────────
-if ($action === 'debug') {
-    $files = @glob(BG_FOLDER . '*.svg') ?: [];
-    sendSuccess([
-        'bg_folder'     => BG_FOLDER,
-        'web_path'      => WEB_PATH,
-        'folder_exists' => is_dir(BG_FOLDER),
-        'is_readable'   => is_readable(BG_FOLDER),
-        'is_writable'   => is_writable(BG_FOLDER),
-        'svg_count'     => count($files),
-        'svg_files'     => array_map('basename', $files),
-        'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? '(nicht gesetzt)',
-        'script_dir'    => __DIR__,
-        'php_version'   => PHP_VERSION,
-        'post_max'      => ini_get('post_max_size'),
-    ]);
-}
-
-// ─── Fallback ─────────────────────────────────────────────────────────────────
-sendError("Unbekannte Aktion: '{$action}'", 400);
+sendSuccess($files, ['count' => count($files)]);

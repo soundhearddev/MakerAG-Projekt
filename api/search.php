@@ -1,5 +1,4 @@
 <?php
-
 /**
  * API Endpoint: search.php
  * Durchsucht Items über mehrere Tabellen (items, categories, locations, specs, tags).
@@ -14,16 +13,29 @@
 
 require_once __DIR__ . '/init.php';
 
-// ─── Erlaubte Sortierfelder (nur echte Spalten aus items) ─────────────────────
+// ─── Erlaubte Sortierfelder ───────────────────────────────────────────────────
+// Whitelist! Der Benutzer übergibt ?sort=name → wir prüfen ob 'name' erlaubt ist.
+// Ohne Whitelist könnte man beliebige SQL in den ORDER BY schreiben (SQL-Injection).
+// Prepared Statements funktionieren für ORDER BY nicht, deshalb Whitelist-Ansatz.
 const SORT_FIELDS = ['id', 'name', 'brand', 'model', 'serial_number', 'status', 'item_condition', 'created_at', 'updated_at'];
 
 // ─── Input ────────────────────────────────────────────────────────────────────
+// mb_substr = Multibyte-sicher kürzen (wichtig für Umlaute/Sonderzeichen)
+// strip_tags = HTML-Tags entfernen (<script> usw.)
+// max 500 Zeichen als Sicherheitslimit
 $query     = mb_substr(strip_tags(trim(getStringParam('query'))), 0, 500, 'UTF-8');
 $limit     = max(1, min(getIntParam('limit', 50), 200));
+// in_array prüft ob der übergebene Sort-Wert in der Whitelist ist
+// Wenn nicht → 'id' als sicheren Fallback nehmen
 $sortField = in_array(getStringParam('sort', 'id'), SORT_FIELDS, true) ? getStringParam('sort', 'id') : 'id';
+// strtoupper macht 'asc' → 'ASC', dann === 'ASC' prüfen → sonst DESC
 $sortOrder = strtoupper(getStringParam('order', 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
 
-// ─── searchFor: Mapping von Frontend-Wert auf SQL-Ausdruck ───────────────────
+// ─── searchFor: Mapping Frontend-Wert → SQL-Ausdruck ─────────────────────────
+// Das Frontend schickt einen deutschen Label wie "Marke",
+// wir übersetzen das in den echten SQL-Spaltennamen.
+// Auch hier: kein direktes Einfügen von Benutzereingaben in SQL!
+// CAST(i.id AS CHAR) = Zahl 42 zu String "42" machen damit LIKE darauf funktioniert
 $searchForMap = [
     'ID'           => 'CAST(i.id AS CHAR)',
     'Name'         => 'i.name',
@@ -34,12 +46,15 @@ $searchForMap = [
     'Locker'       => 'l.schrank',
 ];
 $searchForRaw = getStringParam('searchFor', '');
+// isset() prüft ob der Key existiert. Wenn nicht → null (Vollsuche)
 $searchForCol = isset($searchForMap[$searchForRaw]) ? $searchForMap[$searchForRaw] : null;
 
 
 try {
     if ($query === '') {
-        // ── Kein Suchbegriff: alle Items mit JOINs ────────────────────────────
+        // ── Kein Suchbegriff: alle Items ──────────────────────────────────────
+        // `{$sortField}` in Backticks weil Feldnamen wie 'status' reservierte MySQL-Wörter
+        // sein können. Backticks sagen MySQL "das ist ein Spaltenname, kein Schlüsselwort".
         $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
                        l.room, l.schrank AS locker, l.regal AS shelf, l.position
                 FROM items i
@@ -52,11 +67,12 @@ try {
         $stmt = $db->prepare($sql);
         $stmt->bind_param('i', $limit);
     } else {
-        // ── Suche: entweder nur ein Feld (searchFor) oder alle Felder ─────────
+        // ── Mit Suchbegriff ───────────────────────────────────────────────────
 
         if ($searchForCol !== null) {
-            // ── Gezieltes Feld ─────────────────────────────────────────────────
-            // Kein specs/tags JOIN nötig
+            // ── Nur ein bestimmtes Feld durchsuchen ────────────────────────────
+            // DISTINCT = keine doppelten Zeilen (kann durch JOINs entstehen)
+            // Kein specs/tags JOIN nötig weil wir nicht dort suchen
             $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
                            l.room, l.schrank AS locker, l.regal AS shelf, l.position
                     FROM items i
@@ -67,20 +83,18 @@ try {
                     ORDER BY i.`{$sortField}` {$sortOrder}
                     LIMIT ?";
 
+            // 's' für den Suchstring, 'i' für das Limit = 'si'
             $stmt = $db->prepare($sql);
             $stmt->bind_param('si', $query, $limit);
         } else {
-            // ── Vollsuche über alle Felder ─────────────────────────────────────
+            // ── Vollsuche über ALLE Felder ─────────────────────────────────────
             //
-            // Gesucht wird in:
-            //   items:      id, name, brand, model, serial_number, notes, status
-            //   categories: name (category_name)
-            //   locations:  schrank (locker), regal, room
-            //   specs:      value
-            //   tags:       name
+            // LEFT JOIN auf specs und tags damit wir auch dort suchen können.
+            // DISTINCT verhindert Duplikate: ein Item mit 3 Tags würde sonst 3x auftauchen.
             //
-            // Subquery-Ansatz für specs und tags, damit keine Duplikate entstehen.
-
+            // Jedes LIKE bekommt den gleichen Suchbegriff ($query) als eigenen ?-Parameter.
+            // Man kann denselben Wert nicht "wiederverwenden" in Prepared Statements –
+            // deshalb 13x $query in bind_param.
             $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
                            l.room, l.schrank AS locker, l.regal AS shelf, l.position
                     FROM items i
@@ -108,22 +122,12 @@ try {
                     LIMIT ?";
 
             $stmt = $db->prepare($sql);
-            // 13 String-Parameter + 1 Int für LIMIT
+            // 13 mal 's' für die 13 LIKE-Vergleiche, dann 'i' für LIMIT
+            // $query muss 13x übergeben werden weil jedes ? ein eigener Parameter ist
             $stmt->bind_param(
                 'sssssssssssss' . 'i',
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
+                $query, $query, $query, $query, $query, $query, $query,
+                $query, $query, $query, $query, $query, $query,
                 $limit
             );
         }
@@ -136,7 +140,7 @@ try {
     sendSuccess($items, [
         'count'     => count($items),
         'query'     => $query,
-        'searchFor' => $searchForRaw ?: 'all',
+        'searchFor' => $searchForRaw ?: 'all', // 'all' wenn kein spezifisches Feld
         'sort'      => ['field' => $sortField, 'order' => $sortOrder],
         'limit'     => $limit,
     ]);

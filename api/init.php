@@ -1,49 +1,69 @@
 <?php
 /**
- * init.php
- * ─────────────────────────────────────────────────────────────────────────────
- * Gemeinsame Basis für alle API-Endpunkte.
+ * init.php – Gemeinsame Basis für alle API-Endpunkte.
+ * Wird in jeder anderen PHP-Datei ganz oben mit require_once eingebunden.
  * Tabellen: items, categories, locations, specs, tags, item_tags, documents
- * ─────────────────────────────────────────────────────────────────────────────
  */
 
 // ─── 0. DEBUG-FLAG ────────────────────────────────────────────────────────────
-// Auf true setzen um detaillierte Fehlermeldungen in der JSON-Antwort zu sehen.
+// define() legt eine Konstante fest – kein $ davor, kann später nicht überschrieben werden.
+// true = Fehlermeldungen werden in der JSON-Antwort mitgeschickt (nur für Entwicklung!)
 // NIEMALS auf einem Produktions-Server auf true lassen!
-define('API_DEBUG', true); // ← nach dem Debuggen wieder auf false setzen!
+define('API_DEBUG', true);
 
 // ─── 1. MYSQLI EXCEPTIONS AKTIVIEREN ─────────────────────────────────────────
-// MUSS vor jeder DB-Nutzung stehen – sonst gibt prepare() stillschweigend
-// false zurück und der nachfolgende bind_param()-Aufruf knallt unkontrolliert.
+// Standardmäßig gibt mysqli bei Fehlern nur false zurück – das merkt man oft nicht.
+// MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT = Fehler werden als Exceptions geworfen,
+// also fängt das try/catch sie auf und nichts fällt still durch.
+// MUSS vor jeder DB-Nutzung stehen, sonst knallt prepare() unkontrolliert.
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // ─── 2. ERROR REPORTING ───────────────────────────────────────────────────────
+// E_ALL = alle PHP-Fehler melden (auch Notices, Warnings usw.)
 error_reporting(E_ALL);
-ini_set('display_errors', 0);   // Nie direkt ausgeben (würde JSON zerstören)
+// display_errors = 0: Fehler werden NIE direkt ausgegeben (würde das JSON kaputt machen!)
+ini_set('display_errors', 0);
+// log_errors = 1: Fehler stattdessen in die Logdatei schreiben
 ini_set('log_errors', 1);
 ini_set('error_log', '/var/www/logs/php_errors.log');
 
 // ─── 3. HEADERS ───────────────────────────────────────────────────────────────
+// Dem Browser sagen dass die Antwort JSON ist, auf UTF-8 kodiert
 header('Content-Type: application/json; charset=UTF-8');
+// Verhindert dass der Browser den Content-Type "errät" (Security-Maßnahme)
 header('X-Content-Type-Options: nosniff');
+// Verhindert dass die Seite in einem <iframe> eingebettet werden kann (Clickjacking-Schutz)
 header('X-Frame-Options: DENY');
 
+// CORS: Andere Domains/Ports dürfen die API aufrufen (wichtig für lokale Frontend-Entwicklung)
 if (isset($_SERVER['HTTP_ORIGIN'])) {
+    // Erlaubt Anfragen von der Domain, von der der Request kommt
     header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+    // Erlaubt Cookies/Auth-Header mitzuschicken
     header('Access-Control-Allow-Credentials: true');
 }
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// OPTIONS-Request = Browser fragt zuerst "darf ich?" (Preflight) bevor er den echten Request schickt
+// Einfach 200 OK antworten und sofort aufhören
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// ─── 4. HILFSFUNKTIONEN (VOR dem ersten Aufruf definieren!) ──────────────────
+// ─── 4. HILFSFUNKTIONEN ──────────────────────────────────────────────────────
 
 /**
- * Erfolgsantwort senden und beenden.
+ * Erfolgsantwort als JSON senden und Skript beenden.
+ *
+ * array_merge() klebt die Arrays zusammen:
+ *   ['success' => true] + $extra + ['data' => $data]
+ * Das ergibt z.B.: { "success": true, "count": 5, "data": [...] }
+ *
+ * JSON_UNESCAPED_UNICODE = Umlaute bleiben als ä/ö/ü statt \u00e4
+ * JSON_UNESCAPED_SLASHES = / bleibt als / statt \/
+ * exit() danach = kein weiterer Code läuft mehr
  */
 function sendSuccess(array $data = [], array $extra = [], int $code = 200): void
 {
@@ -56,13 +76,14 @@ function sendSuccess(array $data = [], array $extra = [], int $code = 200): void
 }
 
 /**
- * Fehlerantwort senden und beenden.
- * Bei API_DEBUG=true wird zusätzlich $debugInfo mitgeschickt.
+ * Fehlerantwort als JSON senden und Skript beenden.
+ * ?string = der Parameter darf null sein (PHP 8 Nullable Type)
  */
 function sendError(string $message, int $code = 400, array $extra = [], ?string $debugInfo = null): void
 {
     http_response_code($code);
     $payload = array_merge(['success' => false, 'error' => $message], $extra);
+    // Debug-Info nur mitsenden wenn API_DEBUG aktiv ist
     if (API_DEBUG && $debugInfo !== null) {
         $payload['debug'] = $debugInfo;
     }
@@ -71,7 +92,10 @@ function sendError(string $message, int $code = 400, array $extra = [], ?string 
 }
 
 /**
- * Integer-Parameter aus GET oder POST lesen.
+ * Integer aus GET oder POST lesen.
+ * ?? = Null-Coalescing: nimmt den ersten Wert der nicht null ist
+ * is_numeric() prüft ob es eine Zahl ist (auch "42" als String gilt)
+ * (int) castet den Wert zu einem Integer
  */
 function getIntParam(string $key, int $default = 0): int
 {
@@ -80,7 +104,8 @@ function getIntParam(string $key, int $default = 0): int
 }
 
 /**
- * String-Parameter aus GET oder POST lesen.
+ * String aus GET oder POST lesen.
+ * trim() entfernt Leerzeichen am Anfang und Ende
  */
 function getStringParam(string $key, string $default = ''): string
 {
@@ -89,12 +114,14 @@ function getStringParam(string $key, string $default = ''): string
 }
 
 /**
- * Thumbnail für ein Item suchen (Dateisystem).
+ * Thumbnail-Bild für ein Item im Dateisystem suchen.
+ * Gibt den Web-Pfad zurück (z.B. "/docs/42/images/thumb.png") oder null wenn nichts gefunden.
  */
 function findThumbnail(int $id): ?string
 {
     if ($id <= 0) return null;
 
+    // Zwei mögliche Basispfade – je nachdem wie der Server konfiguriert ist
     $dirs = [
         ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/{$id}/images/",
         "/var/www/public/docs/{$id}/images/",
@@ -103,17 +130,19 @@ function findThumbnail(int $id): ?string
     foreach ($dirs as $dir) {
         if (!is_dir($dir)) continue;
 
-        // Zuerst explizite thumb-Dateien suchen
+        // Zuerst explizit benannte Thumbnails suchen
         foreach (['thumb.png', 'thumb.jpg', 'thumb.jpeg', 'thumb.webp'] as $thumb) {
             if (file_exists($dir . $thumb)) {
                 return "/docs/{$id}/images/{$thumb}";
             }
         }
 
-        // Dann erstes Bild in dem Ordner nehmen
+        // Kein Thumbnail vorhanden → einfach das erste Bild nehmen
+        // @ vor scandir = Fehlermeldungen unterdrücken wenn Ordner nicht lesbar
         $files = @scandir($dir);
         if ($files === false) continue;
         foreach ($files as $file) {
+            // pathinfo() zerlegt den Dateinamen → PATHINFO_EXTENSION gibt nur die Endung
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp'], true)) {
                 return "/docs/{$id}/images/{$file}";
@@ -121,11 +150,11 @@ function findThumbnail(int $id): ?string
         }
     }
 
-    return null;
+    return null; // kein Bild gefunden
 }
 
 /**
- * Docs-Link für ein Item suchen (index.html im Dateisystem).
+ * Prüft ob eine index.html-Dokumentationsseite für das Item existiert.
  */
 function findDocsLink(int $id): ?string
 {
@@ -144,13 +173,19 @@ function findDocsLink(int $id): ?string
 }
 
 /**
- * Specs für ein Item aus der specs-Tabelle laden.
- * Gibt ['RAM' => '2 GB', 'Anzahl' => '3'] zurück.
+ * Alle Specs (technische Daten) für ein Item aus der DB laden.
+ *
+ * Die specs-Tabelle hat Spalten: item_id, key, value
+ * z.B. item_id=42, key="RAM", value="16 GB"
+ *
+ * array_column() wäre hier nicht möglich weil wir key→value brauchen,
+ * deshalb manuelles foreach das ein assoziatives Array aufbaut: ['RAM' => '16 GB', ...]
  */
 function fetchSpecs(int $itemId): array
 {
-    global $db;
+    global $db; // $db ist in init.php definiert, global macht es hier verfügbar
     $stmt = $db->prepare("SELECT `key`, `value` FROM specs WHERE item_id = ? ORDER BY id ASC");
+    // bind_param: 'i' = integer, dann die Variable
     $stmt->bind_param('i', $itemId);
     $stmt->execute();
     $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -162,8 +197,12 @@ function fetchSpecs(int $itemId): array
 }
 
 /**
- * Tags für ein Item aus item_tags + tags laden.
- * Gibt ['laptop', 'vintage'] zurück.
+ * Alle Tags für ein Item laden.
+ *
+ * item_tags ist eine Zwischentabelle (n:m-Beziehung):
+ *   items ←→ item_tags ←→ tags
+ * INNER JOIN = nur Datensätze die in BEIDEN Tabellen einen Match haben
+ * array_column() extrahiert nur die 'name'-Spalte aus dem Ergebnis-Array
  */
 function fetchTags(int $itemId): array
 {
@@ -178,12 +217,12 @@ function fetchTags(int $itemId): array
     $stmt->bind_param('i', $itemId);
     $stmt->execute();
     $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    return array_column($rows, 'name');
+    return array_column($rows, 'name'); // ['laptop', 'vintage', ...]
 }
 
 /**
  * Dokumente werden über das Dateisystem geladen (get_data.php),
- * nicht aus der Datenbank – daher immer leeres Array zurückgeben.
+ * nicht aus einer DB-Tabelle – leeres Array als Platzhalter.
  */
 function fetchDocuments(int $itemId): array
 {
@@ -191,9 +230,11 @@ function fetchDocuments(int $itemId): array
 }
 
 /**
- * Ein einzelnes Item mit allen verknüpften Daten anreichern:
- *   category_name, parent_category, location, specs, tags, documents,
- *   thumbnail, docs_link, has_docs, quantity
+ * Ein einzelnes Item-Array mit allen verknüpften Daten anreichern.
+ *
+ * "Anreichern" bedeutet: das Item kommt mit rohen DB-Spalten rein
+ * (z.B. nur category_id=8) und geht mit allem raus was die UI braucht
+ * (category_name, parent_category, location, specs, tags, thumbnail usw.)
  */
 function enrichItem(array $item): array
 {
@@ -202,6 +243,9 @@ function enrichItem(array $item): array
     $id = (int)($item['id'] ?? 0);
 
     // ── Kategorie ─────────────────────────────────────────────────────────────
+    // LEFT JOIN auf sich selbst (Self-Join): categories hat eine parent_id
+    // die auf eine andere Zeile in derselben Tabelle zeigt
+    // c = child (die eigentliche Kategorie), p = parent (Oberkategorie)
     $item['category_name']   = null;
     $item['parent_category'] = null;
 
@@ -214,7 +258,7 @@ function enrichItem(array $item): array
         );
         $stmt->bind_param('i', $item['category_id']);
         $stmt->execute();
-        $cat = $stmt->get_result()->fetch_assoc();
+        $cat = $stmt->get_result()->fetch_assoc(); // fetch_assoc = eine Zeile als Array
         if ($cat) {
             $item['category_name']   = $cat['category_name'];
             $item['parent_category'] = $cat['parent_name'];
@@ -222,6 +266,7 @@ function enrichItem(array $item): array
     }
 
     // ── Location ──────────────────────────────────────────────────────────────
+    // Lagerort-Infos aus der locations-Tabelle laden (Raum, Schrank, Regal, Position)
     $item['location'] = null;
     $item['locker']   = null;
     $item['shelf']    = null;
@@ -235,6 +280,7 @@ function enrichItem(array $item): array
         $stmt->execute();
         $loc = $stmt->get_result()->fetch_assoc();
         if ($loc) {
+            // Das ganze Objekt UND einzelne Felder direkt speichern (für einfacheren Zugriff im Frontend)
             $item['location'] = $loc;
             $item['locker']   = $loc['schrank'];
             $item['shelf']    = $loc['regal'];
@@ -247,6 +293,8 @@ function enrichItem(array $item): array
         $item['specs']     = fetchSpecs($id);
         $item['tags']      = fetchTags($id);
         $item['documents'] = fetchDocuments($id);
+        // Anzahl als eigenes Feld rausziehen (liegt als Spec drin)
+        // ?? null = wenn 'Anzahl' kein Key in specs ist, null zurückgeben
         $item['quantity']  = $item['specs']['Anzahl'] ?? null;
     } else {
         $item['specs']     = [];
@@ -258,13 +306,15 @@ function enrichItem(array $item): array
     // ── Dateisystem ───────────────────────────────────────────────────────────
     $item['thumbnail'] = findThumbnail($id);
     $item['docs_link'] = findDocsLink($id);
+    // !empty() = true wenn docs_link nicht null/leer ist (= Docs vorhanden)
     $item['has_docs']  = !empty($item['docs_link']);
 
     return $item;
 }
 
 /**
- * Mehrere Items anreichern.
+ * array_map() wendet enrichItem auf jedes Element des Arrays an.
+ * 'enrichItem' als String = Funktionsname wird als Callback übergeben
  */
 function enrichItems(array $items): array
 {
@@ -272,19 +322,19 @@ function enrichItems(array $items): array
 }
 
 // ─── 5. CONFIG / DATENBANK ────────────────────────────────────────────────────
-// Suchpfade für config.php
+// Verschiedene Pfade probieren weil der Server unterschiedlich aufgesetzt sein kann
 $_configPaths = [
     '/var/www/secure/config.php',
-    __DIR__ . '/../secure/config.php',
+    __DIR__ . '/../secure/config.php',               // __DIR__ = Ordner dieser Datei
     ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/secure/config.php',
 ];
 
 $_configLoaded = false;
 foreach ($_configPaths as $_path) {
     if (file_exists($_path)) {
-        require_once $_path;
+        require_once $_path; // require_once = einbinden, aber nur einmal (kein doppeltes Laden)
         $_configLoaded = true;
-        break;
+        break; // Ersten gefundenen Pfad nehmen, Rest überspringen
     }
 }
 
@@ -293,31 +343,32 @@ if (!$_configLoaded) {
     sendError('Konfigurationsfehler: config.php nicht gefunden', 500);
 }
 
-// DB-Verbindung aufbauen
+// DB-Verbindung aufbauen (Database-Klasse kommt aus config.php)
 try {
     $db = Database::connect();
-    $db->set_charset('utf8mb4');
+    $db->set_charset('utf8mb4'); // utf8mb4 = echtes UTF-8 inkl. Emojis (utf8 in MySQL ist kaputt)
 } catch (Exception $e) {
     error_log('init.php: DB-Verbindung fehlgeschlagen – ' . $e->getMessage());
     sendError(
         'Datenbankverbindung fehlgeschlagen',
         500,
         [],
-        API_DEBUG ? $e->getMessage() : null
+        API_DEBUG ? $e->getMessage() : null // Debug-Info nur wenn API_DEBUG = true
     );
 }
 
 // ─── 6. GLOBALER EXCEPTION-HANDLER ───────────────────────────────────────────
-// Fängt alle nicht behandelten Exceptions und gibt sauberes JSON zurück,
-// statt einen weißen 500er zu liefern.
+// Wenn irgendwo eine Exception nicht gefangen wird, läuft dieser Code.
+// Verhindert weißen 500er (leere Seite) – gibt stattdessen sauberes JSON zurück.
+// Throwable = Basisklasse von Exception UND Error (z.B. TypeError, ParseError)
 set_exception_handler(function (Throwable $e) {
     $msg = $e->getMessage();
     error_log('init.php: Unbehandelte Exception – ' . $msg . ' in ' . $e->getFile() . ':' . $e->getLine());
-    // Wenn noch kein Output gesendet wurde, sauber antworten
-    if (!headers_sent()) {
+    if (!headers_sent()) { // Nur setzen wenn noch keine Headers rausgegangen sind
         header('Content-Type: application/json; charset=UTF-8');
     }
     http_response_code(500);
+    // array_filter() entfernt null-Werte aus dem Array (debug ist null wenn API_DEBUG=false)
     echo json_encode(
         array_filter([
             'success' => false,

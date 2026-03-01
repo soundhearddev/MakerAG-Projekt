@@ -1,14 +1,10 @@
 <?php
-/**
- * API Endpoint: count.php
- * Gibt die Gesamtanzahl der Items sowie zusätzliche Statistiken zurück.
- *
- * GET → { count, statistics: { total_items, categories, brands, locations, tags } }
- */
-
 require_once __DIR__ . '/init.php';
 
 try {
+    // Jede Query gibt eine Zahl zurück, fetch_assoc()['c'] holt den Wert
+    // COUNT(DISTINCT brand) = nur eindeutige Marken zählen (Dell doppelt = 1)
+    // WHERE brand IS NOT NULL = leere Marken nicht mitzählen
     $total     = (int) $db->query("SELECT COUNT(id) AS c FROM items")->fetch_assoc()['c'];
     $cats      = (int) $db->query("SELECT COUNT(id) AS c FROM categories")->fetch_assoc()['c'];
     $brands    = (int) $db->query("SELECT COUNT(DISTINCT brand) AS c FROM items WHERE brand IS NOT NULL")->fetch_assoc()['c'];
