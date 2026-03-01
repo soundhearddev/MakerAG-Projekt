@@ -179,6 +179,20 @@ input.settings-icon[type="checkbox"] {
         height 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @keyframes border-transform {
 
     0%,
@@ -1150,33 +1164,6 @@ input.settings-icon[type="checkbox"] {
 }
 
 
-
-/* ===== COMPACT MODE ===== */
-body.compact-mode .setting-item {
-    padding: 14px;
-}
-
-body.compact-mode .settings-body {
-    padding: 18px;
-}
-
-body.compact-mode .setting-group {
-    gap: 14px;
-}
-
-body.compact-mode .tab-heading {
-    margin-bottom: 18px;
-    font-size: 20px;
-}
-
-body.compact-mode .theme-selector {
-    gap: 12px;
-}
-
-body.compact-mode .help-section {
-    padding: 16px;
-    margin-bottom: 14px;
-}
 
 /* ===== NO ANIMATIONS MODE ===== */
 body.no-animations * {

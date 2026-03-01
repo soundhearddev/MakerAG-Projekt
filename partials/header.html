@@ -42,19 +42,21 @@
       }
 
 
+      // NOTE: Die Optimierung in diesem code ist Grauenvoll, deswegen wird es SEHR schnell anfangen zu laggen (die frames droppen) wenn man zu viele pipes gelichzeitig hat. deswegen kann man hier die Anzahl und Lifetime anpassen. 
+      // Es ist eignetlich immer am besten die Lifetime niedrig zu halten
       const CONFIG = {
         CELL: 8,
         SPEED: 70,
-        PIPE_COUNT: 20,
+        PIPE_COUNT: 7,
         TURN_CHANCE: 0.2,
         GLOW_BLUR: 10,
-        TRAIL_LIFETIME: 400,
+        TRAIL_LIFETIME: 150,
         COLORS: [
           'hsla(358, 100%, 70%, 0.9)',
           'hsla(177,  62%, 60%, 0.9)',
           'hsla( 47, 100%, 71%, 0.9)'
         ],
-        SPAWN_MODE: 'edges',
+       //SPAWN_MODE: 'random', // optional. sonst wird es immer am rand des canvas spawnen.
       };
       // ============================================================
 

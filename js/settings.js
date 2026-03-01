@@ -1,14 +1,15 @@
-// meine größe Javascript datei
+// Word Wrap empfohlen
 // 900 zeilen von Settings
 (function () {
   "use strict";
 
   /* ===== KONFIGURATION ===== */
-  // keine Ahnung wofür ich eine settings key und background pattern key brauche aber hey..
 
+  // diese Key wird benutzt um die Einstellungen im localStorage zu speichern. Alle Daten werden als JSON-String unter diesem Key abgelegt.
+  // eigentlich sollte man diesen villeicht verschlüsseln oder so, damit nicht jeder der die Seite benutzt einfach die Einstellungen von anderen Leuten sehen und ändern kann, aber da es hier eh nur um ein paar Farben und so geht, ist das denke ich kein großes Problem. Ich meine es wird nie wirlcih sensible Daten gespeichert wie passowort, benutzername, oder email, weil es das man ja nicht braucht so... warum bräuchte man ein login für so eine seite?
   const SETTINGS_KEY = "SIGMA_SIGMA_SIGMA";
   const BG_PATTERN_KEY = "bg_pattern_settings";
-  //defaults
+
   const DEFAULT_SETTINGS = {
     language: "de",
     autoSave: false,
@@ -42,6 +43,8 @@
   function getThemeFromCSS(themeName) {
     const rootStyles = getComputedStyle(document.documentElement);
 
+    // liest CSS-Variablen aus themes.css, z.B. "--dark-primary", "--dark-accent" usw.
+    // getComputedStyle gibt die *berechneten* (also tatsächlich gültigen) Styles zurück. Einfacher gesagt: die Werte die der Browser tatsächlich benutzt, nachdem er alle CSS-Regeln, Vererbungen und so weiter angewendet hat also auch Custom Properties die nur in CSS definiert sind – nicht im HTML/JS
     const theme = {
       primary: rootStyles.getPropertyValue(`--${themeName}-primary`).trim(),
       secondary: rootStyles.getPropertyValue(`--${themeName}-secondary`).trim(),
@@ -50,9 +53,7 @@
       extra: rootStyles.getPropertyValue(`--${themeName}-extra`).trim(),
     };
 
-    // Fallback zu 'default' wenn Theme nicht gefunden
-    // wird auch komplett zuerst geladen damit es wenigsten etwas gibt (auch einfach als fallback)
-    // das problem ist jetzt wird man auch immer ganz kurz geflashed beim laden vom blauen
+    // wenn das theme nicht existiert ist primary leer → fallback zu "default"
     if (!theme.primary) {
       const fallbackTheme = getThemeFromCSS('default');
       return fallbackTheme;
@@ -61,32 +62,25 @@
     return theme;
   }
 
-  // WICHTIG: Theme sofort laden, noch bevor irgendwas anderes lädt
-  // das theme war mir das wichtigste, weil es halt das theme ist......
-  // und wenn das nicht gut aussieht, dann sieht die seite nicht gut
-  // ich habe mir extra hilfe gesucht von Freunden welche sich mit color theorie und so auskennen um die best aussehenden thmes zu suchen <3
   function applyTheme(themeName) {
-    // es hollt den theme aus themes.css
-
     const theme = getThemeFromCSS(themeName);
     const root = document.documentElement;
 
-    // Theme-Variablen setzen
-    // es setzt den geladeten theme als --cat theme
-    // --cat weil... keine ahnung ich brauchte irgentwas
+    // alle --cat-* variablen überschreiben mit den werten vom gewählten theme. Der rest vom CSS benutzt nur --cat-primary usw., nie direkt --dark-primary o.ä. so muss man im CSS nicht für jedes theme alles neu schreiben
+    // Das war eine ziemlich gute Lösung!
     root.style.setProperty("--cat-primary", theme.primary);
     root.style.setProperty("--cat-secondary", theme.secondary);
     root.style.setProperty("--cat-accent", theme.accent);
     root.style.setProperty("--cat-text", theme.text);
     root.style.setProperty("--cat-extra", theme.extra);
 
-    // Data-Attribute setzen
     document.body.setAttribute("data-theme", themeName);
     root.setAttribute("data-theme", themeName);
 
     log("Theme angewendet:", themeName);
 
-    // Event dispatchen
+    // custom Event feuern damit andere JS-Dateien (z.B. GoL, Background) mitbekommen, dass sich das theme geändert hat, ohne dass sie sich direkt kennen müssen
+    // JavaScript Events sind damit eine super flexible Möglichkeit zur Kommunikation zwischen verschiedenen Teilen der Anwendung, ohne dass sie direkt voneinander abhängig sind
     window.dispatchEvent(
       new CustomEvent("themeChanged", {
         detail: { theme: themeName, colors: theme },
@@ -97,13 +91,13 @@
   function handleThemeSelect(themeName) {
     settings.theme = themeName;
 
-    // Theme Options aktualisieren
+    // alle .theme-option elemente durchgehen und nur dem angeklickten die "active" class geben.
+    // das CSS nutzt dann .theme-option.active um den ausgewählten theme hervorzuheben
     document.querySelectorAll(".theme-option").forEach((opt) => {
       opt.classList.toggle("active", opt.dataset.theme === themeName);
     });
 
-    // Live-Vorschau wenn aktiviert
-    // wer will bitte keine Live-Vorschaue??
+    // wenn preview-mode aktiv ist → theme sofort anwenden. 
     if (settings.themePreviewMode) {
       applyTheme(themeName);
     }
@@ -111,8 +105,8 @@
     log("Theme ausgewählt:", themeName);
   }
 
-  // SOFORTIGES Theme-Laden beim Seitenstart (verhindert Flackern)
-  // hat dann aber doch nicht funktioniert...
+  // IIFE (immediately invoked function expression) läuft sofort beim Script-Load, noch bevor das DOM fertig ist. Ziel: theme schon setzen bevor init() läuft, damit kein sichtbares Flackern zum default-theme entsteht.
+  // Das hat so mittelmßig funktioniert. Persönlich habe ich nie ein unterschied bemerkt.
   (function immediateThemeLoad() {
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
@@ -141,19 +135,18 @@
     }
   })();
 
+
   /* ===== INITIALISIERUNG ===== */
   function init() {
     log("Initialisiere Settings System...");
-
     loadSettings();
     applyAllSettings();
     setupEventListeners();
 
-
-
-    // Container sichtbar machen
     const container = document.querySelector(".settings-container");
     if (container) {
+      // kleines timeout damit der browser erst rendert, dann opacity animiert
+      // ohne timeout würde man die animation nie sehen weil sie schon beim ersten paint fertig wäre
       setTimeout(() => (container.style.opacity = "1"), 50);
     }
 
@@ -162,12 +155,10 @@
 
   /* ===== EVENT LISTENERS ===== */
   function setupEventListeners() {
-    // Navigation Links
     document.querySelectorAll(".settings-nav a").forEach((link) => {
       link.addEventListener("click", handleNavClick);
     });
 
-    // Close Buttons
     document.querySelectorAll(".close-modal").forEach((btn) => {
       btn.addEventListener("click", closeCurrentModal);
     });
@@ -176,26 +167,22 @@
       btn.addEventListener("click", closeCurrentModal);
     });
 
-    // Save Buttons
     document.querySelectorAll('[data-action="save"]').forEach((btn) => {
       btn.addEventListener("click", handleSave);
     });
 
-    // Reset Button
     const resetBtn = document.querySelector('[data-action="reset"]');
     if (resetBtn) resetBtn.addEventListener("click", handleReset);
 
-    // Tab Buttons
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => switchTab(btn.dataset.tab));
     });
 
-    // Theme Options
     document.querySelectorAll(".theme-option").forEach((option) => {
       option.addEventListener("click", () => {
         const theme = option.dataset.theme;
 
-        // Nur für Cyberpunk Theme Bestätigung zeigen
+        // cyberpunk kriegt extra Funktion für halt... Das...
         if (theme === 'cyberpunk') {
           showThemeConfirmation(theme);
         } else {
@@ -204,10 +191,8 @@
       });
     });
 
-    // Input Listeners
     setupInputListeners();
 
-    // Buttons
     const cacheClearBtn = document.getElementById("cache-clear");
     const exportBtn = document.getElementById("export-settings");
     const importBtn = document.getElementById("import-settings");
@@ -216,17 +201,17 @@
     if (exportBtn) exportBtn.addEventListener("click", exportSettings);
     if (importBtn) importBtn.addEventListener("click", importSettings);
 
-    // Keyboard Shortcuts
     document.addEventListener("keydown", handleKeyboard);
 
-    // Modal Click Outside
+    // click auf den dunklen overlay-hintergrund (nicht auf den modal inhalt) schließt das modal
     document.querySelectorAll(".settings-modal").forEach((modal) => {
       modal.addEventListener("mousedown", (e) => {
+        // e.target === modal bedeutet: klick war direkt auf das modal-element selbst,
+        // nicht auf ein kind-element darin (bubbling würde sonst auch innen-klicks triggern)
         if (e.target === modal) closeCurrentModal();
       });
     });
 
-    // Drag & Drop
     setupDragAndDrop();
   }
 
@@ -237,7 +222,6 @@
       fontSize: document.getElementById("font-size"),
       fontSizeValue: document.querySelector(".slider-value"),
       animations: document.getElementById("animations"),
-      compactMode: document.getElementById("compact-mode"),
       themePreviewMode: document.getElementById("theme-preview-mode"),
       golMode: document.getElementById("golMode"),
       debugMode: document.getElementById("debug-mode"),
@@ -259,6 +243,8 @@
     if (inputs.fontSize) {
       inputs.fontSize.addEventListener("input", (e) => {
         settings.fontSize = parseInt(e.target.value);
+        // nextElementSibling ist das <span> direkt nach dem slider im HTML
+        // das zeigt "15px" usw. an ohne extra querySelector
         const valueSpan = e.target.nextElementSibling;
         if (valueSpan) {
           valueSpan.textContent = `${settings.fontSize}px`;
@@ -270,14 +256,9 @@
     if (inputs.animations) {
       inputs.animations.addEventListener("change", (e) => {
         settings.animations = e.target.checked;
+        // toggle: fügt class hinzu wenn animations AUS ist, entfernt sie wenn AN
+        // CSS macht dann mit .no-animations * { animation: none !important; } den rest
         document.body.classList.toggle("no-animations", !settings.animations);
-      });
-    }
-
-    if (inputs.compactMode) {
-      inputs.compactMode.addEventListener("change", (e) => {
-        settings.compactMode = e.target.checked;
-        document.body.classList.toggle("compact-mode", settings.compactMode);
       });
     }
 
@@ -317,20 +298,18 @@
 
     currentModal = modal;
 
-    // Menü schließen
     const menuCheckbox = document.getElementById("settings-icon");
     if (menuCheckbox) menuCheckbox.checked = false;
 
-    // Modal öffnen nach kurzer Verzögerung
+    // wenn das menü noch offen war (checkbox war checked) → 400ms warten bis css-animation fertig ist
+    // sonst sofort öffnen (0ms timeout, aber trotzdem async damit DOM updates erst durchgehen)
     setTimeout(
       () => {
         modal.classList.add("active");
         document.body.classList.add("settings-open");
 
-        // Modal zentrieren
         centerModal(modal);
 
-        // Focus auf Close-Button
         const closeBtn = modal.querySelector(".close-modal");
         if (closeBtn) closeBtn.focus();
       },
@@ -354,7 +333,9 @@
     const content = modal.querySelector(".settings-modal-content");
     if (!content) return;
 
-    // Setze Position auf fixed und zentriere
+    // position auf fixed + 50%/50% + translate(-50%,-50%) = perfekt zentriert
+    // translate(-50%) verschiebt das element um die hälfte seiner eigenen breite nach links,
+    // damit es wirklich mittig ist und nicht von der linken kante aus gemessen
     content.style.position = "fixed";
     content.style.left = "50%";
     content.style.top = "50%";
@@ -364,12 +345,10 @@
 
   /* ===== TAB SYSTEM ===== */
   function switchTab(tabName) {
-    // Tab Buttons aktualisieren
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.tab === tabName);
     });
 
-    // Tab Contents aktualisieren
     document.querySelectorAll(".tab-content").forEach((content) => {
       content.classList.toggle(
         "active",
@@ -385,6 +364,9 @@
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
       if (saved) {
+        // spread DEFAULT_SETTINGS zuerst, dann saved drüber:
+        // so bleiben neue settings-felder (die in DEFAULT aber nicht im gespeicherten objekt sind)
+        // auf ihrem default-wert statt undefined zu sein
         settings = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
         log("Einstellungen geladen");
       }
@@ -411,13 +393,11 @@
       autoSave: document.getElementById("auto-save"),
       fontSize: document.getElementById("font-size"),
       animations: document.getElementById("animations"),
-      compactMode: document.getElementById("compact-mode"),
       themePreviewMode: document.getElementById("theme-preview-mode"),
       golMode: document.getElementById("golMode"),
       debugMode: document.getElementById("debug-mode"),
     };
 
-    // Werte setzen
     if (inputs.languageSelect) inputs.languageSelect.value = settings.language;
     if (inputs.autoSave) inputs.autoSave.checked = settings.autoSave;
 
@@ -435,14 +415,11 @@
     if (inputs.golMode) inputs.golMode.checked = settings.golMode;
     if (inputs.debugMode) inputs.debugMode.checked = settings.debugMode;
 
-    // Theme anwenden
     applyTheme(settings.theme);
     handleThemeSelect(settings.theme);
 
-    // Body Classes & Styles
     document.body.style.fontSize = `${settings.fontSize}px`;
     document.body.classList.toggle("no-animations", !settings.animations);
-    document.body.classList.toggle("compact-mode", settings.compactMode);
 
     log("Alle Einstellungen angewendet");
   }
@@ -451,7 +428,6 @@
   function handleSave() {
     saveSettings();
 
-    // Theme final anwenden wenn in Theme-Modal
     if (currentModal && currentModal.id === "modal-themes") {
       applyTheme(settings.theme);
     }
@@ -471,6 +447,8 @@
     settings.golMode = isEnabled;
 
     if (isEnabled) {
+      // Game of Life ist in einer anderen JS-Datei definiert und wird über window. aufgerufen
+      // typeof check verhindert einen crash falls die datei nicht geladen wurde
       if (typeof window.createGameOfLifeOverlay === "function") {
         window.createGameOfLifeOverlay();
         log("Game of Life gestartet");
@@ -502,12 +480,15 @@
   function exportSettings() {
     try {
       const dataStr = JSON.stringify(settings, null, 2);
+      // Blob = binary large object, hier benutzt um einen in-memory "file download" zu simulieren
       const dataBlob = new Blob([dataStr], { type: "application/json" });
+      // createObjectURL gibt eine temporäre blob:// URL zurück die nur im browser existiert
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement("a");
       link.href = url;
       link.download = `settings_export_${Date.now()}.json`;
       link.click();
+      // URL wieder freigeben damit der browser den speicher aufräumen kann
       URL.revokeObjectURL(url);
       log("Einstellungen exportiert");
       showNotification("Einstellungen exportiert", "success");
@@ -518,6 +499,8 @@
   }
 
   function importSettings() {
+    // unsichtbares file-input element erstellen und sofort klicken
+    // so öffnet sich der datei-dialog ohne ein echtes input im HTML zu brauchen
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "application/json";
@@ -526,6 +509,8 @@
       const file = e.target.files[0];
       if (!file) return;
 
+      // FileReader liest die datei asynchron als text
+      // erst wenn onload feuert ist der inhalt verfügbar
       const reader = new FileReader();
       reader.onload = (event) => {
         try {
@@ -548,27 +533,24 @@
 
   /* ===== KEYBOARD SHORTCUTS ===== */
   function handleKeyboard(e) {
-    // ESC - Modal schließen
     if (e.key === "Escape" && currentModal) {
       closeCurrentModal();
     }
 
-    // Ctrl+S - Speichern
     if (e.ctrlKey && e.key === "s") {
-      e.preventDefault();
+      e.preventDefault(); // verhindert das standard "seite speichern" des browsers
       handleSave();
     }
   }
 
   /* ===== DRAG & DROP ===== */
-  // das ist so cool, dass ich das hinbekommen habe
-  // es gab viel zu viele bugs und das debuggen war grauenvoll
-  // ABER es sieht super gut aus
   function setupDragAndDrop() {
     document.querySelectorAll("[data-drag-handle]").forEach((handle) => {
       handle.addEventListener("mousedown", startDrag);
     });
 
+    // mousemove und mouseup auf document (nicht auf handle) damit dragging auch funktioniert
+    // wenn die maus schnell bewegt wird und kurz außerhalb des elements ist
     document.addEventListener("mousemove", drag);
     document.addEventListener("mouseup", stopDrag);
   }
@@ -583,11 +565,15 @@
 
     const rect = content.getBoundingClientRect();
 
+    // mausposition und modal-position beim start merken
+    // beim draggen berechnen wir dann: neue position = startposition + (aktuelle maus - startmaus)
     dragStartX = e.clientX;
     dragStartY = e.clientY;
     modalStartX = rect.left;
     modalStartY = rect.top;
 
+    // transform entfernen (war vorher translate(-50%,-50%) vom centering)
+    // und stattdessen exakte pixel-position setzen – sonst würde das modal beim ersten drag springen
     content.style.position = "fixed";
     content.style.transform = "none";
     content.style.left = `${rect.left}px`;
@@ -595,7 +581,7 @@
     content.style.margin = "0";
 
     e.currentTarget.style.cursor = "grabbing";
-    document.body.style.userSelect = "none";
+    document.body.style.userSelect = "none"; // verhindert text-selection während dragging
     content.classList.add("dragging");
 
     log("Dragging gestartet");
@@ -613,6 +599,8 @@
     let newX = modalStartX + deltaX;
     let newY = modalStartY + deltaY;
 
+    // clamp: modal kann nicht über den bildschirmrand hinaus geschoben werden
+    // Math.max(0, ...) = nicht links/oben raus, Math.min(..., max) = nicht rechts/unten raus
     const rect = content.getBoundingClientRect();
     const maxX = window.innerWidth - rect.width;
     const maxY = window.innerHeight - rect.height;
@@ -633,7 +621,7 @@
       handle.style.cursor = "grab";
     });
 
-    document.body.style.userSelect = "";
+    document.body.style.userSelect = ""; // user-select wieder erlauben
 
     if (currentModal) {
       const content = currentModal.querySelector(".settings-modal-content");
@@ -652,12 +640,15 @@
     document.body.appendChild(toast);
 
     setTimeout(() => {
+      // erst ausblend-animation starten, dann nach 300ms das element wirklich entfernen
+      // direkt removen würde die animation nicht zeigen
       toast.style.animation = "slideOutToast 0.3s ease";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
   }
 
   /* ===== AUTO-SAVE ===== */
+  // alle 60 sekunden speichern wenn autoSave aktiv ist
   setInterval(() => {
     if (settings.autoSave) {
       saveSettings();
@@ -666,19 +657,22 @@
 
   /* ===== WINDOW RESIZE ===== */
   window.addEventListener("resize", () => {
+    // wenn sich die fenstergröße ändert und ein modal offen ist → neu zentrieren
+    // sonst könnte das modal halb außerhalb des sichtbaren bereichs landen
     if (currentModal) {
       centerModal(currentModal);
     }
   });
 
   /* ===== START ===== */
+  // falls das script im <head> lädt ist das DOM noch nicht fertig → auf DOMContentLoaded warten
+  // falls es am ende des <body> lädt ist das DOM schon bereit → sofort starten
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }
 
-  // Export für globale Verwendung
   window.getThemeFromCSS = getThemeFromCSS;
   window.applyTheme = applyTheme;
   window.handleThemeSelect = handleThemeSelect;
@@ -716,6 +710,9 @@
         }
       }
 
+      // timeout weil das DOM beim ersten aufruf manchmal noch nicht bereit ist
+      // (BackgroundPatterns.init() wird mit setTimeout(100) aufgerufen, aber loadSettings
+      // läuft sofort synchron – die inputs sind dann ggf. noch nicht im DOM)
       setTimeout(() => {
         const enabled = document.getElementById("bg-pattern-enabled");
         const size = document.getElementById("bg-pattern-size");
@@ -732,8 +729,6 @@
 
         if (repeat) repeat.value = this.settings.repeat;
 
-
-
         if (controls) {
           controls.style.display = this.settings.enabled ? "block" : "none";
         }
@@ -747,6 +742,7 @@
 
     loadPatterns: async function () {
       try {
+        // patterns werden vom server geholt (PHP backend gibt JSON zurück)
         const res = await fetch("/api/background.php", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -763,6 +759,7 @@
           this.renderPatternList([]);
         }
       } catch (err) {
+        // wenn das backend nicht erreichbar ist → leere liste, kein crash
         console.warn("Background Patterns Backend nicht verfügbar:", err.message);
         this.renderPatternList([]);
       }
@@ -772,19 +769,20 @@
       const select = document.getElementById("bg-pattern-select");
       if (!select) return;
 
+      // dropdown neu aufbauen
       select.innerHTML = '<option value="">-- Kein Muster --</option>';
 
       patterns.forEach((pattern) => {
         const option = document.createElement("option");
         option.value = pattern.path;
         option.textContent = pattern.name;
+        // gespeichertes pattern direkt vorauswählen
         if (pattern.path === this.settings.pattern) {
           option.selected = true;
         }
         select.appendChild(option);
       });
     },
-
 
     setupEventListeners: function () {
       const enabled = document.getElementById("bg-pattern-enabled");
@@ -835,6 +833,7 @@
     },
 
     applyPattern: function () {
+      // wenn deaktiviert oder kein pattern gewählt → background entfernen
       if (!this.settings.enabled || !this.settings.pattern) {
         document.body.style.backgroundImage = "";
         return;
@@ -843,8 +842,7 @@
       document.body.style.backgroundImage = `url("${this.settings.pattern}")`;
       document.body.style.backgroundSize = `${this.settings.size}px`;
       document.body.style.backgroundRepeat = this.settings.repeat;
-      document.body.style.backgroundAttachment = "fixed";
-
+      document.body.style.backgroundAttachment = "fixed"; // pattern scrollt nicht mit dem inhalt
 
       log("Background Pattern angewendet:", this.settings.pattern);
     },
@@ -863,17 +861,14 @@
       preview.style.backgroundImage = `url("${this.settings.pattern}")`;
       preview.style.backgroundSize = `${this.settings.size}px`;
       preview.style.backgroundRepeat = this.settings.repeat;
-
     },
 
   };
 
-  // Background Patterns nach kurzer Verzögerung initialisieren
   setTimeout(() => {
     BackgroundPatterns.init();
   }, 100);
 
-  // Export BackgroundPatterns
   window.BackgroundPatterns = BackgroundPatterns;
 })();
 
@@ -908,47 +903,49 @@ function showThemeConfirmation(themeName) {
 
   let isMoving = false;
 
-
   function UseButton(e) {
-    if (isMoving) return;
+    if (isMoving) return; // verhindert dass mehrere moves gleichzeitig laufen
 
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // verhindert dass der click irgendwo anders ankommt
 
     isMoving = true;
 
-
-    // Berechnung und so
     const padding = 50;
     const boxWidth = box.offsetWidth;
     const boxHeight = box.offsetHeight;
 
+    // maximale position: fenstergröße minus box-größe minus padding damit die box nicht rausfliegt
     const maxX = window.innerWidth - boxWidth - padding;
     const maxY = window.innerHeight - boxHeight - padding;
 
     let randomX, randomY;
     let attempts = 0;
 
-    // Finde eine Position die weit genug vom Cursor entfernt ist
+    // zufällige position innerhalb des erlaubten bereichs berechnen
+    // die schleife war ursprünglich geplant um positionen nah am cursor zu vermeiden,
+    // aber die bedingung fehlt noch – deswegen macht sie einfach 5 versuche und nimmt den letzten
     do {
       randomX = Math.random() * (maxX - padding) + padding;
       randomY = Math.random() * (maxY - padding) + padding;
       attempts++;
     } while (attempts < 5);
 
-    // Setze neue Position
     box.style.position = 'fixed';
     box.style.left = randomX + 'px';
     box.style.top = randomY + 'px';
+    // cubic-bezier(0.68, -0.55, 0.265, 1.55) = "back easing" → box überschießt kurz und federt zurück
     box.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
 
+    // isMoving lock für 350ms halten damit man den button nicht spammen kann
+    // bevor die animation fertig ist
     setTimeout(() => {
       isMoving = false;
     }, 350);
   }
 
   yesBtn.addEventListener('click', UseButton);
-  yesBtn.addEventListener('touchstart', UseButton, { passive: false });
+  yesBtn.addEventListener('touchstart', UseButton, { passive: false }); // touch-support für mobile
 
   noBtn.addEventListener('click', closeConfirmation);
 
@@ -960,7 +957,7 @@ function showThemeConfirmation(themeName) {
     overlay.style.animation = 'fadeOut 0.2s forwards';
     setTimeout(() => {
       overlay.remove();
-      delete window.activateCyberpunk;
+      delete window.activateCyberpunk; 
     }, 200);
   }
 }

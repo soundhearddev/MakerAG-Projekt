@@ -22,10 +22,13 @@
 ============================================== */
 .counter {
     text-align: center;
+    margin-top: -3rem;
+    margin-bottom: -1.7rem;
 }
 
 .counter h2 {
     margin-bottom: 1rem;
+    font-size: 1.5rem;
 }
 
 .counter .count {
@@ -33,6 +36,8 @@
     font-weight: bold;
     color: var(--cat-text);
 }
+
+
 
 /* ==============================================
    SCHRÄNKE (LOCKER)
