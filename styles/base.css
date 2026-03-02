@@ -77,6 +77,9 @@ body.loaded #settings {
     animation: rotate-gradient 3s forwards;
 }
 
+
+
+
 @keyframes rotate-gradient {
     0% {
         transform: rotate(0deg);
@@ -93,6 +96,16 @@ body.loaded #settings {
     position: relative;
     z-index: 1;
 }
+
+
+
+
+
+
+
+
+
+
 
 /* ==============================================
    ÜBERSCHRIFTEN
@@ -115,7 +128,7 @@ h1 {
 h2 {
     font-size: 2rem;
     font-weight: 700;
-    border-bottom: 2px solid var(--cat-text);
+    border-bottom: 2px solid var(--cat-text); /* cool ahh unterstrich */
     padding-bottom: 0.3rem;
     color: var(--cat-text);
 }

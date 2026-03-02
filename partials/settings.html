@@ -39,9 +39,6 @@
                     <button class="tab-btn active" data-tab="general">
                         <span class="tab-text">Allgemein</span>
                     </button>
-                    <button class="tab-btn" data-tab="appearance">
-                        <span class="tab-text">Darstellung</span>
-                    </button>
                     <button class="tab-btn" data-tab="advanced">
                         <span class="tab-text">Experimentell</span>
                     </button>
@@ -64,6 +61,31 @@
                                 </select>
                             </div>
 
+
+
+                            <div class="setting-group">
+                                <div class="setting-item">
+                                    <div class="setting-label">
+                                        <label for="font-size" class="setting-title">Schriftgröße</label>
+                                        <span class="setting-description">Passe die Textgröße an (12-20px)</span>
+                                    </div>
+
+                                    <div class="slider-container">
+                                        <input type="range" id="font-size" min="12" max="20" value="15"
+                                            class="setting-slider">
+                                        <span class="slider-value">15px</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Experimentell -->
+                    <div class="tab-content" data-tab-content="advanced">
+                        <h3 class="tab-heading">Experimentelle Einstellungen</h3>
+
+                        <div class="setting-group">
+
                             <div class="setting-item">
                                 <div class="setting-label">
                                     <label for="auto-save" class="setting-title">Auto-Save</label>
@@ -74,84 +96,22 @@
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Tab: Darstellung -->
-                    <div class="tab-content" data-tab-content="appearance">
-                        <h3 class="tab-heading">Darstellung & Interface</h3>
 
-                        <div class="setting-group">
-                            <div class="setting-item">
-                                <div class="setting-label">
-                                    <label for="font-size" class="setting-title">Schriftgröße</label>
-                                    <span class="setting-description">Passe die Textgröße an (12-20px)</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="font-size" min="12" max="20" value="15"
-                                        class="setting-slider">
-                                    <span class="slider-value">15px</span>
-                                </div>
-                            </div>
+
+
 
                             <div class="setting-item">
                                 <div class="setting-label">
-                                    <label for="animations" class="setting-title">Animationen</label>
-                                    <span class="setting-description">Bewegungseffekte und Übergänge aktivieren</span>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="animations" checked>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-
-                            <div class="setting-item">
-                                <div class="setting-label">
-                                    <label for="compact-mode" class="setting-title">Kompaktmodus</label>
-                                    <span class="setting-description">Dichtes Layout mit weniger Abstand</span>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="compact-mode">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tab: Experimentell -->
-                    <div class="tab-content" data-tab-content="advanced">
-                        <h3 class="tab-heading">Experimentelle Einstellungen</h3>
-
-
-                        <div class="setting-group">
-                            <div class="setting-item">
-                                <div class="setting-label">
-                                    <label for="golMode" class="setting-title">Echten Titel</label>
-                                    <span class="setting-description">Aktiviere den animierten Game of Life
-                                        Hintergrund</span>
+                                    <label for="golMode" class="setting-title">Game of Life</label>
+                                    <span class="setting-description">???</span>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="golMode" name="golMode">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
-                        </div>
 
-
-
-
-                        <div class="setting-group">
-                            <div class="setting-item">
-                                <div class="setting-label">
-                                    <label for="golMode" class="setting-title">Game of Life Overlay</label>
-                                    <span class="setting-description">Aktiviere den animierten Game of Life
-                                        Hintergrund</span>
-                                </div>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="golMode" name="golMode">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
 
                             <div class="setting-item">
                                 <div class="setting-label">
@@ -161,6 +121,52 @@
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="debug-mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="fps-display" class="setting-title">FPS anzeigen</label>
+                                    <span class="setting-description">zeige die Anzahl an Frames pro sekunde </span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="fps-display">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+
+                                    <label for="REAL-mode" class="setting-title">Titel in den Hintergrund</label>
+                                    <span class="setting-description">Setze den Titel in den Hintergrund</span>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="REAL-mode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+
+                            </div>
+
+
+
+
+
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <label for="animations" class="setting-title">Animationen</label>
+                                    <span class="setting-description"
+                                        style="color: red; font-size: 1.5rem;">FUNKTIONUNFÄHIG
+                                        - Aktiviert lassen</span>
+
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="animations" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>

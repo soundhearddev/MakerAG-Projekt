@@ -1,15 +1,18 @@
-<?php
-/**
- * API Endpoint: fetch_catagory.php
- * Gibt alle Kategorien aus der categories-Tabelle zurück,
- * inklusive Parent-Kategorie und Item-Anzahl.
- *
- * GET → Liste aller Kategorien mit Struktur
- */
 
+<?php
 require_once __DIR__ . '/init.php';
 
 try {
+    // GROUP BY = Kategorien zusammenfassen damit COUNT funktioniert
+    // COUNT(i.id) = wie viele Items haben diese Kategorie
+    // (LEFT JOIN items damit auch Kategorien ohne Items erscheinen, mit COUNT 0)
+    //
+    // Self-Join auf categories:
+    //   c = die Kategorie selbst
+    //   p = die Eltern-Kategorie (parent_id zeigt auf eine andere Zeile derselben Tabelle)
+    // LEFT JOIN damit auch Root-Kategorien (ohne parent) auftauchen
+    //
+    // ORDER BY p.name ASC, c.name ASC = erst nach Elternkategorie, dann alphabetisch
     $result = $db->query(
         "SELECT
             c.id,
@@ -27,9 +30,10 @@ try {
 
     $categories = $result->fetch_all(MYSQLI_ASSOC);
 
-    // Zahlen korrekt casten
-    foreach ($categories as &$cat) {
+    // MySQL gibt Zahlen manchmal als Strings zurück – explizit zu int casten
+    foreach ($categories as &$cat) {         // & = Referenz, ändert das Original-Array
         $cat['id']         = (int) $cat['id'];
+        // !== null check: parent_id darf null sein (Root-Kategorie hat kein Parent)
         $cat['parent_id']  = $cat['parent_id'] !== null ? (int) $cat['parent_id'] : null;
         $cat['item_count'] = (int) $cat['item_count'];
     }
