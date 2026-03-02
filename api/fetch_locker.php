@@ -72,6 +72,6 @@ try {
         ]);
     }
 } catch (Exception $e) {
-    error_log('fetch_locker.php: ' . $e->getMessage());
+    error_log('fetch-locker.php: ' . $e->getMessage());
     sendError('Datenbankfehler', 500);
 }
