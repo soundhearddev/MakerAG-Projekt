@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventar — Schrank-Ansicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ── RESET & VARIABLES ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #0e0e0f;
+    --bg2:        #161618;
+    --bg3:        #1f1f22;
+    --border:     #2a2a2e;
+    --border2:    #3a3a3f;
+    --text:       #e8e8ec;
+    --text2:      #9898a8;
+    --text3:      #5a5a6a;
+    --accent:     #f0c040;
+    --accent2:    #d4a030;
+    --green:      #4caf78;
+    --red:        #e05454;
+    --blue:       #5a9fd4;
+    --font-head:  'Syne', sans-serif;
+    --font-mono:  'DM Mono', monospace;
+    --r:          4px;
+    --r2:         8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ────────────────────────────────────────────────────── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 16px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+  }
+
+  .logo span {
+    color: var(--text3);
+    font-weight: 400;
+    font-size: 12px;
+    display: block;
+    font-family: var(--font-mono);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border);
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .breadcrumb .sep { color: var(--border2); }
+  .breadcrumb .active { color: var(--text); }
+  .breadcrumb a { color: var(--text3); text-decoration: none; cursor: pointer; }
+  .breadcrumb a:hover { color: var(--accent); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stat-badge {
+    font-size: 11px;
+    color: var(--text3);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 3px 8px;
+  }
+  .stat-badge strong { color: var(--accent); }
+
+  /* ── LAYOUT ────────────────────────────────────────────────────── */
+  .app {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 1fr;
+    min-height: calc(100vh - 61px);
+  }
+
+  /* ── SIDEBAR ───────────────────────────────────────────────────── */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    overflow-y: auto;
+    position: sticky;
+    top: 61px;
+    height: calc(100vh - 61px);
+  }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 24px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  .locker-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--r2);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    margin-bottom: 4px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .locker-card:hover {
+    background: var(--bg3);
+    border-color: var(--border);
+  }
+
+  .locker-card.active {
+    background: rgba(240, 192, 64, 0.08);
+    border-color: rgba(240, 192, 64, 0.3);
+  }
+
+  .locker-icon {
+    width: 36px;
+    height: 44px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+  }
+
+  .locker-card.active .locker-icon {
+    background: rgba(240, 192, 64, 0.12);
+    border-color: var(--accent2);
+  }
+
+  .locker-icon-label {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--text2);
+  }
+
+  .locker-card.active .locker-icon-label { color: var(--accent); }
+
+  .locker-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .locker-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .locker-meta {
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .locker-count {
+    font-size: 11px;
+    color: var(--text3);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+  }
+
+  .locker-card.active .locker-count {
+    color: var(--accent2);
+    border-color: rgba(240, 192, 64, 0.3);
+    background: rgba(240, 192, 64, 0.08);
+  }
+
+  /* ── MAIN CONTENT ──────────────────────────────────────────────── */
+  .main {
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  /* ── WELCOME SCREEN ────────────────────────────────────────────── */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 48px;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .welcome-icon {
+    font-size: 64px;
+    opacity: 0.3;
+    margin-bottom: 8px;
+  }
+
+  .welcome h2 {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text2);
+  }
+
+  .welcome p {
+    color: var(--text3);
+    font-size: 13px;
+    max-width: 360px;
+  }
+
+  /* ── LOCKER VIEW ───────────────────────────────────────────────── */
+  .locker-view {
+    padding: 32px;
+    animation: fadeUp 0.25s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .locker-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 16px;
+  }
+
+  .locker-title {
+    font-family: var(--font-head);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .locker-title .schrank-id {
+    color: var(--accent);
+  }
+
+  .locker-subtitle {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 6px;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 4px;
+  }
+
+  .view-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    padding: 6px 10px;
+    border-radius: var(--r);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+
+  .view-btn:hover, .view-btn.active {
+    background: var(--bg2);
+    border-color: var(--border2);
+    color: var(--text);
+  }
+
+  /* ── VISUAL CABINET ────────────────────────────────────────────── */
+  .cabinet-container {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .cabinet {
+    flex-shrink: 0;
+    width: 220px;
+    background: var(--bg2);
+    border: 2px solid var(--border2);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .cabinet::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent2);
+  }
+
+  .cabinet-top {
+    background: var(--bg3);
+    padding: 8px 12px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cabinet-id {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 16px;
+    color: var(--accent);
+  }
+
+  .shelf-row {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shelf-row:last-child { border-bottom: none; }
+
+  .shelf-row:hover { background: rgba(240, 192, 64, 0.04); }
+  .shelf-row.selected { background: rgba(240, 192, 64, 0.08); }
+
+  .shelf-row.selected::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  .shelf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+  }
+
+  .shelf-label {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+  }
+
+  .shelf-row.selected .shelf-label { color: var(--accent2); }
+
+  .shelf-items-preview {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+
+  .shelf-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    background: var(--border2);
+    transition: background 0.15s;
+  }
+
+  .shelf-row:hover .shelf-dot,
+  .shelf-row.selected .shelf-dot { background: var(--accent2); }
+
+  .shelf-items-bar {
+    height: 3px;
+    background: var(--border);
+    margin: 0 14px 10px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .shelf-items-bar-fill {
+    height: 100%;
+    background: var(--accent2);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── SHELF ITEMS LIST ──────────────────────────────────────────── */
+  .shelf-detail {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shelf-detail-header {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .shelf-detail-header strong { color: var(--text); }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  .item-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .item-card:hover {
+    border-color: var(--border2);
+    background: var(--bg3);
+    transform: translateY(-1px);
+  }
+
+  .item-card-id {
+    font-size: 10px;
+    color: var(--text3);
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+  }
+
+  .item-card-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .item-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .tag.status-verfügbar  { color: var(--green); border-color: rgba(76,175,120,0.25); background: rgba(76,175,120,0.06); }
+  .tag.status-ausgeliehen { color: var(--blue); border-color: rgba(90,159,212,0.25); background: rgba(90,159,212,0.06); }
+  .tag.status-defekt     { color: var(--red);  border-color: rgba(224,84,84,0.25);  background: rgba(224,84,84,0.06); }
+  .tag.status-verschollen { color: var(--red); border-color: rgba(224,84,84,0.25);  background: rgba(224,84,84,0.06); }
+
+  .item-card-thumb {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--r);
+    margin-bottom: 10px;
+    background: var(--bg3);
+    display: block;
+  }
+
+  .item-card-thumb-placeholder {
+    width: 100%;
+    height: 60px;
+    background: var(--bg3);
+    border: 1px dashed var(--border);
+    border-radius: var(--r);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--text3);
+    opacity: 0.4;
+  }
+
+  /* ── ALL ITEMS LIST ────────────────────────────────────────────── */
+  .all-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .list-item {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-size: 13px;
+  }
+
+  .list-item:hover {
+    border-color: var(--border2);
+    background: var(--bg3);
+  }
+
+  .list-item-id {
+    font-size: 10px;
+    color: var(--text3);
+    text-align: right;
+    font-family: var(--font-mono);
+  }
+
+  .list-item-name { color: var(--text); font-weight: 500; }
+  .list-item-shelf { font-size: 11px; color: var(--text3); text-align: right; }
+
+  /* ── MODAL OVERLAY ─────────────────────────────────────────────── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 660px;
+    max-height: 88vh;
+    overflow-y: auto;
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.2s;
+    position: relative;
+  }
+
+  .modal-backdrop.open .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-header {
+    padding: 24px 24px 0;
+    position: sticky;
+    top: 0;
+    background: var(--bg2);
+    z-index: 1;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    font-size: 16px;
+    transition: all 0.12s;
+  }
+
+  .modal-close:hover {
+    border-color: var(--border2);
+    color: var(--text);
+  }
+
+  .modal-id {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .modal-title {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    padding-right: 40px;
+  }
+
+  .modal-subtitle {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  .modal-body {
+    padding: 20px 24px 24px;
+  }
+
+  .modal-section {
+    margin-bottom: 20px;
+  }
+
+  .modal-section-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+  }
+
+  .modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .spec-table tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .spec-table tr:last-child { border-bottom: none; }
+
+  .spec-table td {
+    padding: 8px 0;
+    vertical-align: top;
+    font-size: 12px;
+  }
+
+  .spec-key {
+    color: var(--text3);
+    width: 40%;
+    padding-right: 16px;
+  }
+
+  .spec-value { color: var(--text); }
+
+  .notes-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-style: italic;
+  }
+
+  .location-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .location-box .seg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .location-box .seg-label {
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .location-box .seg-value {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+  }
+
+  .location-box .sep {
+    color: var(--border2);
+    font-size: 18px;
+  }
+
+  /* ── LOADING / ERROR ───────────────────────────────────────────── */
+  .state-block {
+    padding: 48px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── SEARCH BAR ────────────────────────────────────────────────── */
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .search-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: var(--r);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--border2); }
+  .search-input::placeholder { color: var(--text3); }
+
+  .count-badge {
+    font-size: 11px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .count-badge strong { color: var(--accent); }
+
+  /* ── SCROLLBAR ─────────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* ── RESPONSIVE ────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .cabinet-container { flex-direction: column; }
+    .cabinet { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">
+      Inventar
+      <span>Schrank-Viewer</span>
+    </div>
+    <div class="header-divider"></div>
+    <nav class="breadcrumb" id="breadcrumb">
+      <span class="active">Alle Schränke</span>
+    </nav>
+  </div>
+  <div class="header-right">
+    <div class="stat-badge" id="total-badge">— Items</div>
+  </div>
+</header>
+
+<!-- APP LAYOUT -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Schränke</div>
+      <div id="locker-list">
+        <div class="state-block">
+          <div class="spinner"></div>
+          Lade Schränke…
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main-content">
+    <div class="welcome">
+      <div class="welcome-icon">🗄️</div>
+      <h2>Schrank auswählen</h2>
+      <p>Wähle links einen Schrank aus, um die enthaltenen Items interaktiv anzuzeigen.</p>
+    </div>
+  </main>
+
+</div>
+
+<!-- ITEM DETAIL MODAL -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" id="modal">
+    <div class="modal-header" id="modal-header"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const API_BASE = window.location.origin; // Passe das an deinen API-Pfad an
+
+// ── STATE ───────────────────────────────────────────────────────────────────
+let allLockers    = [];
+let currentLocker = null;
+let currentItems  = [];
+let currentByShelf = {};
+let selectedShelf = null;
+let viewMode      = 'visual'; // 'visual' | 'list'
+
+// ── API HELPERS ─────────────────────────────────────────────────────────────
+async function apiFetch(endpoint) {
+  const res = await fetch(`${API_BASE}/${endpoint}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error || 'API Fehler');
+  return json;
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const json = await apiFetch('/api/fetch-locker.php');
+    allLockers = json.data;
+    renderSidebar();
+
+    // Stats laden
+    try {
+      const stats = await apiFetch('count.php');
+      document.getElementById('total-badge').innerHTML =
+        `<strong>${stats.statistics?.total_items ?? '—'}</strong> Items`;
+    } catch(e) {}
+  } catch(e) {
+    document.getElementById('locker-list').innerHTML =
+      `<div class="state-block">⚠️ Fehler beim Laden:<br>${e.message}</div>`;
+  }
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const container = document.getElementById('locker-list');
+  if (!allLockers.length) {
+    container.innerHTML = '<div class="state-block">Keine Schränke gefunden.</div>';
+    return;
+  }
+
+  container.innerHTML = allLockers.map(l => `
+    <div class="locker-card ${currentLocker === l.locker ? 'active' : ''}"
+         onclick="selectLocker('${escHtml(l.locker)}')">
+      <div class="locker-icon">
+        <div class="locker-icon-label">${escHtml(l.locker)}</div>
+      </div>
+      <div class="locker-info">
+        <div class="locker-name">Schrank ${escHtml(l.locker)}</div>
+        <div class="locker-meta">${l.shelves?.length || 0} Regal${l.shelves?.length !== 1 ? 'e' : ''}</div>
+      </div>
+      <div class="locker-count">${l.item_count}</div>
+    </div>
+  `).join('');
+}
+
+// ── LOCKER SELECTION ──────────────────────────────────────────────────────────
+async function selectLocker(lockerId) {
+  currentLocker = lockerId;
+  selectedShelf = null;
+  renderSidebar();
+  updateBreadcrumb();
+
+  const main = document.getElementById('main-content');
+  main.innerHTML = `<div class="state-block"><div class="spinner"></div>Lade Schrank ${escHtml(lockerId)}…</div>`;
+
+  try {
+    const json = await apiFetch(`fetch_locker.php?locker=${encodeURIComponent(lockerId)}`);
+    currentItems   = json.data;
+    currentByShelf = json.by_shelf || {};
+
+    renderLockerView();
+  } catch(e) {
+    main.innerHTML = `<div class="state-block">⚠️ ${e.message}</div>`;
+  }
+}
+
+// ── RENDER LOCKER VIEW ────────────────────────────────────────────────────────
+function renderLockerView() {
+  const main = document.getElementById('main-content');
+  const shelves = Object.keys(currentByShelf);
+  const maxItems = Math.max(...shelves.map(s => currentByShelf[s].length));
+
+  main.innerHTML = `
+    <div class="locker-view">
+
+      <div class="locker-header">
+        <div>
+          <div class="locker-title">
+            Schrank <span class="schrank-id">${escHtml(currentLocker)}</span>
+          </div>
+          <div class="locker-subtitle">
+            ${currentItems.length} Item${currentItems.length !== 1 ? 's'  : ''} ·
+            ${shelves.length} Regal${shelves.length !== 1 ? 'e' : ''}
+          </div>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn ${viewMode === 'visual' ? 'active' : ''}" onclick="setView('visual')" title="Schrank-Ansicht">🗄</button>
+          <button class="view-btn ${viewMode === 'list'   ? 'active' : ''}" onclick="setView('list')"   title="Listen-Ansicht">≡</button>
+        </div>
+      </div>
+
+      ${viewMode === 'visual' ? renderVisualView(shelves, maxItems) : renderListView()}
+
+    </div>
+  `;
+
+  // Erstes Regal automatisch auswählen
+  if (viewMode === 'visual' && shelves.length > 0) {
+    selectShelf(shelves[0], false);
+  }
+}
+
+function renderVisualView(shelves, maxItems) {
+  return `
+    <div class="cabinet-container">
+
+      <!-- Visuelle Schrank-Darstellung -->
+      <div class="cabinet">
+        <div class="cabinet-top">
+          <span>Schrank</span>
+          <span class="cabinet-id">${escHtml(currentLocker)}</span>
+        </div>
+        ${shelves.map(shelf => {
+          const items = currentByShelf[shelf];
+          const dots = Math.min(items.length, 12);
+          const pct  = maxItems > 0 ? (items.length / maxItems) * 100 : 0;
+          return `
+            <div class="shelf-row" id="shelf-row-${escAttr(shelf)}" onclick="selectShelf('${escAttr(shelf)}', true)">
+              <div class="shelf-header">
+                <span class="shelf-label">Regal ${escHtml(shelf)}</span>
+                <div class="shelf-items-preview">
+                  ${Array.from({length: dots}, () => `<div class="shelf-dot"></div>`).join('')}
+                  ${items.length > 12 ? `<span style="font-size:9px;color:var(--text3);margin-left:2px;">+${items.length-12}</span>` : ''}
+                </div>
+              </div>
+              <div class="shelf-items-bar">
+                <div class="shelf-items-bar-fill" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- Items für ausgewähltes Regal -->
+      <div class="shelf-detail" id="shelf-detail">
+        <div class="shelf-detail-header">
+          <span>Regal auswählen…</span>
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function renderListView() {
+  const filtered = getFilteredItems();
+  return `
+    <div>
+      <div class="search-row">
+        <input class="search-input" type="text" placeholder="Items filtern…"
+               oninput="onSearchInput(this.value)" id="search-input"
+               value="${escAttr(document.getElementById('search-input')?.value || '')}">
+        <span class="count-badge"><strong id="filtered-count">${filtered.length}</strong> / ${currentItems.length}</span>
+      </div>
+      <div class="all-items-list" id="items-list">
+        ${renderListItems(filtered)}
+      </div>
+    </div>
+  `;
+}
+
+function renderListItems(items) {
+  if (!items.length) return '<div class="state-block">Keine Items gefunden.</div>';
+  return items.map(item => `
+    <div class="list-item" onclick="openItem(${item.id})">
+      <span class="list-item-id">#${item.id}</span>
+      <span class="list-item-name">${escHtml(item.name)}</span>
+      <span class="tag status-${escAttr(item.status)}">${escHtml(item.status)}</span>
+      <span class="list-item-shelf">Regal ${escHtml(item.shelf || '—')}</span>
+    </div>
+  `).join('');
+}
+
+let searchQuery = '';
+
+function getFilteredItems() {
+  if (!searchQuery) return currentItems;
+  const q = searchQuery.toLowerCase();
+  return currentItems.filter(i =>
+    i.name?.toLowerCase().includes(q) ||
+    i.brand?.toLowerCase().includes(q) ||
+    i.model?.toLowerCase().includes(q) ||
+    String(i.id).includes(q)
+  );
+}
+
+function onSearchInput(val) {
+  searchQuery = val;
+  const filtered = getFilteredItems();
+  document.getElementById('items-list').innerHTML = renderListItems(filtered);
+  document.getElementById('filtered-count').textContent = filtered.length;
+}
+
+// ── SHELF SELECTION ───────────────────────────────────────────────────────────
+function selectShelf(shelf, scrollToDetail) {
+  selectedShelf = shelf;
+
+  // Alle Shelf-Rows resetten
+  document.querySelectorAll('.shelf-row').forEach(el => el.classList.remove('selected'));
+  const row = document.getElementById(`shelf-row-${shelf}`);
+  if (row) row.classList.add('selected');
+
+  const detail = document.getElementById('shelf-detail');
+  if (!detail) return;
+
+  const items = currentByShelf[shelf] || [];
+
+  detail.innerHTML = `
+    <div class="shelf-detail-header">
+      Regal <strong>${escHtml(shelf)}</strong> — ${items.length} Item${items.length !== 1 ? 's' : ''}
+    </div>
+    <div class="items-grid">
+      ${items.map(item => `
+        <div class="item-card" onclick="openItem(${item.id})">
+          ${item.thumbnail
+            ? `<img class="item-card-thumb" src="${escAttr(item.thumbnail)}" alt="" onerror="this.style.display='none'">`
+            : `<div class="item-card-thumb-placeholder">📦</div>`
+          }
+          <div class="item-card-id">#${item.id}</div>
+          <div class="item-card-name">${escHtml(item.name)}</div>
+          <div class="item-card-meta">
+            <span class="tag status-${escAttr(item.status)}">${escHtml(item.status)}</span>
+            ${item.category_name ? `<span class="tag">${escHtml(item.category_name)}</span>` : ''}
+            ${(item.tags || []).slice(0,2).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  if (scrollToDetail) {
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ── VIEW TOGGLE ───────────────────────────────────────────────────────────────
+function setView(mode) {
+  viewMode = mode;
+  renderLockerView();
+}
+
+// ── ITEM DETAIL MODAL ─────────────────────────────────────────────────────────
+async function openItem(id) {
+  const item = currentItems.find(i => i.id === id);
+  if (!item) return;
+
+  const backdrop = document.getElementById('modal-backdrop');
+  const header   = document.getElementById('modal-header');
+  const body     = document.getElementById('modal-body');
+
+  header.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-id">#${item.id} · ${escHtml(item.category_name || 'Kein Typ')} ${item.parent_category ? '· ' + escHtml(item.parent_category) : ''}</div>
+    <div class="modal-title">${escHtml(item.name)}</div>
+    <div class="modal-subtitle">
+      ${item.brand ? escHtml(item.brand) : ''}
+      ${item.model ? ' — ' + escHtml(item.model) : ''}
+    </div>
+  `;
+
+  body.innerHTML = `
+    <div class="modal-section">
+      <div class="modal-tags">
+        <span class="tag status-${escAttr(item.status)}">${escHtml(item.status)}</span>
+        ${item.item_condition ? `<span class="tag">${escHtml(item.item_condition)}</span>` : ''}
+        ${(item.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('')}
+      </div>
+    </div>
+
+    ${(item.locker || item.shelf) ? `
+    <div class="modal-section">
+      <div class="modal-section-label">Standort</div>
+      <div class="location-box">
+        ${item.room ? `
+          <div class="seg">
+            <span class="seg-label">Raum</span>
+            <span class="seg-value">${escHtml(item.room)}</span>
+          </div>
+          <span class="sep">›</span>
+        ` : ''}
+        ${item.locker ? `
+          <div class="seg">
+            <span class="seg-label">Schrank</span>
+            <span class="seg-value">${escHtml(item.locker)}</span>
+          </div>
+          <span class="sep">›</span>
+        ` : ''}
+        ${item.shelf ? `
+          <div class="seg">
+            <span class="seg-label">Regal</span>
+            <span class="seg-value">${escHtml(item.shelf)}</span>
+          </div>
+        ` : ''}
+        ${item.position ? `
+          <span class="sep">›</span>
+          <div class="seg">
+            <span class="seg-label">Position</span>
+            <span class="seg-value">${escHtml(item.position)}</span>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+    ` : ''}
+
+    ${Object.keys(item.specs || {}).length > 0 ? `
+    <div class="modal-section">
+      <div class="modal-section-label">Spezifikationen</div>
+      <table class="spec-table">
+        ${Object.entries(item.specs).map(([k,v]) => `
+          <tr>
+            <td class="spec-key">${escHtml(k)}</td>
+            <td class="spec-value">${escHtml(v)}</td>
+          </tr>
+        `).join('')}
+      </table>
+    </div>
+    ` : ''}
+
+    ${item.notes ? `
+    <div class="modal-section">
+      <div class="modal-section-label">Notizen</div>
+      <div class="notes-box">${escHtml(item.notes)}</div>
+    </div>
+    ` : ''}
+
+    ${item.serial_number ? `
+    <div class="modal-section">
+      <div class="modal-section-label">Seriennummer</div>
+      <code style="font-family:var(--font-mono);font-size:12px;color:var(--text2)">${escHtml(item.serial_number)}</code>
+    </div>
+    ` : ''}
+  `;
+
+  backdrop.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+}
+
+// Close on backdrop click
+document.getElementById('modal-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── BREADCRUMB ─────────────────────────────────────────────────────────────────
+function updateBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  if (!currentLocker) {
+    bc.innerHTML = '<span class="active">Alle Schränke</span>';
+  } else {
+    bc.innerHTML = `
+      <a onclick="clearLocker()">Alle Schränke</a>
+      <span class="sep">/</span>
+      <span class="active">Schrank ${escHtml(currentLocker)}</span>
+    `;
+  }
+}
+
+function clearLocker() {
+  currentLocker = null;
+  currentItems  = [];
+  currentByShelf = {};
+  renderSidebar();
+  updateBreadcrumb();
+  document.getElementById('main-content').innerHTML = `
+    <div class="welcome">
+      <div class="welcome-icon">🗄️</div>
+      <h2>Schrank auswählen</h2>
+      <p>Wähle links einen Schrank aus, um die enthaltenen Items interaktiv anzuzeigen.</p>
+    </div>
+  `;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escAttr(str) {
+  return escHtml(str).replace(/\s/g, '_');
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
