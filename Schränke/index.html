@@ -924,16 +924,35 @@ async function apiFetch(endpoint) {
 // ── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
   try {
-    const json = await apiFetch('/api/fetch-locker.php');
-    allLockers = json.data;
+    // Alle Items laden, daraus Schränke ableiten — kein neuer Endpoint nötig
+    const json = await apiFetch('fetch_all_items.php?limit=1000');
+    const items = json.data;
+
+    // Schränke aus den Items extrahieren
+    const lockerMap = {};
+    for (const item of items) {
+      const locker = item.locker;
+      if (!locker) continue;
+      if (!lockerMap[locker]) {
+        lockerMap[locker] = { locker, item_count: 0, shelves: new Set(), room: item.room };
+      }
+      lockerMap[locker].item_count++;
+      if (item.shelf) lockerMap[locker].shelves.add(item.shelf);
+    }
+
+    allLockers = Object.values(lockerMap)
+      .map(l => ({ ...l, shelves: [...l.shelves].sort() }))
+      .sort((a, b) => String(a.locker).localeCompare(String(b.locker)));
+
+    // Alle Items cachen für spätere Schrank-Ansichten
+    window._allItems = items;
+
     renderSidebar();
 
-    // Stats laden
-    try {
-      const stats = await apiFetch('count.php');
-      document.getElementById('total-badge').innerHTML =
-        `<strong>${stats.statistics?.total_items ?? '—'}</strong> Items`;
-    } catch(e) {}
+    // Stats
+    document.getElementById('total-badge').innerHTML =
+      `<strong>${items.length}</strong> Items`;
+
   } catch(e) {
     document.getElementById('locker-list').innerHTML =
       `<div class="state-block">⚠️ Fehler beim Laden:<br>${e.message}</div>`;
@@ -970,18 +989,20 @@ async function selectLocker(lockerId) {
   renderSidebar();
   updateBreadcrumb();
 
-  const main = document.getElementById('main-content');
-  main.innerHTML = `<div class="state-block"><div class="spinner"></div>Lade Schrank ${escHtml(lockerId)}…</div>`;
+  const allItems = window._allItems || [];
+  currentItems = allItems.filter(i => i.locker === lockerId);
 
-  try {
-    const json = await apiFetch(`fetch_locker.php?locker=${encodeURIComponent(lockerId)}`);
-    currentItems   = json.data;
-    currentByShelf = json.by_shelf || {};
-
-    renderLockerView();
-  } catch(e) {
-    main.innerHTML = `<div class="state-block">⚠️ ${e.message}</div>`;
+  currentByShelf = {};
+  for (const item of currentItems) {
+    const shelf = item.shelf ?? 'Unbekannt';
+    if (!currentByShelf[shelf]) currentByShelf[shelf] = [];
+    currentByShelf[shelf].push(item);
   }
+  currentByShelf = Object.fromEntries(
+    Object.entries(currentByShelf).sort(([a],[b]) => String(a).localeCompare(String(b)))
+  );
+
+  renderLockerView();
 }
 
 // ── RENDER LOCKER VIEW ────────────────────────────────────────────────────────
