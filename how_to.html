@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +8,7 @@
     <link rel="stylesheet" href="/styles/base.css">
     <link rel="stylesheet" href="/styles/how_to.css">
     <link rel="icon" href="/images/logo.png">
-
 </head>
-
 <body>
     <script src="js/loader.js"></script>
     <div class="page-loader">
@@ -24,91 +21,63 @@
     <div class="container">
         <h1>Wie Fügt man Weitere Gegenstände hinzu?</h1>
     </div>
+
     <div class="container">
         <div class="how-to-content">
             <h4>
-                <p>um weitere Gegenstände hinzuzufügen muss eine verbindung mit dem Server hergestellt werden.</p>
-                <p> um dies zu tun, vergewissern sie sich, dass sie die Benötigten SSH Keys besitzen.</p>
-                <p> zum Verbinden, öffnen sie das Terminal und führen sie diesen Befehl aus:
-                    <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
-                </p>
-                <p> wenn dies getan ist, können sie ihren Browser öffnen und auf die Seite <a
-                        href="http://localhost">http://localhost</a> navigieren.</p>
+                <p>Um weitere Gegenstände hinzuzufügen muss eine Verbindung mit dem Server hergestellt werden.</p>
+                <p>Um dies zu tun, vergewissern Sie sich, dass Sie die benötigten SSH Keys besitzen.</p>
+                <p>Zum Verbinden öffnen Sie das Terminal und führen Sie diesen Befehl aus:</p>
             </h4>
 
+            <div class="code-block">
+                <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
+                <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
+            </div>
+
+            <h4>
+                <p>Wenn dies getan ist, können Sie Ihren Browser öffnen und auf die Seite
+                    <a href="http://localhost">http://localhost</a> navigieren.
+                </p>
+            </h4>
         </div>
     </div>
+
     <script>
-        console.log("=== Browser Infos ===");
+        // Copy Button Logik
+        document.querySelectorAll('.code-block').forEach(block => {
+            const btn = block.querySelector('.copy-btn');
+            const code = block.querySelector('code');
+            if (!btn || !code) return;
 
-        console.log("User Agent:", navigator.userAgent);
-        console.log("Browser Name:", navigator.appName);
-        console.log("Browser Version:", navigator.appVersion);
-        console.log("Platform / OS:", navigator.platform);
-        console.log("Language:", navigator.language);
-        console.log("Languages:", navigator.languages);
-        console.log("Cookies aktiviert:", navigator.cookieEnabled);
-        console.log("Online:", navigator.onLine);
-        console.log("Hardware Concurrency (CPU Kerne):", navigator.hardwareConcurrency);
-        console.log("Device Memory (GB):", navigator.deviceMemory);
-
-        console.log("\n=== Bildschirm ===");
-
-        console.log("Screen Width:", screen.width);
-        console.log("Screen Height:", screen.height);
-        console.log("Available Width:", screen.availWidth);
-        console.log("Available Height:", screen.availHeight);
-        console.log("Color Depth:", screen.colorDepth);
-        console.log("Pixel Depth:", screen.pixelDepth);
-
-        console.log("\n=== Fenster ===");
-
-        console.log("Window Inner Width:", window.innerWidth);
-        console.log("Window Inner Height:", window.innerHeight);
-        console.log("Device Pixel Ratio:", window.devicePixelRatio);
-
-        console.log("\n=== Standort URL ===");
-
-        console.log("URL:", location.href);
-        console.log("Hostname:", location.hostname);
-        console.log("Pathname:", location.pathname);
-        console.log("Protocol:", location.protocol);
-
-        console.log("\n=== Zeit & Zeitzone ===");
-
-        console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-        console.log("Current Time:", new Date());
-
-        console.log("\n=== Features ===");
-
-        console.log("LocalStorage verfügbar:", typeof localStorage !== "undefined");
-        console.log("SessionStorage verfügbar:", typeof sessionStorage !== "undefined");
-        console.log("IndexedDB verfügbar:", !!window.indexedDB);
-        console.log("Service Worker unterstützt:", "serviceWorker" in navigator);
-        console.log("Touch Support:", "ontouchstart" in window);
-
-        console.log("\n=== GPU (WebGL) ===");
-
-        const canvas = document.createElement("canvas");
-        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-
-        if (gl) {
-            const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-            if (debugInfo) {
-                console.log("GPU Vendor:", gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
-                console.log("GPU Renderer:", gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
-            }
-        } else {
-            console.log("WebGL nicht verfügbar");
-        }
-
-
-        console.log(
-            CSS.supports("selector(:has(*))")
-        );
+            btn.addEventListener('click', () => {
+                const text = code.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    btn.textContent = '✓ Kopiert!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = 'Kopieren';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback fuer aeltere Browser
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    btn.textContent = '✓ Kopiert!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = 'Kopieren';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                });
+            });
+        });
     </script>
-
 </body>
-
-
 </html>
