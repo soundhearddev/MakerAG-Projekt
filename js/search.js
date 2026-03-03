@@ -136,6 +136,8 @@ window.addEventListener("load", () => {
 async function searchItems(query) {
   if (state.activeRequest) {
     state.activeRequest.abort();
+    state.isLoading = false;  
+
     // log.debug("Vorherige Anfrage abgebrochen");
   }
 
@@ -172,7 +174,7 @@ async function searchItems(query) {
       sort: state.sortField,
       order: state.sortOrder,
       limit: state.limit,
-      searchFor: state.searchFor,   
+      searchFor: state.searchFor,
     });
 
     // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
@@ -287,12 +289,13 @@ function renderTable(data, query) {
       <td class="item-id">${escapeHtml(item.id)}</td>
       <td>${renderThumbnail(item.thumbnail, item.id)}</td>
       <td>${renderCell(item.name, "name", index, query)}</td>
-      <td>${renderCell(item.category, "category", index, query)}</td>
+      <td>${renderCell(item.category_name, "category", index, query)}</td>
+
       <td>${renderCell(item.brand, "brand", index, query)}</td>
       <td>${renderCell(item.model, "model", index, query)}</td>
-      <td>${renderCell(item.serial, "serial", index, query)}</td>
+      <td>${renderCell(item.serial_number, "serial", index, query)}</td>
       <td>${renderCell(item.quantity, "quantity", index, query)}</td>
-      <td>${renderCell(item.locker, "locker", index, query)}</td>
+      <td>${renderCell(item.locker, "locker", index, query)}</td>  
       <td>${state.editorMode
         ? renderEditableDocsLink(item.docs_link, index)
         : renderDocsLink(item.docs_link, item.id)
