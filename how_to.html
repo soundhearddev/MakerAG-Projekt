@@ -26,18 +26,89 @@
     </div>
     <div class="container">
         <div class="how-to-content">
-            <p>um weitere Gegenstände hinzuzufügen muss eine verbindung mit dem Server hergestellt werden.</p>
-            <p> um dies zu tun, vergewissern sie sich, dass sie die Benötigten SSH Keys besitzen.</p>
-            <p> zum Verbinden, öffnen sie das Terminal und führen sie diesen Befehl aus:
-                <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
-            </p>
-            <p> wenn dies getan ist, können sie ihren Browser öffnen und auf die Seite <a
-                    href="http://localhost">http://localhost</a> navigieren.</p>
-
+            <h4>
+                <p>um weitere Gegenstände hinzuzufügen muss eine verbindung mit dem Server hergestellt werden.</p>
+                <p> um dies zu tun, vergewissern sie sich, dass sie die Benötigten SSH Keys besitzen.</p>
+                <p> zum Verbinden, öffnen sie das Terminal und führen sie diesen Befehl aus:
+                    <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
+                </p>
+                <p> wenn dies getan ist, können sie ihren Browser öffnen und auf die Seite <a
+                        href="http://localhost">http://localhost</a> navigieren.</p>
+            </h4>
 
         </div>
     </div>
+    <script>
+        console.log("=== Browser Infos ===");
+
+        console.log("User Agent:", navigator.userAgent);
+        console.log("Browser Name:", navigator.appName);
+        console.log("Browser Version:", navigator.appVersion);
+        console.log("Platform / OS:", navigator.platform);
+        console.log("Language:", navigator.language);
+        console.log("Languages:", navigator.languages);
+        console.log("Cookies aktiviert:", navigator.cookieEnabled);
+        console.log("Online:", navigator.onLine);
+        console.log("Hardware Concurrency (CPU Kerne):", navigator.hardwareConcurrency);
+        console.log("Device Memory (GB):", navigator.deviceMemory);
+
+        console.log("\n=== Bildschirm ===");
+
+        console.log("Screen Width:", screen.width);
+        console.log("Screen Height:", screen.height);
+        console.log("Available Width:", screen.availWidth);
+        console.log("Available Height:", screen.availHeight);
+        console.log("Color Depth:", screen.colorDepth);
+        console.log("Pixel Depth:", screen.pixelDepth);
+
+        console.log("\n=== Fenster ===");
+
+        console.log("Window Inner Width:", window.innerWidth);
+        console.log("Window Inner Height:", window.innerHeight);
+        console.log("Device Pixel Ratio:", window.devicePixelRatio);
+
+        console.log("\n=== Standort URL ===");
+
+        console.log("URL:", location.href);
+        console.log("Hostname:", location.hostname);
+        console.log("Pathname:", location.pathname);
+        console.log("Protocol:", location.protocol);
+
+        console.log("\n=== Zeit & Zeitzone ===");
+
+        console.log("Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
+        console.log("Current Time:", new Date());
+
+        console.log("\n=== Features ===");
+
+        console.log("LocalStorage verfügbar:", typeof localStorage !== "undefined");
+        console.log("SessionStorage verfügbar:", typeof sessionStorage !== "undefined");
+        console.log("IndexedDB verfügbar:", !!window.indexedDB);
+        console.log("Service Worker unterstützt:", "serviceWorker" in navigator);
+        console.log("Touch Support:", "ontouchstart" in window);
+
+        console.log("\n=== GPU (WebGL) ===");
+
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+        if (gl) {
+            const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+            if (debugInfo) {
+                console.log("GPU Vendor:", gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+                console.log("GPU Renderer:", gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+            }
+        } else {
+            console.log("WebGL nicht verfügbar");
+        }
+
+
+        console.log(
+            CSS.supports("selector(:has(*))")
+        );
+    </script>
 
 </body>
+
 
 </html>
