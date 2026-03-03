@@ -31,6 +31,7 @@ $sortField = in_array(getStringParam('sort', 'id'), SORT_FIELDS, true) ? getStri
 // strtoupper macht 'asc' → 'ASC', dann === 'ASC' prüfen → sonst DESC
 $sortOrder = strtoupper(getStringParam('order', 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
 
+
 // ─── searchFor: Mapping Frontend-Wert → SQL-Ausdruck ─────────────────────────
 // Das Frontend schickt einen deutschen Label wie "Marke",
 // wir übersetzen das in den echten SQL-Spaltennamen.

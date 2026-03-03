@@ -56,6 +56,7 @@ const state = {
   activeRequest: null,
   retryCount: 0,
   maxRetries: 3,
+  categoryId: 0,
 };
 
 // =============================================================================
@@ -106,8 +107,11 @@ function debounce(func, wait) {
   // log.debug("URL-Parameter werden gelesen...");
   try {
     const params = new URLSearchParams(window.location.search);
-    const initial =
-      params.get("category") || params.get("query") || params.get("q") || "";
+
+    const categoryId = parseInt(params.get("category_id")) || 0;
+    state.categoryId = categoryId;
+    const initial = params.get("category") || params.get("query") || params.get("q") || "";
+
 
     if (initial) {
       // log.info("Initiale Suche gefunden:", initial);
@@ -136,7 +140,7 @@ window.addEventListener("load", () => {
 async function searchItems(query) {
   if (state.activeRequest) {
     state.activeRequest.abort();
-    state.isLoading = false;  
+    state.isLoading = false;
 
     // log.debug("Vorherige Anfrage abgebrochen");
   }
@@ -175,6 +179,7 @@ async function searchItems(query) {
       order: state.sortOrder,
       limit: state.limit,
       searchFor: state.searchFor,
+      ...(state.categoryId > 0 && { category_id: state.categoryId }),  // ← neu
     });
 
     // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
