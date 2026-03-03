@@ -24,16 +24,18 @@
     <div class="container">
         <h1>Wie Fügt man Weitere Gegenstände hinzu?</h1>
     </div>
+    <div class="container">
+        <div class="how-to-content">
+            <p>um weitere Gegenstände hinzuzufügen muss eine verbindung mit dem Server hergestellt werden.</p>#
+            <p> um dies zu tun, vergewissern sie sich, dass sie die Benötigten SSH Keys besitzen.</p>
+            <p> zum Verbinden, öffnen sie das Terminal und führen sie diesen Befehl aus:
+                <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N admin@10.1.200.8</code>
+            </p>
+            <p> wenn dies getan ist, können sie ihren Browser öffnen und auf die Seite <a
+                    href="http://localhost">http://localhost</a> navigieren.</p>
 
-    <div class="how-to-content">
-        <p>um weitere Gegenstände hinzuzufügen muss eine verbindung mit dem Server hergestellt werden.</p>#
-        <p> um dies zu tun, vergewissern sie sich, dass sie die Benötigten SSH Keys besitzen.</p>
-        <p> zum Verbinden, öffnen sie das Terminal und führen sie diesen Befehl aus:
-            <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N admin@10.1.200.8</code>
-        </p>
-        <p> wenn dies getan ist, können sie ihren Browser öffnen und auf die Seite <a href="http://localhost">http://localhost</a> navigieren.</p>
-
-
+        </div>
+    </div>
 
 </body>
 
