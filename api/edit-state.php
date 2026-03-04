@@ -55,9 +55,9 @@ if ($id <= 0) {
 }
 
 // Whitelist erlaubter Status-Werte
-const ALLOWED_STATUS = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
+$allowedStatus = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
 
-if (!in_array($status, ALLOWED_STATUS, true)) {
+if (!in_array($status, $allowedStatus, true)) {
     sendError('Ungültiger Status: ' . $status, 400);
     exit;
 }
