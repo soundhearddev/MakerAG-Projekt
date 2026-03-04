@@ -101,83 +101,94 @@
             const statusDiv = document.getElementById("status");
             statusDiv.className = "status-info";
 
-            let h2 = null;
-
             if (item.status) {
-                const h2 = document.createElement("h2");
-                h2.textContent = item.status || 'Kein Status';
-                // die CSS-klasse wird aus dem Status-Text generiert. also wird es z.B bei gut dann zu "status-gut". Das hat es ermöglicht die Statusanzeige farblich zu gestalten. 
-                h2.className = `status-${slug(item.status || 'kein-status')}`;
-                //button welcher den Status ändern kann
-                const changeStatusBtn = document.createElement("button");
-                changeStatusBtn.textContent = "Status ändern";
-                statusDiv.appendChild(changeStatusBtn);
-                statusDiv.appendChild(h2);
-
-
-
-                // ── Status ändern Button ──────────────────────────────────────────────────────
                 const ALLOWED_STATUS = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
 
-                changeStatusBtn.addEventListener("click", () => {
-                    const current = item.status || '';
-                    const options = ALLOWED_STATUS.filter(s => s !== current);
+                // h2 + Button nebeneinander
+                const statusHeader = document.createElement('div');
+                statusHeader.style.cssText = 'display: flex; align-items: center; gap: 10px; flex-wrap: wrap;';
 
-                    // Einfaches Select-Dropdown dynamisch einfügen
-                    const existing = document.getElementById('status-select-popup');
-                    if (existing) {
-                        existing.remove();
-                        const existingConfirm = document.getElementById('status-confirm-btn');
-                        if (existingConfirm) existingConfirm.remove();
+                const h2 = document.createElement("h2");
+                h2.textContent = item.status;
+                h2.className = `status-${slug(item.status)}`;
+
+                const changeStatusBtn = document.createElement("button");
+                changeStatusBtn.textContent = "Status ändern";
+
+                statusHeader.appendChild(h2);
+                statusHeader.appendChild(changeStatusBtn);
+                statusDiv.appendChild(statusHeader);
+
+                // Dropdown-Zeile (wird beim Klick eingefügt)
+                const statusPopup = document.createElement('div');
+                statusPopup.id = 'status-popup';
+                statusPopup.style.cssText = 'display: none; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap;';
+
+                const select = document.createElement('select');
+                select.id = 'status-select-popup';
+
+                const confirmBtn = document.createElement('button');
+                confirmBtn.textContent = 'Speichern';
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.textContent = '✕';
+                cancelBtn.style.cssText = 'background: transparent; color: gray;';
+
+                statusPopup.appendChild(select);
+                statusPopup.appendChild(confirmBtn);
+                statusPopup.appendChild(cancelBtn);
+                statusDiv.appendChild(statusPopup);
+
+                // Toggle Dropdown
+                changeStatusBtn.addEventListener("click", () => {
+                    const isOpen = statusPopup.style.display === 'flex';
+                    if (isOpen) {
+                        statusPopup.style.display = 'none';
                         return;
                     }
-                    const select = document.createElement('select');
-                    select.id = 'status-select-popup';
-                    select.innerHTML = options.map(s => `<option value="${s}">${s}</option>`).join('');
-
-                    const confirmBtn = document.createElement('button');
-                    confirmBtn.id = 'status-confirm-btn';
-
-                    confirmBtn.textContent = 'Speichern';
-                    confirmBtn.addEventListener('click', async () => {
-                        const newStatus = select.value;
-                        try {
-                            const res = await fetch('/api/edit-state.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ id: item.id, status: newStatus }),
-                            });
-                            const data = await res.json();
-                            if (!data.success) throw new Error(data.error || 'Fehler');
-
-                            // UI sofort aktualisieren
-                            const h2 = statusDiv.querySelector('h2');
-                            if (h2) {
-                                h2.textContent = newStatus;
-                                h2.className = `status-${slug(newStatus)}`;
-                            }
-                            item.status = newStatus;
-                            select.remove();
-                            confirmBtn.remove();
-                        } catch (err) {
-                            console.error('Status-Update fehlgeschlagen:', err);
-                            alert('Fehler beim Speichern: ' + err.message);
-                        }
-                    });
-
-                    statusDiv.appendChild(select);
-                    statusDiv.appendChild(confirmBtn);
+                    // Optionen neu befüllen (aktuellen Status ausschließen)
+                    select.innerHTML = ALLOWED_STATUS
+                        .filter(s => s !== item.status)
+                        .map(s => `<option value="${s}">${s}</option>`)
+                        .join('');
+                    statusPopup.style.display = 'flex';
                 });
-                statusDiv.appendChild(changeStatusBtn);
 
+                cancelBtn.addEventListener('click', () => {
+                    statusPopup.style.display = 'none';
+                });
+
+                confirmBtn.addEventListener('click', async () => {
+                    const newStatus = select.value;
+                    confirmBtn.disabled = true;
+                    confirmBtn.textContent = '...';
+                    try {
+                        const res = await fetch('/api/edit-state.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: item.id, status: newStatus }),
+                        });
+                        const json = await res.json();
+                        if (!json.success) throw new Error(json.error || 'Fehler');
+
+                        // UI aktualisieren
+                        h2.textContent = newStatus;
+                        h2.className = `status-${slug(newStatus)}`;
+                        item.status = newStatus;
+                        statusPopup.style.display = 'none';
+                    } catch (err) {
+                        console.error('Status-Update fehlgeschlagen:', err);
+                        alert('Fehler: ' + err.message);
+                    } finally {
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = 'Speichern';
+                    }
+                });
             }
-
-
 
             if (item.item_condition) {
                 const cond = slug(item.item_condition);
                 appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond} item-condition">${item.item_condition}</span>`));
-
             }
 
 
