@@ -550,8 +550,8 @@ if ($db) {
       <td><?= htmlspecialchars($row['schrank'] ?? '–') ?></td>
       <td><?= htmlspecialchars($row['regal'] ?? '–') ?></td>
       <td>
-        <a href="/docs/<?= $row['id'] ?>/" target="_blank">Seite</a>
-        | <a href="/api/fetch_item.php?id=<?= $row['id'] ?>" target="_blank">API</a>
+        <a href="http://10.1.200.8/docs/<?= $row['id'] ?>/" target="_blank">Seite</a>
+        | <a href="http://10.1.200.8/api/fetch_item.php?id=<?= $row['id'] ?>" target="_blank">API</a>
       </td>
     </tr>
     <?php endforeach; ?>
