@@ -86,6 +86,6 @@ try {
     } else {
         sendSuccess(null, ['message' => 'Status aktualisiert', 'id' => $id, 'status' => $status]);
     }
-} catch (Exception $e) {
-    sendError($e->getMessage(), 500);
+} catch (Throwable $e) {  // Throwable statt Exception fängt ALLES
+    sendError($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), 500);
 }
