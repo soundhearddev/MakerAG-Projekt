@@ -108,11 +108,12 @@
                 h2.textContent = item.status || 'Kein Status';
                 // die CSS-klasse wird aus dem Status-Text generiert. also wird es z.B bei gut dann zu "status-gut". Das hat es ermöglicht die Statusanzeige farblich zu gestalten. 
                 h2.className = `status-${slug(item.status || 'kein-status')}`;
-                statusDiv.appendChild(h2);
                 //button welcher den Status ändern kann
                 const changeStatusBtn = document.createElement("button");
                 changeStatusBtn.textContent = "Status ändern";
                 statusDiv.appendChild(changeStatusBtn);
+                statusDiv.appendChild(h2);
+
 
 
                 // ── Status ändern Button ──────────────────────────────────────────────────────
