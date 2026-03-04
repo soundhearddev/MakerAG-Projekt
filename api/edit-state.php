@@ -81,10 +81,9 @@ try {
     $stmt->execute();
 
     if ($stmt->affected_rows === 0) {
-        // Status war bereits gleich – kein Fehler, aber Info mitgeben
-        sendSuccess(null, ['message' => 'Status bereits gesetzt', 'id' => $id, 'status' => $status]);
+        sendSuccess(['message' => 'Status bereits gesetzt', 'id' => $id, 'status' => $status]);
     } else {
-        sendSuccess(null, ['message' => 'Status aktualisiert', 'id' => $id, 'status' => $status]);
+        sendSuccess(['message' => 'Status aktualisiert', 'id' => $id, 'status' => $status]);
     }
 } catch (Throwable $e) {  // Throwable statt Exception fängt ALLES
     sendError($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), 500);
