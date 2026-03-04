@@ -64,6 +64,9 @@ if (!in_array($status, ALLOWED_STATUS, true)) {
 
 // ── Prüfen ob Item existiert ──────────────────────────────────────────────────
 try {
+
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
     $check = $db->prepare("SELECT id FROM items WHERE id = ? LIMIT 1");
     $check->bind_param('i', $id);
     $check->execute();
@@ -84,6 +87,5 @@ try {
         sendSuccess(null, ['message' => 'Status aktualisiert', 'id' => $id, 'status' => $status]);
     }
 } catch (Exception $e) {
-    error_log('edit-state.php: ' . $e->getMessage());
-    sendError('Datenbankfehler', 500);
+    sendError($e->getMessage(), 500);
 }
