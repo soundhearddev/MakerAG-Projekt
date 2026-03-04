@@ -7,7 +7,8 @@
  */
 
 require_once __DIR__ . '/init.php';
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // ── Nur POST erlauben ─────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendError('Nur POST erlaubt', 405);
