@@ -94,6 +94,9 @@
                 }
             }
 
+
+
+
             // Status / Meta-Infos
             const statusDiv = document.getElementById("status");
             statusDiv.className = "status-info";
@@ -103,14 +106,71 @@
             if (item.status) {
                 const h2 = document.createElement("h2");
                 h2.textContent = item.status;
+                // die CSS-klasse wird aus dem Status-Text generiert. also wird es z.B bei gut dann zu "status-gut". Das hat es ermöglicht die Statusanzeige farblich zu gestalten. 
                 h2.className = `status-${slug(item.status)}`;
                 statusDiv.appendChild(h2);
+                //button welcher den Status ändern kann
+                const changeStatusBtn = document.createElement("button");
+                changeStatusBtn.textContent = "Status ändern";
+
+                // ── Status ändern Button ──────────────────────────────────────────────────────
+                const ALLOWED_STATUS = ['Verfügbar', 'Defekt', 'Ausgeliehen', 'In Reparatur', 'Reserviert', 'Verloren'];
+
+                changeStatusBtn.addEventListener("click", () => {
+                    const current = item.status || '';
+                    const options = ALLOWED_STATUS.filter(s => s !== current);
+
+                    // Einfaches Select-Dropdown dynamisch einfügen
+                    const existing = document.getElementById('status-select-popup');
+                    if (existing) { existing.remove(); return; }
+
+                    const select = document.createElement('select');
+                    select.id = 'status-select-popup';
+                    select.innerHTML = options.map(s => `<option value="${s}">${s}</option>`).join('');
+
+                    const confirmBtn = document.createElement('button');
+                    confirmBtn.textContent = 'Speichern';
+                    confirmBtn.addEventListener('click', async () => {
+                        const newStatus = select.value;
+                        try {
+                            const res = await fetch('/api/edit-state.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: item.id, status: newStatus }),
+                            });
+                            const data = await res.json();
+                            if (!data.success) throw new Error(data.error || 'Fehler');
+
+                            // UI sofort aktualisieren
+                            const h2 = statusDiv.querySelector('h2');
+                            if (h2) {
+                                h2.textContent = newStatus;
+                                h2.className = `status-${slug(newStatus)}`;
+                            }
+                            item.status = newStatus;
+                            select.remove();
+                            confirmBtn.remove();
+                        } catch (err) {
+                            console.error('Status-Update fehlgeschlagen:', err);
+                            alert('Fehler beim Speichern: ' + err.message);
+                        }
+                    });
+
+                    statusDiv.appendChild(select);
+                    statusDiv.appendChild(confirmBtn);
+                });
+                statusDiv.appendChild(changeStatusBtn);
+
             }
+
+
 
             if (item.item_condition) {
                 const cond = slug(item.item_condition);
                 appendIf(statusDiv, infoLine("Zustand", `<span class="condition-${cond} item-condition">${item.item_condition}</span>`));
+
             }
+
 
             // Kategorie
             if (item.category_name) {
@@ -196,9 +256,9 @@
                         return;
                     }
 
-                    files.forEach((file, i) => {                      
+                    files.forEach((file, i) => {
                         const img = document.createElement("img");
-                        img.src = file.path;                         
+                        img.src = file.path;
                         img.alt = `Bild ${i + 1}`;
                         img.style.cssText = "height:300px; cursor:pointer; border-radius:4px;";
                         img.addEventListener("click", () => window.open(img.src, "_blank"));
@@ -213,8 +273,8 @@
             // ── PDFs ─────────────────────────────────────────────────────────
             fetch(`/api/get_data.php?id=${id}&type=pdf`)
                 .then(res => res.json())
-                .then(pdfData => {                                     
-                    const files = pdfData.data || [];                 
+                .then(pdfData => {
+                    const files = pdfData.data || [];
                     if (files.length === 0) return;
 
                     const docsContainer = document.getElementById("docs-container");
@@ -222,9 +282,9 @@
                     heading.innerHTML = "<strong>Dokumente:</strong>";
                     docsContainer.appendChild(heading);
 
-                    files.forEach(file => {                            
+                    files.forEach(file => {
                         const p = document.createElement("p");
-                        p.innerHTML = `📄 <a href="${file.path}" target="_blank">${file.filename.replace(/\.pdf$/i, "")}</a>`; 
+                        p.innerHTML = `📄 <a href="${file.path}" target="_blank">${file.filename.replace(/\.pdf$/i, "")}</a>`;
                         docsContainer.appendChild(p);
                     });
                 })
