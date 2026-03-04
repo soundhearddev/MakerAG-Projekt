@@ -116,7 +116,7 @@
 
 
                 // ── Status ändern Button ──────────────────────────────────────────────────────
-                const ALLOWED_STATUS = ['Verfügbar', 'Defekt', 'Ausgeliehen', 'In Reparatur', 'Reserviert', 'Verloren'];
+                const ALLOWED_STATUS = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
 
                 changeStatusBtn.addEventListener("click", () => {
                     const current = item.status || '';

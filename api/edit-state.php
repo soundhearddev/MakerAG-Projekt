@@ -1,4 +1,5 @@
 <?php
+
 /**
  * API Endpoint: edit-state.php
  * Ändert den Status eines Items (z.B. "Verfügbar", "Defekt", "Ausgeliehen")
@@ -54,7 +55,7 @@ if ($id <= 0) {
 }
 
 // Whitelist erlaubter Status-Werte
-const ALLOWED_STATUS = ['Verfügbar', 'Defekt', 'Ausgeliehen', 'In Reparatur', 'Reserviert', 'Verloren'];
+const ALLOWED_STATUS = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
 
 if (!in_array($status, ALLOWED_STATUS, true)) {
     sendError('Ungültiger Status: ' . $status, 400);
@@ -82,7 +83,6 @@ try {
     } else {
         sendSuccess(null, ['message' => 'Status aktualisiert', 'id' => $id, 'status' => $status]);
     }
-
 } catch (Exception $e) {
     error_log('edit-state.php: ' . $e->getMessage());
     sendError('Datenbankfehler', 500);
