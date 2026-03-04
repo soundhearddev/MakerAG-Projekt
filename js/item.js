@@ -105,13 +105,15 @@
 
             if (item.status) {
                 const h2 = document.createElement("h2");
-                h2.textContent = item.status;
+                h2.textContent = item.status || 'Kein Status';
                 // die CSS-klasse wird aus dem Status-Text generiert. also wird es z.B bei gut dann zu "status-gut". Das hat es ermöglicht die Statusanzeige farblich zu gestalten. 
-                h2.className = `status-${slug(item.status)}`;
+                h2.className = `status-${slug(item.status || 'kein-status')}`;
                 statusDiv.appendChild(h2);
                 //button welcher den Status ändern kann
                 const changeStatusBtn = document.createElement("button");
                 changeStatusBtn.textContent = "Status ändern";
+                statusDiv.appendChild(changeStatusBtn);
+
 
                 // ── Status ändern Button ──────────────────────────────────────────────────────
                 const ALLOWED_STATUS = ['Verfügbar', 'Defekt', 'Ausgeliehen', 'In Reparatur', 'Reserviert', 'Verloren'];
@@ -122,13 +124,19 @@
 
                     // Einfaches Select-Dropdown dynamisch einfügen
                     const existing = document.getElementById('status-select-popup');
-                    if (existing) { existing.remove(); return; }
-
+                    if (existing) {
+                        existing.remove();
+                        const existingConfirm = document.getElementById('status-confirm-btn');
+                        if (existingConfirm) existingConfirm.remove();
+                        return;
+                    }
                     const select = document.createElement('select');
                     select.id = 'status-select-popup';
                     select.innerHTML = options.map(s => `<option value="${s}">${s}</option>`).join('');
 
                     const confirmBtn = document.createElement('button');
+                    confirmBtn.id = 'status-confirm-btn';
+
                     confirmBtn.textContent = 'Speichern';
                     confirmBtn.addEventListener('click', async () => {
                         const newStatus = select.value;
