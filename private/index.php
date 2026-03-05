@@ -508,6 +508,7 @@ if ($db) {
     Bilder (jpg, png, webp, gif, svg, avif) → <code>/docs/{id}/images/</code><br>
     Dokumente (pdf, doc, docx, xls, xlsx, txt, csv, zip) → <code>/docs/{id}/data/</code><br>
     Wird automatisch nach Dateiendung sortiert.
+    Um ein Thumbnail zu erstellen. Laden sie eine Datei mit dem Namen "thumb.png" zum Beispiel hoch. 
   </small>
 
   <div class="file-drop" onclick="document.getElementById('file-input').click()">

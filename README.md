@@ -54,3 +54,4 @@ Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. 
 # TODO:
 - bearbeiten des Status und Standort zu einem gewissen Grad. also auf jedne fall rate limmiten
 - private wesbite mit proxy zum hinzufügen von weiteren Gegenständen
+- Feedback system oder so aber ohne sensible daten abgeben
