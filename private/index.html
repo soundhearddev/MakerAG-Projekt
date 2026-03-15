@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventar – Gegenstand hinzufügen</title>
+
+    <link rel="stylesheet" href="/styles/animation.css">
+    <link rel="stylesheet" href="/styles/base.css">
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="icon" href="/images/icon144x144 copy.png" type="image/png">
+    <script src="js/loader.js"></script>
+
+    <style>
+        /* ── Formular ── */
+        fieldset { margin-bottom: 20px; border: 1px solid #999; padding: 12px; background: #fff; }
+        legend   { font-weight: bold; padding: 0 6px; }
+        label    { display: block; margin: 8px 0 2px; font-weight: bold; font-size: 0.9em; }
+
+        input[type=text], input[type=number], textarea, select {
+            width: 100%; box-sizing: border-box; padding: 6px;
+            font-family: monospace; border: 1px solid #aaa;
+            background: #fafafa; font-size: 0.95em;
+        }
+        textarea { height: 80px; resize: vertical; }
+
+        .form-row       { display: flex; gap: 10px; }
+        .form-row > *   { flex: 1; }
+
+        button[type=submit] {
+            background: #1a6600; color: #fff; border: none;
+            padding: 12px 30px; font-size: 1.1em;
+            font-family: monospace; cursor: pointer; margin-top: 10px;
+        }
+        button[type=submit]:hover    { background: #145200; }
+        button[type=submit]:disabled { background: #888; cursor: default; }
+
+        .spec-row         { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+        .spec-row input   { flex: 1; }
+        .spec-row button  { flex: 0 0 28px; background: #c00; color: #fff; border: none; cursor: pointer; font-size: 1.1em; }
+        #add-spec         { background: #006; color: #fff; border: none; padding: 5px 12px; cursor: pointer; font-family: monospace; }
+
+        .tag-grid         { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag-grid label   { display: inline-flex; align-items: center; gap: 4px; font-weight: normal; background: #eee; padding: 3px 8px; border: 1px solid #ccc; cursor: pointer; }
+        .tag-grid label:hover { background: #ddd; }
+
+        .success-box { background: #d4edda; border: 1px solid #28a745; padding: 14px; margin-bottom: 20px; }
+        .error-box   { background: #f8d7da; border: 1px solid #dc3545; padding: 14px; margin-bottom: 20px; }
+        .warn-box    { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 16px; }
+
+        small        { color: #555; font-size: 0.82em; }
+        .or-divider  { text-align: center; font-weight: bold; margin: 8px 0; color: #888; }
+
+        .file-drop       { border: 2px dashed #999; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; margin-top: 6px; }
+        .file-drop:hover { background: #f0f0f0; }
+        #file-list       { margin-top: 6px; font-size: 0.85em; }
+
+        /* DB-Übersicht */
+        details         { margin-top: 10px; }
+        details summary { cursor: pointer; font-weight: bold; }
+        .db-table       { border-collapse: collapse; width: 100%; font-size: 0.85em; background: #fff; margin-top: 8px; }
+        .db-table th    { background: #ddd; }
+        .db-table th, .db-table td { border: 1px solid #ccc; padding: 4px 6px; }
+
+        /* Overlay */
+        #welcome-overlay *, #welcome-overlay *::before, #welcome-overlay *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        #welcome-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; font-family: 'Courier New', Courier, monospace;
+        }
+        #welcome-backdrop {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.82);
+            backdrop-filter: blur(6px);
+            animation: backdropIn 0.4s ease forwards;
+        }
+        @keyframes backdropIn { from{opacity:0} to{opacity:1} }
+
+        #welcome-modal {
+            position: relative; z-index: 1;
+            background: #0f0f0f; border: 1px solid #2a2a2a; border-top: 3px solid #e8e000;
+            max-width: 640px; width: 100%; padding: 0;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+            animation: modalIn 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        @keyframes modalIn { from{opacity:0;transform:translateY(-24px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        #welcome-header       { padding: 32px 40px 24px; border-bottom: 1px solid #1e1e1e; }
+        #welcome-tag          { font-size: 0.7em; letter-spacing: 0.2em; text-transform: uppercase; color: #e8e000; margin-bottom: 10px; }
+        #welcome-title        { font-size: 2.6em; font-weight: 700; color: #f0f0f0; letter-spacing: -0.02em; line-height: 1; }
+        #welcome-body         { padding: 28px 40px; border-bottom: 1px solid #1e1e1e; }
+        #welcome-body p       { color: #a0a0a0; font-size: 0.88em; line-height: 1.75; margin-bottom: 16px; }
+        #welcome-body strong  { color: #d0d0d0; }
+        #welcome-rules        { display: grid; gap: 10px; }
+        .rule-item            { display: flex; align-items: center; gap: 16px; padding: 10px 14px; background: #161616; border: 1px solid #222; font-size: 0.82em; color: #c0c0c0; animation: ruleIn 0.4s ease both; }
+        .rule-item:nth-child(1){animation-delay:0.3s} .rule-item:nth-child(2){animation-delay:0.4s}
+        .rule-item:nth-child(3){animation-delay:0.5s} .rule-item:nth-child(4){animation-delay:0.6s}
+        @keyframes ruleIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+        .rule-icon            { font-size: 0.75em; color: #e8e000; letter-spacing: 0.05em; min-width: 24px; font-weight: 700; }
+        #welcome-footer       { padding: 24px 40px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        #welcome-sub          { font-size: 0.72em; color: #444; letter-spacing: 0.04em; }
+        #welcome-btn          {
+            display: inline-flex; align-items: center; gap: 12px;
+            background: #e8e000; color: #0a0a0a; border: none;
+            padding: 13px 28px; font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em; font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; cursor: pointer;
+            transition: background 0.15s, gap 0.2s;
+        }
+        #welcome-btn:hover    { background: #fff200; gap: 20px; }
+        #welcome-btn:active   { transform: scale(0.97); }
+        #welcome-overlay.hiding { animation: overlayOut 0.35s ease forwards; }
+        @keyframes overlayOut { from{opacity:1} to{opacity:0;pointer-events:none} }
+
+        @media (max-width: 520px) {
+            #welcome-header { padding: 24px 24px 20px; }
+            #welcome-body   { padding: 20px 24px; }
+            #welcome-footer { padding: 20px 24px 26px; flex-direction: column; align-items: flex-start; }
+            #welcome-title  { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-loader"><div class="loader-spinner"></div></div>
+
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+    <!-- ── Overlay (wird per JS eingeblendet wenn Session fehlt) ── -->
+    <div id="welcome-overlay" style="display:none">
+        <div id="welcome-backdrop"></div>
+        <div id="welcome-modal">
+            <div id="welcome-header">
+                <div id="welcome-tag">Inventarsystem – Interne Nutzung</div>
+                <h1 id="welcome-title">Nutzungshinweis</h1>
+            </div>
+            <div id="welcome-body">
+                <p>
+                    Dieses System ist ausschließlich für autorisierte Personen zugänglich
+                    und dient der internen Verwaltung von Inventar, Gegenständen und Standorten.
+                    Mit dem Fortfahren erkennen Sie die nachfolgenden Nutzungsbedingungen an.
+                </p>
+                <div id="welcome-rules">
+                    <div class="rule-item"><span class="rule-icon">§ 1</span><span>Zugang nur für autorisierte Personen – Weitergabe untersagt</span></div>
+                    <div class="rule-item"><span class="rule-icon">§ 2</span><span>Daten vollständig, wahrheitsgemäß und sorgfältig erfassen</span></div>
+                    <div class="rule-item"><span class="rule-icon">§ 3</span><span>Eingegebene Daten werden intern gespeichert – keine Weitergabe</span></div>
+                    <div class="rule-item"><span class="rule-icon">§ 4</span><span>Korrekturen und Löschungen nur in Absprache mit dem Systemverantwortlichen</span></div>
+                </div>
+            </div>
+            <div id="welcome-footer">
+                <p id="welcome-sub">Diese Meldung erscheint nur einmalig pro Sitzung.</p>
+                <button id="welcome-btn" onclick="acceptOverlay()">
+                    <span id="btn-text">Fortfahren</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Haupt-Content ── -->
+    <div class="container">
+        <h2>Neuen Gegenstand hinzufügen</h2>
+        <div id="status-msg"></div>
+
+        <form id="item-form" enctype="multipart/form-data">
+
+            <!-- GRUNDDATEN -->
+            <fieldset>
+                <legend>Grunddaten</legend>
+                <label>Name <small>(Pflichtfeld)</small></label>
+                <input type="text" name="name" id="f-name" required placeholder="z.B. Raspberry Pi 4 B 4GB">
+                <div class="form-row">
+                    <div><label>Marke / Brand</label><input type="text" name="brand" placeholder="z.B. Raspberry Pi"></div>
+                    <div><label>Modell</label><input type="text" name="model" placeholder="z.B. 4 B 4GB"></div>
+                </div>
+                <label>Seriennummer</label>
+                <input type="text" name="serial_number" placeholder="Optional">
+                <div class="form-row">
+                    <div>
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="verfügbar">verfügbar</option>
+                            <option value="ausgeliehen">ausgeliehen</option>
+                            <option value="defekt">defekt</option>
+                            <option value="verschollen">verschollen</option>
+                            <option value="entsorgt">entsorgt</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Zustand</label>
+                        <select name="item_condition">
+                            <option value="">– kein –</option>
+                            <option value="neu">neu</option>
+                            <option value="gut">gut</option>
+                            <option value="akzeptabel">akzeptabel</option>
+                            <option value="schlecht">schlecht</option>
+                        </select>
+                    </div>
+                </div>
+                <label>Notizen</label>
+                <textarea name="notes" placeholder="Freitext-Notizen…"></textarea>
+            </fieldset>
+
+            <!-- KATEGORIE -->
+            <fieldset>
+                <legend>Kategorie</legend>
+                <label>Bestehende Kategorie</label>
+                <select name="category_id" id="f-categories"><option value="">– keine / neue anlegen –</option></select>
+                <div class="or-divider">— oder neue anlegen —</div>
+                <div class="form-row">
+                    <div><label>Name der neuen Kategorie</label><input type="text" name="new_category_name" placeholder="z.B. Smartphone"></div>
+                    <div>
+                        <label>Oberkategorie (optional)</label>
+                        <select name="new_category_parent" id="f-cat-parent"><option value="">– keine –</option></select>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- STANDORT -->
+            <fieldset>
+                <legend>Standort</legend>
+                <label>Bestehenden Standort</label>
+                <select name="location_id" id="f-locations"><option value="">– keiner / neuen anlegen –</option></select>
+                <div class="or-divider">— oder neuen anlegen —</div>
+                <div class="form-row">
+                    <div><label>Raum</label><input type="text" name="new_room" placeholder="Optional"></div>
+                    <div><label>Schrank</label><input type="text" name="new_schrank" placeholder="z.B. S"></div>
+                    <div><label>Regal</label><input type="text" name="new_regal" placeholder="z.B. 3"></div>
+                    <div><label>Position</label><input type="text" name="new_position" placeholder="Optional"></div>
+                </div>
+                <small>Neuer Standort wird nur angelegt wenn "Schrank" ausgefüllt ist.</small>
+            </fieldset>
+
+            <!-- SPECS -->
+            <fieldset>
+                <legend>Technische Daten (Specs)</legend>
+                <small>Beliebig viele Schlüssel-Wert-Paare.</small>
+                <div id="specs-container" style="margin-top:10px;">
+                    <div class="spec-row">
+                        <input type="text" name="spec_key[]" placeholder="Schlüssel (z.B. RAM)">
+                        <input type="text" name="spec_value[]" placeholder="Wert (z.B. 4 GB)">
+                        <button type="button" onclick="this.closest('.spec-row').remove()">✕</button>
+                    </div>
+                </div>
+                <button type="button" id="add-spec" onclick="addSpec()">+ Spec hinzufügen</button>
+            </fieldset>
+
+            <!-- TAGS -->
+            <fieldset>
+                <legend>Tags</legend>
+                <div id="f-tags"><em style="color:#888">Lade Tags…</em></div>
+                <label style="margin-top:12px;">Neue Tags <small>(kommagetrennt)</small></label>
+                <input type="text" name="new_tags" placeholder="z.B. microcontroller, blau">
+            </fieldset>
+
+            <!-- DATEIEN -->
+            <fieldset>
+                <legend>Dateien hochladen</legend>
+                <small>
+                    Bilder (jpg, png, webp, gif, svg, avif) → <code>/docs/{id}/images/</code><br>
+                    Dokumente (pdf, doc, docx, xls, xlsx, txt, csv, zip) → <code>/docs/{id}/data/</code>
+                </small>
+                <div class="file-drop" onclick="document.getElementById('file-input').click()">
+                    Klicken zum Auswählen oder Dateien hierher ziehen
+                    <input type="file" id="file-input" name="uploads[]" multiple style="display:none" onchange="showFiles(this)">
+                </div>
+                <div id="file-list"></div>
+            </fieldset>
+
+            <button type="submit" id="submit-btn">Gegenstand speichern</button>
+        </form>
+    </div>
+
+    <!-- DB-Übersicht -->
+    <div class="container" id="db-overview" style="display:none">
+        <h2>Aktueller Datenbankstand</h2>
+        <div id="db-content"></div>
+    </div>
+
+    <script src="js/index.js"></script>
+    <script>
+    // ── Overlay ───────────────────────────────────────────────────────────────
+
+    async function checkSession() {
+        const res  = await fetch('api.php?action=formdata');
+        // Session-Check: Overlay zeigen wenn nicht akzeptiert
+        const sess = await fetch('api.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: 'action=session_status'
+        }).then(r => r.json()).catch(() => ({accepted: false}));
+
+        if (!sess.accepted) {
+            document.getElementById('welcome-overlay').style.display = 'flex';
+        }
+    }
+
+    async function acceptOverlay() {
+        const btn = document.getElementById('welcome-btn');
+        btn.disabled = true;
+        document.getElementById('btn-text').textContent = 'Einen Moment…';
+
+        await fetch('api.php', {
+            method: 'POST',
+            headers: {'Content-Type':'application/x-www-form-urlencoded'},
+            body: 'action=accept_overlay'
+        }).catch(() => {});
+
+        const overlay = document.getElementById('welcome-overlay');
+        overlay.classList.add('hiding');
+        overlay.addEventListener('animationend', () => overlay.remove(), {once: true});
+    }
+
+    // ── Formulardaten laden ───────────────────────────────────────────────────
+
+    async function loadFormData() {
+        const res  = await fetch('api.php?action=formdata');
+        if (!res.ok) {
+            document.getElementById('status-msg').innerHTML =
+                '<div class="warn-box"><strong>Keine Datenbankverbindung.</strong> Speichern funktioniert nicht.</div>';
+            return;
+        }
+        const data = await res.json();
+        if (data.error) {
+            document.getElementById('status-msg').innerHTML =
+                `<div class="warn-box"><strong>DB-Fehler:</strong> ${data.error}</div>`;
+            return;
+        }
+
+        // Kategorien
+        const catSel    = document.getElementById('f-categories');
+        const catParent = document.getElementById('f-cat-parent');
+        data.categories.forEach(c => {
+            const label = c.parent_name ? `${c.parent_name} / ${c.name}` : c.name;
+            catSel.innerHTML    += `<option value="${c.id}">${label}</option>`;
+            catParent.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+
+        // Standorte
+        const locSel = document.getElementById('f-locations');
+        data.locations.forEach(l => {
+            const parts = [l.room?`Raum ${l.room}`:null, l.schrank?`Schrank ${l.schrank}`:null, l.regal?`Regal ${l.regal}`:null, l.position?`Pos. ${l.position}`:null].filter(Boolean);
+            locSel.innerHTML += `<option value="${l.id}">${parts.join(', ') || `Standort #${l.id}`}</option>`;
+        });
+
+        // Tags
+        const tagDiv = document.getElementById('f-tags');
+        if (data.tags.length) {
+            tagDiv.innerHTML = '<label>Bestehende Tags</label><div class="tag-grid">' +
+                data.tags.map(t => `<label><input type="checkbox" name="tags[]" value="${t.id}"> ${t.name}</label>`).join('') +
+                '</div>';
+        } else {
+            tagDiv.innerHTML = '<em>Noch keine Tags vorhanden.</em>';
+        }
+
+        // DB-Übersicht aufbauen
+        buildDbOverview(data);
+    }
+
+    function buildDbOverview(data) {
+        const wrap = document.getElementById('db-overview');
+        const cont = document.getElementById('db-content');
+        wrap.style.display = 'block';
+
+        cont.innerHTML = `
+        <details>
+            <summary>Kategorien (${data.categories.length})</summary>
+            <table class="db-table">
+                <tr style="background:#ddd"><th>ID</th><th>Name</th><th>Oberkategorie</th></tr>
+                ${data.categories.map(c=>`<tr><td>${c.id}</td><td>${c.name}</td><td>${c.parent_name||'–'}</td></tr>`).join('')}
+            </table>
+        </details>
+        <details>
+            <summary>Standorte (${data.locations.length})</summary>
+            <table class="db-table">
+                <tr style="background:#ddd"><th>ID</th><th>Raum</th><th>Schrank</th><th>Regal</th><th>Position</th></tr>
+                ${data.locations.map(l=>`<tr><td>${l.id}</td><td>${l.room||'–'}</td><td>${l.schrank||'–'}</td><td>${l.regal||'–'}</td><td>${l.position||'–'}</td></tr>`).join('')}
+            </table>
+        </details>
+        <details>
+            <summary>Tags (${data.tags.length})</summary>
+            <div style="margin-top:8px">${data.tags.map(t=>`<span style="display:inline-block;background:#eee;border:1px solid #ccc;padding:2px 8px;margin:3px;font-size:0.85em">#${t.name} (ID ${t.id})</span>`).join('')}</div>
+        </details>`;
+    }
+
+    // ── Formular absenden ─────────────────────────────────────────────────────
+
+    document.getElementById('item-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Speichert…';
+
+        const fd = new FormData(e.target);
+        fd.append('action', 'save_item');
+
+        try {
+            const res  = await fetch('api.php', {method:'POST', body: fd});
+            const data = await res.json();
+
+            if (data.error) {
+                document.getElementById('status-msg').innerHTML =
+                    `<div class="error-box"><strong>Fehler:</strong> ${data.error}</div>`;
+            } else {
+                const imgs = data.uploaded.images.length ? `<br>Bilder: ${data.uploaded.images.join(', ')}` : '';
+                const docs = data.uploaded.docs.length   ? `<br>Dokumente: ${data.uploaded.docs.join(', ')}` : '';
+                document.getElementById('status-msg').innerHTML = `
+                    <div class="success-box">
+                        <strong>Erfolgreich angelegt!</strong><br>
+                        Item-ID: <strong>${data.id}</strong> – ${data.name}
+                        ${imgs}${docs}<br><br>
+                        <a href="?">Weiteren Gegenstand hinzufügen</a>
+                        &nbsp;|&nbsp;
+                        <a href="/docs/${data.id}/">Item-Seite öffnen</a>
+                        &nbsp;|&nbsp;
+                        <a href="/api/fetch_item.php?id=${data.id}" target="_blank">API-Antwort</a>
+                    </div>`;
+                e.target.reset();
+                document.getElementById('specs-container').innerHTML = `
+                    <div class="spec-row">
+                        <input type="text" name="spec_key[]" placeholder="Schlüssel">
+                        <input type="text" name="spec_value[]" placeholder="Wert">
+                        <button type="button" onclick="this.closest('.spec-row').remove()">✕</button>
+                    </div>`;
+            }
+        } catch (err) {
+            document.getElementById('status-msg').innerHTML =
+                `<div class="error-box"><strong>Netzwerkfehler:</strong> ${err.message}</div>`;
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Gegenstand speichern';
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+
+    // ── Hilfsfunktionen ───────────────────────────────────────────────────────
+
+    function addSpec() {
+        const c = document.getElementById('specs-container');
+        const d = document.createElement('div');
+        d.className = 'spec-row';
+        d.innerHTML = `<input type="text" name="spec_key[]" placeholder="Schlüssel"><input type="text" name="spec_value[]" placeholder="Wert"><button type="button" onclick="this.closest('.spec-row').remove()">✕</button>`;
+        c.appendChild(d);
+        d.querySelector('input').focus();
+    }
+
+    function showFiles(input) {
+        const list = document.getElementById('file-list');
+        list.innerHTML = '';
+        const imgE = ['jpg','jpeg','png','gif','webp','svg','avif'];
+        const docE = ['pdf','doc','docx','xls','xlsx','txt','csv','zip'];
+        Array.from(input.files).forEach(f => {
+            const ext  = f.name.split('.').pop().toLowerCase();
+            const type = imgE.includes(ext) ? 'Bild' : docE.includes(ext) ? 'Dokument' : 'Unbekannt';
+            const p    = document.createElement('div');
+            p.textContent = `${type}: ${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+            list.appendChild(p);
+        });
+    }
+
+    const dropZone  = document.querySelector('.file-drop');
+    const fileInput = document.getElementById('file-input');
+    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.style.background='#e0e8ff'; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.background=''; });
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault(); dropZone.style.background='';
+        fileInput.files = e.dataTransfer.files; showFiles(fileInput);
+    });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    checkSession();
+    loadFormData();
+    </script>
+</body>
+</html>
