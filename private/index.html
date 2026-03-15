@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventar – Gegenstand hinzufügen</title>
 
-    <link rel="stylesheet" href="/styles/animation.css">
-    <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/index.css">
-    <link rel="icon" href="/images/icon144x144 copy.png" type="image/png">
-    <script src="js/loader.js"></script>
+    <link rel="stylesheet" href="/base.css">
 
     <style>
         /* ── Formular ── */
@@ -21,11 +17,16 @@
             width: 100%; box-sizing: border-box; padding: 6px;
             font-family: monospace; border: 1px solid #aaa;
             background: #fafafa; font-size: 0.95em;
+            transition: border-color 0.15s, background 0.15s;
         }
+        input[type=text]:focus, textarea:focus, select:focus {
+            border-color: #1a6600; background: #fff; outline: none;
+        }
+        input.input-error { border-color: #dc3545 !important; background: #fff5f5 !important; }
         textarea { height: 80px; resize: vertical; }
 
         .form-row       { display: flex; gap: 10px; }
-        .form-row > *   { flex: 1; }
+        .form-row > *   { flex: 1; min-width: 0; }
 
         button[type=submit] {
             background: #1a6600; color: #fff; border: none;
@@ -37,30 +38,90 @@
 
         .spec-row         { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
         .spec-row input   { flex: 1; }
-        .spec-row button  { flex: 0 0 28px; background: #c00; color: #fff; border: none; cursor: pointer; font-size: 1.1em; }
-        #add-spec         { background: #006; color: #fff; border: none; padding: 5px 12px; cursor: pointer; font-family: monospace; }
+        .spec-row button  { flex: 0 0 28px; background: #c00; color: #fff; border: none; cursor: pointer; font-size: 1.1em; border-radius: 2px; }
+        .spec-row button:hover { background: #900; }
+        #add-spec         { background: #006; color: #fff; border: none; padding: 5px 12px; cursor: pointer; font-family: monospace; margin-top: 4px; }
+        #add-spec:hover   { background: #003; }
 
         .tag-grid         { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag-grid label   { display: inline-flex; align-items: center; gap: 4px; font-weight: normal; background: #eee; padding: 3px 8px; border: 1px solid #ccc; cursor: pointer; }
         .tag-grid label:hover { background: #ddd; }
+        .tag-grid input[type=checkbox]:checked + span { font-weight: bold; }
 
-        .success-box { background: #d4edda; border: 1px solid #28a745; padding: 14px; margin-bottom: 20px; }
-        .error-box   { background: #f8d7da; border: 1px solid #dc3545; padding: 14px; margin-bottom: 20px; }
-        .warn-box    { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 16px; }
+        .success-box { background: #d4edda; border: 1px solid #28a745; padding: 14px; margin-bottom: 20px; border-left: 4px solid #28a745; }
+        .error-box   { background: #f8d7da; border: 1px solid #dc3545; padding: 14px; margin-bottom: 20px; border-left: 4px solid #dc3545; }
+        .warn-box    { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin-bottom: 16px; border-left: 4px solid #ffc107; }
+        .info-box    { background: #d1ecf1; border: 1px solid #17a2b8; padding: 10px; margin-bottom: 16px; border-left: 4px solid #17a2b8; }
 
         small        { color: #555; font-size: 0.82em; }
         .or-divider  { text-align: center; font-weight: bold; margin: 8px 0; color: #888; }
+        .required-star { color: #c00; }
 
-        .file-drop       { border: 2px dashed #999; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; margin-top: 6px; }
-        .file-drop:hover { background: #f0f0f0; }
-        #file-list       { margin-top: 6px; font-size: 0.85em; }
+        /* Char-Counter */
+        .field-wrap        { position: relative; }
+        .char-counter      { position: absolute; right: 6px; bottom: 6px; font-size: 0.75em; color: #999; pointer-events: none; }
+        .char-counter.warn { color: #c00; }
+
+        .file-drop         { border: 2px dashed #999; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; margin-top: 6px; transition: background 0.2s, border-color 0.2s; }
+        .file-drop:hover,
+        .file-drop.drag-over { background: #e8f0ff; border-color: #1a6600; }
+        #file-list         { margin-top: 6px; font-size: 0.85em; }
+        .file-item         { display: flex; gap: 6px; align-items: center; padding: 3px 0; }
+        .file-badge        { font-size: 0.75em; padding: 1px 6px; border-radius: 10px; font-weight: bold; }
+        .file-badge.img    { background: #cce5ff; color: #004085; }
+        .file-badge.doc    { background: #d4edda; color: #155724; }
+        .file-badge.bad    { background: #f8d7da; color: #721c24; }
 
         /* DB-Übersicht */
         details         { margin-top: 10px; }
-        details summary { cursor: pointer; font-weight: bold; }
+        details summary { cursor: pointer; font-weight: bold; padding: 4px; }
+        details summary:hover { background: #f0f0f0; }
         .db-table       { border-collapse: collapse; width: 100%; font-size: 0.85em; background: #fff; margin-top: 8px; }
-        .db-table th    { background: #ddd; }
-        .db-table th, .db-table td { border: 1px solid #ccc; padding: 4px 6px; }
+        .db-table th    { background: #ddd; text-align: left; }
+        .db-table th, .db-table td { border: 1px solid #ccc; padding: 4px 8px; }
+        .db-table tr:hover td { background: #f8f8f8; }
+
+        /* Tabs */
+        .tabs           { display: flex; gap: 0; border-bottom: 2px solid #999; margin-bottom: 20px; }
+        .tab-btn        { padding: 8px 18px; border: 1px solid #ccc; border-bottom: none; background: #f0f0f0; cursor: pointer; font-family: monospace; font-size: 0.9em; }
+        .tab-btn.active { background: #fff; border-bottom: 2px solid #fff; margin-bottom: -2px; font-weight: bold; }
+        .tab-btn:hover:not(.active) { background: #e8e8e8; }
+        .tab-panel      { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Logs-Viewer */
+        .log-filter-bar  { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+        .log-filter-bar select,
+        .log-filter-bar input { width: auto; flex: 1; min-width: 120px; }
+        .log-filter-bar button { padding: 6px 14px; background: #333; color: #fff; border: none; cursor: pointer; font-family: monospace; }
+        .log-filter-bar button:hover { background: #000; }
+
+        .log-table       { border-collapse: collapse; width: 100%; font-size: 0.8em; background: #fff; }
+        .log-table th    { background: #222; color: #fff; padding: 6px 8px; text-align: left; position: sticky; top: 0; }
+        .log-table td    { border-bottom: 1px solid #eee; padding: 4px 8px; vertical-align: top; }
+        .log-table tr:hover td { background: #f5f5f5; }
+
+        .log-table tr.level-error   td { background: #fff0f0; }
+        .log-table tr.level-warning td { background: #fffbe6; }
+        .log-table tr.level-debug   td { color: #888; }
+
+        .log-level       { display: inline-block; padding: 1px 6px; border-radius: 3px; font-weight: bold; font-size: 0.85em; }
+        .level-info      { background: #d1ecf1; color: #0c5460; }
+        .level-warning   { background: #fff3cd; color: #856404; }
+        .level-error     { background: #f8d7da; color: #721c24; }
+        .level-debug     { background: #e2e3e5; color: #383d41; }
+
+        .log-pagination  { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+        .log-pagination button { padding: 5px 12px; background: #555; color: #fff; border: none; cursor: pointer; font-family: monospace; }
+        .log-pagination button:disabled { background: #bbb; cursor: default; }
+        .log-pagination span { font-size: 0.9em; color: #555; }
+
+        .extra-toggle    { cursor: pointer; color: #06c; text-decoration: underline; font-size: 0.8em; }
+        .extra-data      { display: none; background: #f8f8f8; padding: 4px; margin-top: 4px; font-size: 0.78em; white-space: pre-wrap; border: 1px solid #ddd; }
+
+        /* Loading-Spinner im Button */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
 
         /* Overlay */
         #welcome-overlay *, #welcome-overlay *::before, #welcome-overlay *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -71,12 +132,10 @@
         }
         #welcome-backdrop {
             position: absolute; inset: 0;
-            background: rgba(0,0,0,0.82);
-            backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.82); backdrop-filter: blur(6px);
             animation: backdropIn 0.4s ease forwards;
         }
         @keyframes backdropIn { from{opacity:0} to{opacity:1} }
-
         #welcome-modal {
             position: relative; z-index: 1;
             background: #0f0f0f; border: 1px solid #2a2a2a; border-top: 3px solid #e8e000;
@@ -85,7 +144,6 @@
             animation: modalIn 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
         }
         @keyframes modalIn { from{opacity:0;transform:translateY(-24px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-
         #welcome-header       { padding: 32px 40px 24px; border-bottom: 1px solid #1e1e1e; }
         #welcome-tag          { font-size: 0.7em; letter-spacing: 0.2em; text-transform: uppercase; color: #e8e000; margin-bottom: 10px; }
         #welcome-title        { font-size: 2.6em; font-weight: 700; color: #f0f0f0; letter-spacing: -0.02em; line-height: 1; }
@@ -129,7 +187,7 @@
     <div id="nav"></div>
     <div id="settings"></div>
 
-    <!-- ── Overlay (wird per JS eingeblendet wenn Session fehlt) ── -->
+    <!-- ── Overlay ── -->
     <div id="welcome-overlay" style="display:none">
         <div id="welcome-backdrop"></div>
         <div id="welcome-modal">
@@ -162,139 +220,226 @@
 
     <!-- ── Haupt-Content ── -->
     <div class="container">
-        <h2>Neuen Gegenstand hinzufügen</h2>
-        <div id="status-msg"></div>
+        <h2>Inventarverwaltung</h2>
 
-        <form id="item-form" enctype="multipart/form-data">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-add', this)">➕ Gegenstand hinzufügen</button>
+            <button class="tab-btn"        onclick="switchTab('tab-db',  this)">🗄 Datenbankstand</button>
+            <button class="tab-btn"        onclick="switchTab('tab-logs',this); loadLogs()">📋 Logs</button>
+        </div>
 
-            <!-- GRUNDDATEN -->
-            <fieldset>
-                <legend>Grunddaten</legend>
-                <label>Name <small>(Pflichtfeld)</small></label>
-                <input type="text" name="name" id="f-name" required placeholder="z.B. Raspberry Pi 4 B 4GB">
-                <div class="form-row">
-                    <div><label>Marke / Brand</label><input type="text" name="brand" placeholder="z.B. Raspberry Pi"></div>
-                    <div><label>Modell</label><input type="text" name="model" placeholder="z.B. 4 B 4GB"></div>
-                </div>
-                <label>Seriennummer</label>
-                <input type="text" name="serial_number" placeholder="Optional">
-                <div class="form-row">
-                    <div>
-                        <label>Status</label>
-                        <select name="status">
-                            <option value="verfügbar">verfügbar</option>
-                            <option value="ausgeliehen">ausgeliehen</option>
-                            <option value="defekt">defekt</option>
-                            <option value="verschollen">verschollen</option>
-                            <option value="entsorgt">entsorgt</option>
-                        </select>
+        <!-- ── Tab: Hinzufügen ── -->
+        <div id="tab-add" class="tab-panel active">
+
+            <div id="status-msg"></div>
+
+            <form id="item-form" enctype="multipart/form-data" novalidate>
+                <input type="hidden" name="csrf_token" id="csrf-token-field">
+
+                <!-- GRUNDDATEN -->
+                <fieldset>
+                    <legend>Grunddaten</legend>
+                    <label>Name <span class="required-star">*</span></label>
+                    <div class="field-wrap">
+                        <input type="text" name="name" id="f-name" required
+                               maxlength="255" placeholder="z.B. Raspberry Pi 4 B 4GB"
+                               oninput="updateCharCounter(this)">
+                        <span class="char-counter" id="cc-name"></span>
                     </div>
-                    <div>
-                        <label>Zustand</label>
-                        <select name="item_condition">
-                            <option value="">– kein –</option>
-                            <option value="neu">neu</option>
-                            <option value="gut">gut</option>
-                            <option value="akzeptabel">akzeptabel</option>
-                            <option value="schlecht">schlecht</option>
-                        </select>
+                    <div class="form-row">
+                        <div>
+                            <label>Marke / Brand</label>
+                            <input type="text" name="brand" maxlength="100" placeholder="z.B. Raspberry Pi">
+                        </div>
+                        <div>
+                            <label>Modell</label>
+                            <input type="text" name="model" maxlength="100" placeholder="z.B. 4 B 4GB">
+                        </div>
                     </div>
-                </div>
-                <label>Notizen</label>
-                <textarea name="notes" placeholder="Freitext-Notizen…"></textarea>
-            </fieldset>
-
-            <!-- KATEGORIE -->
-            <fieldset>
-                <legend>Kategorie</legend>
-                <label>Bestehende Kategorie</label>
-                <select name="category_id" id="f-categories"><option value="">– keine / neue anlegen –</option></select>
-                <div class="or-divider">— oder neue anlegen —</div>
-                <div class="form-row">
-                    <div><label>Name der neuen Kategorie</label><input type="text" name="new_category_name" placeholder="z.B. Smartphone"></div>
-                    <div>
-                        <label>Oberkategorie (optional)</label>
-                        <select name="new_category_parent" id="f-cat-parent"><option value="">– keine –</option></select>
+                    <label>Seriennummer</label>
+                    <input type="text" name="serial_number" maxlength="100" placeholder="Optional">
+                    <div class="form-row">
+                        <div>
+                            <label>Status</label>
+                            <select name="status">
+                                <option value="verfügbar">verfügbar</option>
+                                <option value="ausgeliehen">ausgeliehen</option>
+                                <option value="defekt">defekt</option>
+                                <option value="verschollen">verschollen</option>
+                                <option value="entsorgt">entsorgt</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Zustand</label>
+                            <select name="item_condition">
+                                <option value="">– kein –</option>
+                                <option value="neu">neu</option>
+                                <option value="gut">gut</option>
+                                <option value="akzeptabel">akzeptabel</option>
+                                <option value="schlecht">schlecht</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-            </fieldset>
-
-            <!-- STANDORT -->
-            <fieldset>
-                <legend>Standort</legend>
-                <label>Bestehenden Standort</label>
-                <select name="location_id" id="f-locations"><option value="">– keiner / neuen anlegen –</option></select>
-                <div class="or-divider">— oder neuen anlegen —</div>
-                <div class="form-row">
-                    <div><label>Raum</label><input type="text" name="new_room" placeholder="Optional"></div>
-                    <div><label>Schrank</label><input type="text" name="new_schrank" placeholder="z.B. S"></div>
-                    <div><label>Regal</label><input type="text" name="new_regal" placeholder="z.B. 3"></div>
-                    <div><label>Position</label><input type="text" name="new_position" placeholder="Optional"></div>
-                </div>
-                <small>Neuer Standort wird nur angelegt wenn "Schrank" ausgefüllt ist.</small>
-            </fieldset>
-
-            <!-- SPECS -->
-            <fieldset>
-                <legend>Technische Daten (Specs)</legend>
-                <small>Beliebig viele Schlüssel-Wert-Paare.</small>
-                <div id="specs-container" style="margin-top:10px;">
-                    <div class="spec-row">
-                        <input type="text" name="spec_key[]" placeholder="Schlüssel (z.B. RAM)">
-                        <input type="text" name="spec_value[]" placeholder="Wert (z.B. 4 GB)">
-                        <button type="button" onclick="this.closest('.spec-row').remove()">✕</button>
+                    <label>Notizen</label>
+                    <div class="field-wrap">
+                        <textarea name="notes" maxlength="2000" placeholder="Freitext-Notizen…"
+                                  oninput="updateCharCounter(this)"></textarea>
+                        <span class="char-counter" id="cc-notes"></span>
                     </div>
-                </div>
-                <button type="button" id="add-spec" onclick="addSpec()">+ Spec hinzufügen</button>
-            </fieldset>
+                </fieldset>
 
-            <!-- TAGS -->
-            <fieldset>
-                <legend>Tags</legend>
-                <div id="f-tags"><em style="color:#888">Lade Tags…</em></div>
-                <label style="margin-top:12px;">Neue Tags <small>(kommagetrennt)</small></label>
-                <input type="text" name="new_tags" placeholder="z.B. microcontroller, blau">
-            </fieldset>
+                <!-- KATEGORIE -->
+                <fieldset>
+                    <legend>Kategorie</legend>
+                    <label>Bestehende Kategorie</label>
+                    <select name="category_id" id="f-categories" onchange="onCategoryChange(this)">
+                        <option value="">– keine / neue anlegen –</option>
+                    </select>
+                    <div id="new-category-section">
+                        <div class="or-divider">— oder neue anlegen —</div>
+                        <div class="form-row">
+                            <div>
+                                <label>Name der neuen Kategorie</label>
+                                <input type="text" name="new_category_name" maxlength="100" placeholder="z.B. Smartphone">
+                            </div>
+                            <div>
+                                <label>Oberkategorie <small>(optional)</small></label>
+                                <select name="new_category_parent" id="f-cat-parent"><option value="">– keine –</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
 
-            <!-- DATEIEN -->
-            <fieldset>
-                <legend>Dateien hochladen</legend>
-                <small>
-                    Bilder (jpg, png, webp, gif, svg, avif) → <code>/docs/{id}/images/</code><br>
-                    Dokumente (pdf, doc, docx, xls, xlsx, txt, csv, zip) → <code>/docs/{id}/data/</code>
-                </small>
-                <div class="file-drop" onclick="document.getElementById('file-input').click()">
-                    Klicken zum Auswählen oder Dateien hierher ziehen
-                    <input type="file" id="file-input" name="uploads[]" multiple style="display:none" onchange="showFiles(this)">
-                </div>
-                <div id="file-list"></div>
-            </fieldset>
+                <!-- STANDORT -->
+                <fieldset>
+                    <legend>Standort</legend>
+                    <label>Bestehenden Standort</label>
+                    <select name="location_id" id="f-locations" onchange="onLocationChange(this)">
+                        <option value="">– keiner / neuen anlegen –</option>
+                    </select>
+                    <div id="new-location-section">
+                        <div class="or-divider">— oder neuen anlegen —</div>
+                        <div class="form-row">
+                            <div><label>Raum</label><input type="text" name="new_room"     maxlength="100" placeholder="Optional"></div>
+                            <div><label>Schrank</label><input type="text" name="new_schrank" maxlength="100" placeholder="z.B. S1"></div>
+                            <div><label>Regal</label><input type="text" name="new_regal"   maxlength="100" placeholder="z.B. 3"></div>
+                            <div><label>Position</label><input type="text" name="new_position" maxlength="100" placeholder="Optional"></div>
+                        </div>
+                        <small>Neuer Standort wird nur angelegt wenn „Schrank" ausgefüllt ist.</small>
+                    </div>
+                </fieldset>
 
-            <button type="submit" id="submit-btn">Gegenstand speichern</button>
-        </form>
+                <!-- SPECS -->
+                <fieldset>
+                    <legend>Technische Daten (Specs)</legend>
+                    <small>Beliebig viele Schlüssel-Wert-Paare.</small>
+                    <div id="specs-container" style="margin-top:10px;">
+                        <div class="spec-row">
+                            <input type="text" name="spec_key[]"   maxlength="100" placeholder="Schlüssel (z.B. RAM)">
+                            <input type="text" name="spec_value[]" maxlength="500" placeholder="Wert (z.B. 4 GB)">
+                            <button type="button" title="Entfernen" onclick="this.closest('.spec-row').remove()">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-spec" onclick="addSpec()">+ Spec hinzufügen</button>
+                </fieldset>
+
+                <!-- TAGS -->
+                <fieldset>
+                    <legend>Tags</legend>
+                    <div id="f-tags"><em style="color:#888">Lade Tags…</em></div>
+                    <label style="margin-top:12px;">Neue Tags <small>(kommagetrennt)</small></label>
+                    <input type="text" name="new_tags" maxlength="500" placeholder="z.B. microcontroller, blau">
+                </fieldset>
+
+                <!-- DATEIEN -->
+                <fieldset>
+                    <legend>Dateien hochladen</legend>
+                    <small>
+                        Bilder (jpg, png, webp, gif, svg, avif) → <code>/docs/{id}/images/</code><br>
+                        Dokumente (pdf, doc, docx, xls, xlsx, txt, csv, zip) → <code>/docs/{id}/data/</code><br>
+                        Max. 20 MB pro Datei.
+                    </small>
+                    <div class="file-drop" id="file-drop"
+                         onclick="document.getElementById('file-input').click()"
+                         ondragover="onDragOver(event)"
+                         ondragleave="onDragLeave(event)"
+                         ondrop="onDrop(event)">
+                        📁 Klicken zum Auswählen oder Dateien hierher ziehen
+                        <input type="file" id="file-input" name="uploads[]" multiple
+                               style="display:none" onchange="showFiles(this)">
+                    </div>
+                    <div id="file-list"></div>
+                </fieldset>
+
+                <button type="submit" id="submit-btn">Gegenstand speichern</button>
+            </form>
+        </div>
+
+        <!-- ── Tab: DB-Übersicht ── -->
+        <div id="tab-db" class="tab-panel">
+            <div id="db-content"><em style="color:#888">Daten werden geladen…</em></div>
+        </div>
+
+        <!-- ── Tab: Logs ── -->
+        <div id="tab-logs" class="tab-panel">
+            <div class="log-filter-bar">
+                <select id="log-level-filter">
+                    <option value="">Alle Level</option>
+                    <option value="info">info</option>
+                    <option value="warning">warning</option>
+                    <option value="error">error</option>
+                    <option value="debug">debug</option>
+                </select>
+                <input type="text" id="log-search" placeholder="Suche (Action / Detail / IP)…" maxlength="100">
+                <button onclick="loadLogs(0)">🔍 Filtern</button>
+                <button onclick="loadLogs(0)" style="background:#1a6600">↻ Neu laden</button>
+                <span id="log-total" style="font-size:0.85em;color:#555"></span>
+            </div>
+            <div id="logs-container"><em style="color:#888">Logs werden geladen…</em></div>
+            <div class="log-pagination" id="log-pagination" style="display:none">
+                <button id="log-prev" onclick="logPage(-1)">◀ Zurück</button>
+                <span id="log-page-info"></span>
+                <button id="log-next" onclick="logPage(1)">Weiter ▶</button>
+            </div>
+        </div>
     </div>
 
-    <!-- DB-Übersicht -->
-    <div class="container" id="db-overview" style="display:none">
-        <h2>Aktueller Datenbankstand</h2>
-        <div id="db-content"></div>
-    </div>
-
-    <script src="js/index.js"></script>
     <script>
-    // ── Overlay ───────────────────────────────────────────────────────────────
+    // ═════════════════════════════════════════════════════════════════════════
+    // State
+    // ═════════════════════════════════════════════════════════════════════════
+
+    let csrfToken    = '';
+    let logOffset    = 0;
+    const LOG_LIMIT  = 50;
+    let logTotal     = 0;
+    let logsLoaded   = false;
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // Overlay
+    // ═════════════════════════════════════════════════════════════════════════
 
     async function checkSession() {
-        const res  = await fetch('api.php?action=formdata');
-        // Session-Check: Overlay zeigen wenn nicht akzeptiert
-        const sess = await fetch('api.php', {
-            method: 'POST',
-            headers: {'Content-Type':'application/x-www-form-urlencoded'},
-            body: 'action=session_status'
-        }).then(r => r.json()).catch(() => ({accepted: false}));
+        try {
+            const res  = await fetch('api.php', {
+                method:  'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body:    'action=session_status',
+            });
+            const json = await res.json();
+            const data = json.data ?? json; // Kompatibilität mit alter API
 
-        if (!sess.accepted) {
-            document.getElementById('welcome-overlay').style.display = 'flex';
+            if (data.csrf_token) {
+                csrfToken = data.csrf_token;
+                document.getElementById('csrf-token-field').value = csrfToken;
+            }
+
+            if (!data.accepted) {
+                document.getElementById('welcome-overlay').style.display = 'flex';
+            }
+        } catch (err) {
+            console.warn('Session-Check fehlgeschlagen:', err);
         }
     }
 
@@ -303,174 +448,389 @@
         btn.disabled = true;
         document.getElementById('btn-text').textContent = 'Einen Moment…';
 
-        await fetch('api.php', {
-            method: 'POST',
-            headers: {'Content-Type':'application/x-www-form-urlencoded'},
-            body: 'action=accept_overlay'
-        }).catch(() => {});
+        try {
+            await fetch('api.php', {
+                method:  'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body:    'action=accept_overlay',
+            });
+        } catch (_) { /* ignorieren */ }
 
         const overlay = document.getElementById('welcome-overlay');
         overlay.classList.add('hiding');
         overlay.addEventListener('animationend', () => overlay.remove(), {once: true});
     }
 
-    // ── Formulardaten laden ───────────────────────────────────────────────────
+    // ═════════════════════════════════════════════════════════════════════════
+    // Formulardaten laden
+    // ═════════════════════════════════════════════════════════════════════════
 
     async function loadFormData() {
-        const res  = await fetch('api.php?action=formdata');
-        if (!res.ok) {
-            document.getElementById('status-msg').innerHTML =
-                '<div class="warn-box"><strong>Keine Datenbankverbindung.</strong> Speichern funktioniert nicht.</div>';
-            return;
+        try {
+            const res  = await fetch('api.php?action=formdata');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+
+            if (json.error) {
+                showMsg('warn', `<strong>DB-Fehler:</strong> ${escHtml(json.error)}`);
+                return;
+            }
+
+            const data = json.data ?? json;
+
+            // CSRF aus formdata-Antwort übernehmen falls noch nicht gesetzt
+            if (data.csrf_token && !csrfToken) {
+                csrfToken = data.csrf_token;
+                document.getElementById('csrf-token-field').value = csrfToken;
+            }
+
+            // Kategorien befüllen
+            const catSel    = document.getElementById('f-categories');
+            const catParent = document.getElementById('f-cat-parent');
+            (data.categories ?? []).forEach(c => {
+                const label = c.parent_name ? `${c.parent_name} / ${c.name}` : c.name;
+                catSel.innerHTML    += `<option value="${c.id}">${escHtml(label)}</option>`;
+                catParent.innerHTML += `<option value="${c.id}">${escHtml(c.name)}</option>`;
+            });
+
+            // Standorte befüllen
+            const locSel = document.getElementById('f-locations');
+            (data.locations ?? []).forEach(l => {
+                const parts = [
+                    l.room     ? `Raum ${l.room}`      : null,
+                    l.schrank  ? `Schrank ${l.schrank}` : null,
+                    l.regal    ? `Regal ${l.regal}`     : null,
+                    l.position ? `Pos. ${l.position}`   : null,
+                ].filter(Boolean);
+                locSel.innerHTML += `<option value="${l.id}">${escHtml(parts.join(', ') || `Standort #${l.id}`)}</option>`;
+            });
+
+            // Tags befüllen
+            const tagDiv = document.getElementById('f-tags');
+            if ((data.tags ?? []).length) {
+                tagDiv.innerHTML = '<label>Bestehende Tags</label><div class="tag-grid">' +
+                    data.tags.map(t =>
+                        `<label><input type="checkbox" name="tags[]" value="${t.id}"> <span>${escHtml(t.name)}</span></label>`
+                    ).join('') + '</div>';
+            } else {
+                tagDiv.innerHTML = '<em>Noch keine Tags vorhanden.</em>';
+            }
+
+            buildDbOverview(data);
+
+        } catch (err) {
+            showMsg('warn', `<strong>Ladefehler:</strong> ${escHtml(err.message)}`);
         }
-        const data = await res.json();
-        if (data.error) {
-            document.getElementById('status-msg').innerHTML =
-                `<div class="warn-box"><strong>DB-Fehler:</strong> ${data.error}</div>`;
-            return;
-        }
-
-        // Kategorien
-        const catSel    = document.getElementById('f-categories');
-        const catParent = document.getElementById('f-cat-parent');
-        data.categories.forEach(c => {
-            const label = c.parent_name ? `${c.parent_name} / ${c.name}` : c.name;
-            catSel.innerHTML    += `<option value="${c.id}">${label}</option>`;
-            catParent.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-        });
-
-        // Standorte
-        const locSel = document.getElementById('f-locations');
-        data.locations.forEach(l => {
-            const parts = [l.room?`Raum ${l.room}`:null, l.schrank?`Schrank ${l.schrank}`:null, l.regal?`Regal ${l.regal}`:null, l.position?`Pos. ${l.position}`:null].filter(Boolean);
-            locSel.innerHTML += `<option value="${l.id}">${parts.join(', ') || `Standort #${l.id}`}</option>`;
-        });
-
-        // Tags
-        const tagDiv = document.getElementById('f-tags');
-        if (data.tags.length) {
-            tagDiv.innerHTML = '<label>Bestehende Tags</label><div class="tag-grid">' +
-                data.tags.map(t => `<label><input type="checkbox" name="tags[]" value="${t.id}"> ${t.name}</label>`).join('') +
-                '</div>';
-        } else {
-            tagDiv.innerHTML = '<em>Noch keine Tags vorhanden.</em>';
-        }
-
-        // DB-Übersicht aufbauen
-        buildDbOverview(data);
     }
 
     function buildDbOverview(data) {
-        const wrap = document.getElementById('db-overview');
         const cont = document.getElementById('db-content');
-        wrap.style.display = 'block';
-
         cont.innerHTML = `
         <details>
-            <summary>Kategorien (${data.categories.length})</summary>
+            <summary>Kategorien (${(data.categories ?? []).length})</summary>
             <table class="db-table">
-                <tr style="background:#ddd"><th>ID</th><th>Name</th><th>Oberkategorie</th></tr>
-                ${data.categories.map(c=>`<tr><td>${c.id}</td><td>${c.name}</td><td>${c.parent_name||'–'}</td></tr>`).join('')}
+                <tr><th>ID</th><th>Name</th><th>Oberkategorie</th></tr>
+                ${(data.categories ?? []).map(c =>
+                    `<tr><td>${c.id}</td><td>${escHtml(c.name)}</td><td>${escHtml(c.parent_name || '–')}</td></tr>`
+                ).join('')}
             </table>
         </details>
         <details>
-            <summary>Standorte (${data.locations.length})</summary>
+            <summary>Standorte (${(data.locations ?? []).length})</summary>
             <table class="db-table">
-                <tr style="background:#ddd"><th>ID</th><th>Raum</th><th>Schrank</th><th>Regal</th><th>Position</th></tr>
-                ${data.locations.map(l=>`<tr><td>${l.id}</td><td>${l.room||'–'}</td><td>${l.schrank||'–'}</td><td>${l.regal||'–'}</td><td>${l.position||'–'}</td></tr>`).join('')}
+                <tr><th>ID</th><th>Raum</th><th>Schrank</th><th>Regal</th><th>Position</th></tr>
+                ${(data.locations ?? []).map(l =>
+                    `<tr><td>${l.id}</td><td>${escHtml(l.room||'–')}</td><td>${escHtml(l.schrank||'–')}</td><td>${escHtml(l.regal||'–')}</td><td>${escHtml(l.position||'–')}</td></tr>`
+                ).join('')}
             </table>
         </details>
         <details>
-            <summary>Tags (${data.tags.length})</summary>
-            <div style="margin-top:8px">${data.tags.map(t=>`<span style="display:inline-block;background:#eee;border:1px solid #ccc;padding:2px 8px;margin:3px;font-size:0.85em">#${t.name} (ID ${t.id})</span>`).join('')}</div>
+            <summary>Tags (${(data.tags ?? []).length})</summary>
+            <div style="margin-top:8px">${(data.tags ?? []).map(t =>
+                `<span style="display:inline-block;background:#eee;border:1px solid #ccc;padding:2px 8px;margin:3px;font-size:0.85em">#${escHtml(t.name)} <small>(ID ${t.id})</small></span>`
+            ).join('')}</div>
         </details>`;
     }
 
-    // ── Formular absenden ─────────────────────────────────────────────────────
+    // ═════════════════════════════════════════════════════════════════════════
+    // Formular absenden
+    // ═════════════════════════════════════════════════════════════════════════
 
     document.getElementById('item-form').addEventListener('submit', async e => {
         e.preventDefault();
+
+        // Client-seitige Validierung
+        const nameInput = document.getElementById('f-name');
+        if (!nameInput.value.trim()) {
+            nameInput.classList.add('input-error');
+            nameInput.focus();
+            showMsg('error', '<strong>Bitte Name eingeben.</strong> Dieses Feld ist Pflicht.');
+            return;
+        }
+        nameInput.classList.remove('input-error');
+
         const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        btn.textContent = 'Speichert…';
+        btn.disabled    = true;
+        btn.innerHTML   = '<span class="spinner"></span> Speichert…';
+
+        // CSRF-Token aktuell halten
+        document.getElementById('csrf-token-field').value = csrfToken;
 
         const fd = new FormData(e.target);
-        fd.append('action', 'save_item');
+        fd.set('action', 'save_item');
 
         try {
-            const res  = await fetch('api.php', {method:'POST', body: fd});
-            const data = await res.json();
+            const res  = await fetch('api.php', {method: 'POST', body: fd});
+            const json = await res.json();
+            const data = json.data ?? json;
 
-            if (data.error) {
-                document.getElementById('status-msg').innerHTML =
-                    `<div class="error-box"><strong>Fehler:</strong> ${data.error}</div>`;
+            if (json.error || !json.ok) {
+                const code = json.code ? ` <small style="color:#888">[${json.code}]</small>` : '';
+                showMsg('error', `<strong>Fehler:</strong> ${escHtml(json.error ?? 'Unbekannter Fehler')}${code}`);
             } else {
-                const imgs = data.uploaded.images.length ? `<br>Bilder: ${data.uploaded.images.join(', ')}` : '';
-                const docs = data.uploaded.docs.length   ? `<br>Dokumente: ${data.uploaded.docs.join(', ')}` : '';
-                document.getElementById('status-msg').innerHTML = `
-                    <div class="success-box">
-                        <strong>Erfolgreich angelegt!</strong><br>
-                        Item-ID: <strong>${data.id}</strong> – ${data.name}
-                        ${imgs}${docs}<br><br>
-                        <a href="?">Weiteren Gegenstand hinzufügen</a>
-                        &nbsp;|&nbsp;
-                        <a href="/docs/${data.id}/">Item-Seite öffnen</a>
-                        &nbsp;|&nbsp;
-                        <a href="/api/fetch_item.php?id=${data.id}" target="_blank">API-Antwort</a>
-                    </div>`;
+                const imgs     = (data.uploaded?.images ?? []);
+                const docs     = (data.uploaded?.docs   ?? []);
+                const rejected = (data.uploaded?.rejected ?? []);
+
+                let uploadInfo = '';
+                if (imgs.length)     uploadInfo += `<br>📷 Bilder: ${imgs.map(escHtml).join(', ')}`;
+                if (docs.length)     uploadInfo += `<br>📄 Dokumente: ${docs.map(escHtml).join(', ')}`;
+                if (rejected.length) uploadInfo += `<br>⚠️ Abgelehnt: ${rejected.map(r => `${escHtml(r.file)} (${escHtml(r.reason)})`).join('; ')}`;
+
+                showMsg('success', `
+                    <strong>Erfolgreich angelegt!</strong><br>
+                    Item-ID: <strong>${data.id}</strong> – ${escHtml(data.name)}
+                    ${uploadInfo}<br><br>
+                    <a href="?">Weiteren Gegenstand hinzufügen</a>
+                    &nbsp;|&nbsp;
+                    <a href="/docs/${data.id}/">Item-Seite öffnen</a>
+                    &nbsp;|&nbsp;
+                    <a href="/api/fetch_item.php?id=${data.id}" target="_blank">API-Antwort</a>
+                `);
+
                 e.target.reset();
+                csrfToken = '';
+                // Neuen Token holen
+                await checkSession();
+
                 document.getElementById('specs-container').innerHTML = `
                     <div class="spec-row">
-                        <input type="text" name="spec_key[]" placeholder="Schlüssel">
-                        <input type="text" name="spec_value[]" placeholder="Wert">
+                        <input type="text" name="spec_key[]"   placeholder="Schlüssel (z.B. RAM)">
+                        <input type="text" name="spec_value[]" placeholder="Wert (z.B. 4 GB)">
                         <button type="button" onclick="this.closest('.spec-row').remove()">✕</button>
                     </div>`;
+                document.getElementById('file-list').innerHTML = '';
             }
         } catch (err) {
-            document.getElementById('status-msg').innerHTML =
-                `<div class="error-box"><strong>Netzwerkfehler:</strong> ${err.message}</div>`;
+            showMsg('error', `<strong>Netzwerkfehler:</strong> ${escHtml(err.message)}`);
         }
 
-        btn.disabled = false;
-        btn.textContent = 'Gegenstand speichern';
+        btn.disabled  = false;
+        btn.innerHTML = 'Gegenstand speichern';
         window.scrollTo({top: 0, behavior: 'smooth'});
     });
 
-    // ── Hilfsfunktionen ───────────────────────────────────────────────────────
+    // ═════════════════════════════════════════════════════════════════════════
+    // Logs-Viewer
+    // ═════════════════════════════════════════════════════════════════════════
+
+    async function loadLogs(offset = logOffset) {
+        logOffset = offset;
+        const level  = document.getElementById('log-level-filter').value;
+        const search = document.getElementById('log-search').value.trim();
+
+        const params = new URLSearchParams({
+            action: 'logs',
+            limit:  LOG_LIMIT,
+            offset: logOffset,
+        });
+        if (level)  params.set('level', level);
+        if (search) params.set('q', search);
+
+        const container = document.getElementById('logs-container');
+        container.innerHTML = '<em style="color:#888">Lade Logs…</em>';
+        document.getElementById('log-pagination').style.display = 'none';
+
+        try {
+            const res  = await fetch('api.php?' + params.toString());
+            const json = await res.json();
+
+            if (json.error) {
+                container.innerHTML = `<div class="error-box">${escHtml(json.error)}</div>`;
+                return;
+            }
+
+            const { logs, total } = json.data;
+            logTotal = total;
+
+            document.getElementById('log-total').textContent =
+                `${total.toLocaleString('de-DE')} Einträge gesamt`;
+
+            if (!logs.length) {
+                container.innerHTML = '<em style="color:#888">Keine Einträge gefunden.</em>';
+                return;
+            }
+
+            const rows = logs.map((l, idx) => {
+                const extra = l.extra_data
+                    ? `<span class="extra-toggle" onclick="toggleExtra(${idx})">JSON ▾</span>
+                       <pre class="extra-data" id="extra-${idx}">${escHtml(JSON.stringify(JSON.parse(l.extra_data), null, 2))}</pre>`
+                    : '';
+                return `<tr class="level-${escHtml(l.level)}">
+                    <td style="white-space:nowrap">${escHtml(l.created_at)}</td>
+                    <td><span class="log-level level-${escHtml(l.level)}">${escHtml(l.level)}</span></td>
+                    <td><strong>${escHtml(l.action)}</strong></td>
+                    <td>${escHtml(l.detail ?? '')}</td>
+                    <td>${escHtml(l.ip ?? '')}</td>
+                    <td>${escHtml(l.browser ?? '')} / ${escHtml(l.os ?? '')}</td>
+                    <td>${escHtml(l.method ?? '')} ${extra}</td>
+                </tr>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div style="overflow-x:auto">
+                <table class="log-table">
+                    <thead><tr>
+                        <th>Zeitstempel</th><th>Level</th><th>Action</th>
+                        <th>Detail</th><th>IP</th><th>Browser / OS</th><th>Methode</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                </div>`;
+
+            // Pagination
+            const totalPages = Math.ceil(total / LOG_LIMIT);
+            const curPage    = Math.floor(logOffset / LOG_LIMIT) + 1;
+            if (totalPages > 1) {
+                document.getElementById('log-pagination').style.display = 'flex';
+                document.getElementById('log-page-info').textContent    =
+                    `Seite ${curPage} / ${totalPages}`;
+                document.getElementById('log-prev').disabled = logOffset <= 0;
+                document.getElementById('log-next').disabled = logOffset + LOG_LIMIT >= total;
+            }
+
+        } catch (err) {
+            container.innerHTML = `<div class="error-box">Netzwerkfehler: ${escHtml(err.message)}</div>`;
+        }
+    }
+
+    function logPage(dir) {
+        const newOffset = logOffset + dir * LOG_LIMIT;
+        if (newOffset < 0 || newOffset >= logTotal) return;
+        loadLogs(newOffset);
+    }
+
+    function toggleExtra(idx) {
+        const el = document.getElementById(`extra-${idx}`);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // UI-Hilfsfunktionen
+    // ═════════════════════════════════════════════════════════════════════════
+
+    function switchTab(id, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function showMsg(type, html) {
+        const cls = { success: 'success-box', error: 'error-box', warn: 'warn-box', info: 'info-box' };
+        document.getElementById('status-msg').innerHTML =
+            `<div class="${cls[type] ?? 'info-box'}">${html}</div>`;
+    }
+
+    function escHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
 
     function addSpec() {
         const c = document.getElementById('specs-container');
         const d = document.createElement('div');
         d.className = 'spec-row';
-        d.innerHTML = `<input type="text" name="spec_key[]" placeholder="Schlüssel"><input type="text" name="spec_value[]" placeholder="Wert"><button type="button" onclick="this.closest('.spec-row').remove()">✕</button>`;
+        d.innerHTML = `
+            <input type="text" name="spec_key[]"   maxlength="100" placeholder="Schlüssel (z.B. RAM)">
+            <input type="text" name="spec_value[]" maxlength="500" placeholder="Wert (z.B. 4 GB)">
+            <button type="button" title="Entfernen" onclick="this.closest('.spec-row').remove()">✕</button>`;
         c.appendChild(d);
         d.querySelector('input').focus();
     }
 
+    function onCategoryChange(sel) {
+        const sec = document.getElementById('new-category-section');
+        sec.style.display = sel.value ? 'none' : '';
+    }
+
+    function onLocationChange(sel) {
+        const sec = document.getElementById('new-location-section');
+        sec.style.display = sel.value ? 'none' : '';
+    }
+
+    function updateCharCounter(input) {
+        const id  = 'cc-' + (input.name === 'name' ? 'name' : 'notes');
+        const el  = document.getElementById(id);
+        if (!el) return;
+        const len  = input.value.length;
+        const max  = parseInt(input.getAttribute('maxlength') || '255');
+        el.textContent = `${len}/${max}`;
+        el.classList.toggle('warn', len > max * 0.9);
+    }
+
     function showFiles(input) {
-        const list = document.getElementById('file-list');
+        const list   = document.getElementById('file-list');
+        const imgE   = new Set(['jpg','jpeg','png','gif','webp','svg','avif']);
+        const docE   = new Set(['pdf','doc','docx','xls','xlsx','txt','csv','zip']);
+        const maxMB  = 20;
         list.innerHTML = '';
-        const imgE = ['jpg','jpeg','png','gif','webp','svg','avif'];
-        const docE = ['pdf','doc','docx','xls','xlsx','txt','csv','zip'];
+
         Array.from(input.files).forEach(f => {
-            const ext  = f.name.split('.').pop().toLowerCase();
-            const type = imgE.includes(ext) ? 'Bild' : docE.includes(ext) ? 'Dokument' : 'Unbekannt';
-            const p    = document.createElement('div');
-            p.textContent = `${type}: ${f.name} (${(f.size/1024).toFixed(1)} KB)`;
-            list.appendChild(p);
+            const ext   = f.name.split('.').pop().toLowerCase();
+            const sizeMB= (f.size / 1024 / 1024).toFixed(2);
+            const tooBig= f.size > maxMB * 1024 * 1024;
+            let type, badge;
+
+            if (imgE.has(ext))       { type = 'Bild';     badge = 'img'; }
+            else if (docE.has(ext))  { type = 'Dokument'; badge = 'doc'; }
+            else                     { type = 'Unbekannt';badge = 'bad'; }
+
+            if (tooBig) badge = 'bad';
+
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.innerHTML = `
+                <span class="file-badge ${badge}">${type}</span>
+                <span>${escHtml(f.name)}</span>
+                <small>${sizeMB} MB${tooBig ? ' ⚠️ zu groß!' : ''}</small>`;
+            list.appendChild(div);
         });
     }
 
-    const dropZone  = document.querySelector('.file-drop');
-    const fileInput = document.getElementById('file-input');
-    dropZone.addEventListener('dragover',  e => { e.preventDefault(); dropZone.style.background='#e0e8ff'; });
-    dropZone.addEventListener('dragleave', () => { dropZone.style.background=''; });
-    dropZone.addEventListener('drop', e => {
-        e.preventDefault(); dropZone.style.background='';
-        fileInput.files = e.dataTransfer.files; showFiles(fileInput);
-    });
+    // Drag & Drop
+    function onDragOver(e) {
+        e.preventDefault();
+        document.getElementById('file-drop').classList.add('drag-over');
+    }
+    function onDragLeave(e) {
+        document.getElementById('file-drop').classList.remove('drag-over');
+    }
+    function onDrop(e) {
+        e.preventDefault();
+        const drop  = document.getElementById('file-drop');
+        const input = document.getElementById('file-input');
+        drop.classList.remove('drag-over');
+        input.files = e.dataTransfer.files;
+        showFiles(input);
+    }
 
-    // ── Init ──────────────────────────────────────────────────────────────────
+    // ═════════════════════════════════════════════════════════════════════════
+    // Init
+    // ═════════════════════════════════════════════════════════════════════════
+
     checkSession();
     loadFormData();
     </script>
