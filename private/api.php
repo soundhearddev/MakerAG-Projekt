@@ -205,7 +205,7 @@ function triggerHostLookup(string $ip): void
         return;
     }
 
-    $scriptPath = '/opt/inventar/lookup_host.sh';
+    $scriptPath = '/var/www/private/scanner-prototyp.sh';
 
     // Script muss existieren und ausführbar sein
     if (!is_executable($scriptPath)) {
