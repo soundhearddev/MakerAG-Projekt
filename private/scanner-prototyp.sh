@@ -47,7 +47,7 @@ mysql_cmd() {
     if [[ -f "${DB_CONF:-}" ]]; then
         mysql --defaults-file="$DB_CONF" --silent --skip-column-names -e "$1" 2>/dev/null
     else
-        mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" --silent --skip-column-names -e "$1" 2>/dev/null
+mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASS" "$DB_NAME" --silent --skip-column-names -e "$1"
     fi
 }
 
@@ -154,7 +154,7 @@ ESC_IP=$(sql_escape "$IP")
 [[ -z "$HOSTNAME" ]] && SQL_HOST="NULL"   || SQL_HOST="'$(sql_escape "$HOSTNAME")'"
 [[ -z "$VENDOR"   ]] && SQL_VENDOR="NULL" || SQL_VENDOR="'$(sql_escape "$VENDOR")'"
 
-SQL="CALL upsert_host('$ESC_IP', $SQL_MAC, $SQL_HOST, $SQL_VENDOR);"
+SQL="CALL upsert_user('$ESC_IP', $SQL_MAC, $SQL_HOST, $SQL_VENDOR);"
 debug "SQL: $SQL"
 mysql_cmd "$SQL"
 
