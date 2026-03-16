@@ -1,11 +1,28 @@
 #!/usr/bin/env bash
-# lookup_host.sh – IP → MAC + Hostname → DB
 
 set -euo pipefail
 
 # ─── Konfiguration ────────────────────────────────────────────────────────────
 
-DB_CONF="/etc/inventar/db.conf"
+ENV_FILE="/var/www/secure/.env" 
+if [[ ! -f "$ENV_FILE" ]]; then
+    echo "FEHLER: .env nicht gefunden: $ENV_FILE"
+    exit 1
+fi
+
+while IFS='=' read -r key val; do
+    [[ "$key" =~ ^#.*$ || -z "$key" ]] && continue
+    val="${val%\"}"   
+    val="${val#\"}"
+    val="${val%\'}"
+    val="${val#\'}"
+    declare "$key=$val"
+done < "$ENV_FILE"
+
+DB_HOST="${DB_HOST:-localhost}"
+DB_NAME="${DB_NAME:-}"
+DB_USER="${DB_USER:-}"
+DB_PASS="${DB_PASS:-}"
 
 
 # ─── Logging ──────────────────────────────────────────────────────────────────
@@ -22,7 +39,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] [BOOT] Script gestartet | PID=$$ | User=$(w
 
 [[ -z "$IP" ]]                                                  && { echo "FEHLER: Keine IP"; exit 1; }
 echo "$IP" | grep -qP '^(\d{1,3}\.){3}\d{1,3}$'               || { echo "FEHLER: Ungültiges Format: $IP"; exit 1; }
-echo "$IP" | grep -qP '^10\.'                                   || { echo "FEHLER: Keine 10.x IP: $IP"; exit 1; }
+#echo "$IP" | grep -qP '^10\.'                                   || { echo "FEHLER: Keine 10.x IP: $IP"; exit 1; }
 
 # ─── Hilfsfunktionen ──────────────────────────────────────────────────────────
 
