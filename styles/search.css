@@ -176,7 +176,7 @@ th[data-sort]:hover {
 
 td {
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--cat-extra);
+    border-bottom: 2px solid var(--cat-extra);
     border-left: 1px solid var(--cat-extra);
     border-right: 1px solid var(--cat-extra);
     color: var(--cat-text);
