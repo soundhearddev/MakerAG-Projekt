@@ -168,7 +168,6 @@ input.settings-icon[type="checkbox"] {
     margin: 0;
     z-index: 9;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     background: var(--cat-secondary);
     opacity: 1;
     animation: border-transform 7s linear infinite;
