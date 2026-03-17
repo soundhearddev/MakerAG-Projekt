@@ -298,7 +298,6 @@ function renderTable(data, query) {
 
       <td>${renderCell(item.brand, "brand", index, query)}</td>
       <td>${renderCell(item.model, "model", index, query)}</td>
-      <td>${renderCell(item.serial_number, "serial", index, query)}</td>
       <td>${renderCell(item.quantity, "quantity", index, query)}</td>
       <td>${renderCell(item.locker, "locker", index, query)}</td>  
       <td>${state.editorMode
