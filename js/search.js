@@ -1,3 +1,4 @@
+ 
 // =============================================================================
 // DEBUG-LOGGING SYSTEM
 // =============================================================================
@@ -426,35 +427,6 @@ if (searchFor) {
 }
 
 
-// =============================================================================
-// KEYBOARD SHORTCUTS
-// =============================================================================
-document.addEventListener("keydown", (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-    e.preventDefault();
-    if (state.editorMode && Object.keys(state.editedData).length > 0) {
-      const saveBtn = document.getElementById("saveChanges");
-      if (saveBtn) saveBtn.click();
-    }
-  }
-
-  if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-    e.preventDefault();
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-      searchInput.focus();
-      searchInput.select();
-    }
-  }
-
-  if (e.key === "Escape") {
-    if (document.activeElement.classList.contains("cell")) {
-      document.activeElement.blur();
-    } else if (document.activeElement.id === "searchInput") {
-      document.activeElement.blur();
-    }
-  }
-});
 
 // =============================================================================
 // PAGE VISIBILITY
@@ -525,16 +497,4 @@ window.addEventListener("offline", () => {
   }
 });
 
-// =============================================================================
-// FINALIZATION
-// =============================================================================
-// log.success("search.js vollständig geladen und initialisiert");
 
-window.APP_VERSION = "2.1.0";
-window.APP_INIT_TIME = new Date().toISOString();
-
-// log.info("Application Info", {
-//   version: window.APP_VERSION,
-//   initialized: window.APP_INIT_TIME,
-//   mode: "ID-basierte Pfade aktiv"
-// });

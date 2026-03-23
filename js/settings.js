@@ -181,13 +181,7 @@
     document.querySelectorAll(".theme-option").forEach((option) => {
       option.addEventListener("click", () => {
         const theme = option.dataset.theme;
-
-        // cyberpunk kriegt extra Funktion für halt... Das...
-        if (theme === 'cyberpunk') {
-          showThemeConfirmation(theme);
-        } else {
-          handleThemeSelect(theme);
-        }
+        handleThemeSelect(theme);
       });
     });
 
@@ -874,90 +868,3 @@
 
 
 
-// Lustige Geschichte:
-// das ganze mit dem Cyberpunk theme Confirm und so, dass man eignetlich nciht das theme auswählen kann und so. Als ich alle Themes nochmal mit ein paar freunden überabeitet habe, welche sich mit Color Theory und so auskennen. haben wir erst natürlcih die jetzigen super guten themes gerwählt aber dazu auch ein theme welches komplett schlimm aussieht. Das ist das Cyberpunk theme. Es hätte kein Sinn gemacht so ein theme reinzubringen, deswegen habe ich später diese Confimation hinzugefügt damit man nicht direkt dieses theme auswhälen kann. Aber also das ganze gestet habe, hatte ich den Fehler, dass der Confirm button nciht funktioniert hat. Es wäre eigentlich ein ziemlich einfacher Fix aber, dann kahm mir die idee mit dem unmöglichen button. Dass man gar nciht so weit kommt und das Theme auswählen kann. Und daraus ist dann das hier geworden.
-function showThemeConfirmation(themeName) {
-  document.querySelectorAll('.theme-confirm-overlay').forEach(el => el.remove());
-
-  const overlay = document.createElement('div');
-  overlay.className = 'theme-confirm-overlay';
-
-  overlay.innerHTML = `
-        <div class="theme-confirm-box">
-            <div class="theme-confirm-title">Cyberpunk Theme</div>
-            <div class="theme-confirm-message">
-                Bist du sicher, dass du fortfahren möchtest?
-            </div>
-            <div class="theme-confirm-buttons">
-                <button class="theme-confirm-btn theme-confirm-no">Abbrechen</button>
-                <button class="theme-confirm-btn theme-confirm-yes">Ja, aktivieren</button>
-            </div>
-        </div>
-    `;
-
-  document.body.appendChild(overlay);
-
-  const yesBtn = overlay.querySelector('.theme-confirm-yes');
-  const noBtn = overlay.querySelector('.theme-confirm-no');
-  const box = overlay.querySelector('.theme-confirm-box');
-
-  let isMoving = false;
-
-  function UseButton(e) {
-    if (isMoving) return; // verhindert dass mehrere moves gleichzeitig laufen
-
-    e.preventDefault();
-    e.stopPropagation(); // verhindert dass der click irgendwo anders ankommt
-
-    isMoving = true;
-
-    const padding = 50;
-    const boxWidth = box.offsetWidth;
-    const boxHeight = box.offsetHeight;
-
-    // maximale position: fenstergröße minus box-größe minus padding damit die box nicht rausfliegt
-    const maxX = window.innerWidth - boxWidth - padding;
-    const maxY = window.innerHeight - boxHeight - padding;
-
-    let randomX, randomY;
-    let attempts = 0;
-
-    // zufällige position innerhalb des erlaubten bereichs berechnen
-    // die schleife war ursprünglich geplant um positionen nah am cursor zu vermeiden,
-    // aber die bedingung fehlt noch – deswegen macht sie einfach 5 versuche und nimmt den letzten
-    do {
-      randomX = Math.random() * (maxX - padding) + padding;
-      randomY = Math.random() * (maxY - padding) + padding;
-      attempts++;
-    } while (attempts < 5);
-
-    box.style.position = 'fixed';
-    box.style.left = randomX + 'px';
-    box.style.top = randomY + 'px';
-    // cubic-bezier(0.68, -0.55, 0.265, 1.55) = "back easing" → box überschießt kurz und federt zurück
-    box.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-
-    // isMoving lock für 350ms halten damit man den button nicht spammen kann
-    // bevor die animation fertig ist
-    setTimeout(() => {
-      isMoving = false;
-    }, 350);
-  }
-
-  yesBtn.addEventListener('click', UseButton);
-  yesBtn.addEventListener('touchstart', UseButton, { passive: false }); // touch-support für mobile
-
-  noBtn.addEventListener('click', closeConfirmation);
-
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeConfirmation();
-  });
-
-  function closeConfirmation() {
-    overlay.style.animation = 'fadeOut 0.2s forwards';
-    setTimeout(() => {
-      overlay.remove();
-      delete window.activateCyberpunk; 
-    }, 200);
-  }
-}
