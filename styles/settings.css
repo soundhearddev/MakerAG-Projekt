@@ -304,7 +304,6 @@ input.settings-icon[type="checkbox"] {
 .settings-nav ul li a:hover {
     color: var(--cat-text);
     transform: scale(1.05);
-    text-shadow: 0 4px 20px var(--cat-accent);
 }
 
 .settings-icon:checked~.settings-nav ul li {
@@ -1162,7 +1161,7 @@ input.settings-icon[type="checkbox"] {
     color: white;
     border-color: #0b7dda;
 }
-
+t
 
 
 /* ===== NO ANIMATIONS MODE ===== */
@@ -1635,14 +1634,14 @@ body::after {
 }
 
 .theme-confirm-yes {
-    background: #d9ff00;
+    background: #3f3f3f;
     color: #000;
     min-width: 150px;
 }
 
 .theme-confirm-yes:hover {
-    background: #ffff00;
-    box-shadow: 0 0 20px rgba(217, 255, 0, 0.6);
+    background: #8f8f8f;
+    box-shadow: 0 0 20px rgba(123, 123, 123, 0.6);
     transform: scale(1.05);
 }
 
@@ -1651,12 +1650,12 @@ body::after {
 }
 
 .theme-confirm-no {
-    background: #a6327d;
+    background: #27038b;
     color: #fff;
 }
 
 .theme-confirm-no:hover {
-    background: #c03d94;
+    background: #4f00d8;
     box-shadow: 0 0 20px rgba(166, 50, 125, 0.6);
     transform: scale(1.05);
 }

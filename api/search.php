@@ -18,7 +18,7 @@ require_once __DIR__ . '/init.php';
 // Whitelist! Der Benutzer übergibt ?sort=name → wir prüfen ob 'name' erlaubt ist.
 // Ohne Whitelist könnte man beliebige SQL in den ORDER BY schreiben (SQL-Injection).
 // Prepared Statements funktionieren für ORDER BY nicht, deshalb Whitelist-Ansatz.
-const SORT_FIELDS = ['id', 'name', 'brand', 'model', 'serial_number', 'status', 'item_condition', 'created_at', 'updated_at'];
+const SORT_FIELDS = ['id', 'name', 'brand', 'model', 'status', 'item_condition', 'created_at', 'updated_at'];
 
 // ─── Input ────────────────────────────────────────────────────────────────────
 // mb_substr = Multibyte-sicher kürzen (wichtig für Umlaute/Sonderzeichen)
@@ -46,7 +46,6 @@ $searchForMap = [
     'Kategorie'    => 'c.name',
     'Marke'        => 'i.brand',
     'Modell'       => 'i.model',
-    'Seriennummer' => 'i.serial_number',
     'Locker'       => 'l.schrank',
 ];
 $searchForRaw = getStringParam('searchFor', '');
@@ -109,7 +108,6 @@ try {
                     i.name              LIKE CONCAT('%', ?, '%') OR
                     i.brand             LIKE CONCAT('%', ?, '%') OR
                     i.model             LIKE CONCAT('%', ?, '%') OR
-                    i.serial_number     LIKE CONCAT('%', ?, '%') OR
                     i.notes             LIKE CONCAT('%', ?, '%') OR
                     i.status            LIKE CONCAT('%', ?, '%') OR
                     c.name              LIKE CONCAT('%', ?, '%') OR
@@ -125,8 +123,7 @@ try {
         $stmt = $db->prepare($sql);
         if ($categoryId > 0) {
             $stmt->bind_param(
-                'sssssssssssssiii',
-                $query,
+                'ssssssssssssiii',
                 $query,
                 $query,
                 $query,
@@ -145,8 +142,7 @@ try {
             );
         } else {
             $stmt->bind_param(
-                'sssssssssssss' . 'i',
-                $query,
+                'ssssssssssss' . 'i',
                 $query,
                 $query,
                 $query,
