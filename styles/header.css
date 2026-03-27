@@ -69,12 +69,18 @@
 
 
 
-
+/* 
+Seltsame sache: 
+wenn die Seite eine kleine breite hat, aka auf handy händy geladen wird, der hintergrund vom header höher, der canvas aber nicht. 
+Das heißt die pipes gehen nicht in den weiteren unteren bereich. Aber hier ist das seltsame, wenn man in firefox das inspektiziert,
+dann spawnen neue pipes richtig um neuen unterem canvas. Das habe ich erst spät erkannt... latest verfügbare version: d7b8cc3 
+*/
 
 @media (max-width: 768px) {
   .head {
-    min-height: 300px;
+    /*min-height: 300px;*/
     padding: 3rem 1rem;
+    
   }
 
   .title h1 {
@@ -90,11 +96,12 @@
   .blob {
     opacity: 0.8;
   }
+
+
 }
 
 @media (max-width: 480px) {
   .head {
-    min-height: 250px;
     padding: 2rem 1rem;
   }
 

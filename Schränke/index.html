@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<!--
+jaja 90 hier ist ki aber das ist ja auch ertmal nur ein prototyp zum verschaulichen des späteren aussehens
+
+
+-->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MakerAG — Lager Map v2</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0ede6;
+  --surface: #ffffff;
+  --border: #ddd9d0;
+  --text: #1a1917;
+  --muted: #8a8780;
+  --green: #3a5c2e;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Fraunces', Georgia, serif;
+}
+body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; overflow: hidden; }
+
+/* ── Navigation ─────────────────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 36px; z-index: 100;
+}
+.logo { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+.logo span { color: var(--green); }
+.nav-right { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ── Kartenbereich ───────────────────────────────────────────────────────── */
+.map-wrap { position: fixed; top: 56px; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; }
+svg#isomap { width: 100%; height: 100%; cursor: default; }
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────── */
+.tooltip {
+  position: fixed; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px; pointer-events: none;
+  opacity: 0; transform: translateY(6px); transition: opacity 0.15s, transform 0.15s;
+  z-index: 200; min-width: 190px; box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+.tooltip.visible { opacity: 1; transform: translateY(0); }
+.tt-id   { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.tt-name { font-family: var(--serif); font-size: 18px; font-weight: 300; margin-bottom: 10px; }
+.tt-row  { display: flex; justify-content: space-between; gap: 24px; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.tt-row span:last-child { color: var(--text); font-weight: 500; }
+.tt-bar  { height: 3px; background: var(--border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.tt-bar-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s ease; }
+.tt-cap  { font-size: 10px; color: var(--muted); margin-top: 5px; letter-spacing: 0.04em; }
+.tt-hint { font-size: 10px; color: var(--muted); margin-top: 10px; letter-spacing: 0.04em; }
+
+/* ── Legende ─────────────────────────────────────────────────────────────── */
+.legend { position: fixed; bottom: 28px; left: 36px; display: flex; gap: 20px; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; z-index: 100; }
+.legend-item { display: flex; align-items: center; gap: 7px; }
+.legend-dot  { width: 10px; height: 10px; border-radius: 2px; }
+
+/* ── Hover-Effekt auf Objekte (CSS statt JS) ─────────────────────────────── */
+.map-object .hover-face { transition: opacity 0.15s; pointer-events: none; }
+.map-object:hover .hover-face { opacity: 0.13 !important; }
+.map-object { cursor: pointer; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Maker<span>AG</span></div>
+  <div class="nav-right">Lager — Hallenansicht</div>
+</nav>
+
+<div class="map-wrap">
+  <svg id="isomap" viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Isometrisches Gittermuster für den Hallenboden -->
+      <pattern id="grid" width="58" height="33" patternUnits="userSpaceOnUse">
+        <path d="M0 16.5 L29 0 L58 16.5 L29 33 Z" fill="none" stroke="#ddd8d0" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <g id="rooms-layer"></g>
+    <g id="objects-layer"></g>
+  </svg>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tt-id"   id="tt-id"></div>
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-row"><span>Kategorie</span><span id="tt-cat"></span></div>
+  <div class="tt-row"><span>Standort</span> <span id="tt-loc"></span></div>
+  <div class="tt-row"><span>Artikel</span>  <span id="tt-items"></span></div>
+  <div class="tt-bar"><div class="tt-bar-fill" id="tt-bar" style="width:0%"></div></div>
+  <div class="tt-cap"  id="tt-cap"></div>
+  <div class="tt-hint" id="tt-hint"></div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+// =============================================================================
+//
+//  MakerAG — Lager Map v2
+//  Optimierte Version mit isometrischem Grid-System
+//
+//  SCHNELLSTART:
+//  ─────────────
+//  • Objekt hinzufügen  → im OBJECTS-Array einen Block ergänzen (s.u.)
+//  • Raum hinzufügen    → im ROOMS-Array einen Block ergänzen (s.u.)
+//  • Objekt verschieben → gridCol / gridRow ändern (keine Pixel!)
+//
+//  KOORDINATENSYSTEM:
+//  ──────────────────
+//  Alle Objekte werden in Grid-Koordinaten (gridCol, gridRow) angegeben.
+//  Das System rechnet das automatisch in isometrische Pixelpositionen um.
+//
+//  Visualisierung des Grids (vereinfacht):
+//
+//       col→   0    1    2    3    4    5    6    7
+//   row↓      ┌────┬────┬────┬────┬────┬────┬────┬────┐
+//    0        │    │    │    │    │    │    │    │    │
+//    1        │    │ A  │    │ B  │    │    │    │    │
+//    2        │    │    │    │    │    │    │    │    │
+//    3        │    │    │    │    │    │    │    │    │
+//             └────┴────┴────┴────┴────┴────┴────┴────┘
+//
+//  col ↗ = nach rechts-oben im SVG
+//  row ↘ = nach links-unten im SVG
+//
+// =============================================================================
+
+
+// =============================================================================
+//  GRID-KONFIGURATION
+//  ──────────────────
+//  TILE_W, TILE_H:  Breite und Höhe einer Grid-Kachel in Pixel
+//                   Muss zum SVG-Pattern (id="grid") passen → 58×33
+//
+//  ORIGIN:          [x, y] — Ursprung des Grids im SVG-Koordinatensystem.
+//                   Das ist der Punkt, wo Grid-Position [0,0] landet.
+//                   Erhöhen → Grid wandert nach rechts/unten
+// =============================================================================
+const GRID = {
+  TILE_W:  58,    // Breite einer Kachel (passt zum Grid-Pattern)
+  TILE_H:  33,    // Höhe einer Kachel  (passt zum Grid-Pattern)
+  ORIGIN:  [550, 80],  // SVG-Punkt für Grid [col=0, row=0]
+};
+
+/**
+ * Rechnet Grid-Koordinaten in SVG-Pixelpositionen um.
+ *
+ * @param {number} col  — Spalte (0 = links-oben, steigt nach rechts-oben)
+ * @param {number} row  — Zeile  (0 = links-oben, steigt nach links-unten)
+ * @returns {[number, number]}  [x, y] in SVG-Pixeln
+ *
+ * Beispiele:
+ *   isoXY(0, 0)  → ORIGIN                       (Nullpunkt)
+ *   isoXY(1, 0)  → ORIGIN + [TILE_W/2, TILE_H/2]  (eine Spalte rechts-oben)
+ *   isoXY(0, 1)  → ORIGIN + [-TILE_W/2, TILE_H/2] (eine Zeile links-unten)
+ *   isoXY(3, 2)  → ORIGIN + [1*TILE_W/2, 5*TILE_H/2] (Spalte 3, Reihe 2)
+ */
+function isoXY(col, row) {
+  const [ox, oy] = GRID.ORIGIN;
+  const { TILE_W, TILE_H } = GRID;
+  return [
+    ox + col * TILE_W / 2 - row * TILE_W / 2,
+    oy + col * TILE_H / 2 + row * TILE_H / 2,
+  ];
+}
+
+/**
+ * Berechnet die 4 Eckpunkte einer isometrischen Bodenfläche
+ * aus Grid-Koordinaten.
+ *
+ * @param {number} col       — Startspalte (oben-links)
+ * @param {number} row       — Startzeile  (oben-links)
+ * @param {number} spanCols  — Breite des Raums in Grid-Kacheln
+ * @param {number} spanRows  — Tiefe  des Raums in Grid-Kacheln
+ * @returns {[number,number][]}  4 Punkte [links, oben, rechts, unten]
+ *
+ * Raum-Geometrie:
+ *   oben  ──────── rechts
+ *   |                  |
+ *   links ──────── unten
+ */
+function isoFloor(col, row, spanCols, spanRows) {
+  return [
+    isoXY(col,             row + spanRows),  // links
+    isoXY(col,             row),             // oben
+    isoXY(col + spanCols,  row),             // rechts
+    isoXY(col + spanCols,  row + spanRows),  // unten
+  ];
+}
+
+/**
+ * Berechnet linke und rechte Wand automatisch aus dem Bodengrundriss.
+ *
+ * @param {[number,number][]} floor  — 4 Bodenpunkte (Ausgabe von isoFloor)
+ * @param {number} wallH             — Wandhöhe in Pixeln (Standard: 100)
+ * @returns {{ wallL, wallR }}       — je 4 Punkte für linke / rechte Wand
+ *
+ * TIPP: wallH vergrößern = höhere Wände (und mehr Schattenfläche)
+ */
+function buildWalls(floor, wallH = 100) {
+  const shift = (pt) => [pt[0], pt[1] + wallH];
+  return {
+    wallL: [floor[0], shift(floor[0]), shift(floor[3]), floor[3]],
+    wallR: [floor[2], shift(floor[2]), shift(floor[3]), floor[3]],
+  };
+}
+
+
+// =============================================================================
+//  RÄUME
+//  ──────
+//  Jeder Raum braucht:
+//    id         — eindeutiger Bezeichner (intern)
+//    label      — Text der auf dem Boden erscheint
+//    col, row   — Grid-Position der oberen-linken Ecke des Raums
+//    spanCols   — Breite in Grid-Kacheln (Richtung rechts-oben)
+//    spanRows   — Tiefe  in Grid-Kacheln (Richtung links-unten)
+//    wallH      — (optional) Wandhöhe in Pixeln, Standard = 100
+//
+//  RAUM VERSCHIEBEN:
+//    → col / row ändern
+//
+//  RAUM VERGRÖSSERN:
+//    → spanCols oder spanRows erhöhen
+//
+//  NEUEN RAUM HINZUFÜGEN:
+//    → Block kopieren, id/label/col/row/span anpassen
+//
+//  Räume dürfen sich überlappen (z.B. Durchgänge), werden aber
+//  in Reihenfolge gezeichnet — später = weiter vorne.
+// =============================================================================
+const ROOMS = [
+  {
+    id:       'halle-west',
+    label:    'HALLE WEST',
+    col:      11,        // linke Ecke  (Grid-Spalte)
+    row:      0,        // obere Ecke  (Grid-Reihe)
+    spanCols: 9,       // 11 Kacheln breit
+    spanRows: 10,       // 10 Kacheln tief
+    wallH:    100,      // Wandhöhe in Pixeln
+  },
+  {
+    id:       'abstellraum',
+    label:    'ABSTELLRAUM',
+    col:      1,       // direkt rechts neben Halle West
+    row:      0,
+    spanCols: 5,
+    spanRows: 5,
+    wallH:    100,
+  },
+
+  // ── Neuen Raum hinzufügen ────────────────────────────────────────────────
+  // {
+  //   id:       'werkstatt',
+  //   label:    'WERKSTATT',
+  //   col:      0,    // ← Grid-Spalte anpassen
+  //   row:      10,   // ← direkt unter Halle West
+  //   spanCols: 8,
+  //   spanRows: 6,
+  //   wallH:    100,
+  // },
+];
+
+
+// =============================================================================
+//  OBJEKTE — Schränke, Werkbänke, Regale
+//  ──────────────────────────────────────
+//  Jedes Objekt braucht:
+//    id       — z.B. 'A-01' (erscheint als Label auf dem Objekt)
+//    name     — langer Name für den Tooltip
+//    type     — Objekttyp (s. OBJECT_TYPES unten für alle Optionen)
+//    gridCol  — Grid-Spalte  (0 = ganz links im Grid)
+//    gridRow  — Grid-Reihe   (0 = ganz oben im Grid)
+//    cat      — Kategorie (im Tooltip)
+//    loc      — Standort  (im Tooltip)
+//    items    — aktuelle Artikelanzahl  (null = kein Füllstand)
+//    cap      — Kapazität               (null = kein Füllstand)
+//    link     — URL beim Klick          (null = kein Link)
+//
+//  OBJEKT VERSCHIEBEN:
+//    → gridCol / gridRow anpassen — das war's!
+//    Keine Pixel ausrechnen, kein Offset addieren.
+//
+//  OBJEKTE NEBENEINANDER:
+//    → gridCol um 1–2 erhöhen (je nach Objektgröße)
+//    Schränke: 1 breit, Werkbänke: 3 breit (in Grid-Einheiten ca.)
+//
+//  OBJEKT HINZUFÜGEN:
+//    → Block kopieren, Werte anpassen
+//
+//  OBJEKT ENTFERNEN:
+//    → Block löschen oder auskommentieren
+//
+//  VERFÜGBARE TYPEN (type):
+//    'cabinet-green'  Grüner Industrieschrank  (schmal, hoch)
+//    'cabinet-brown'  Brauner Archivschrank    (schmal, sehr hoch)
+//    'workbench'      Werkbank                 (breit, flach)
+//    'shelf'          Wandregal                (schmal, niedrig)
+// =============================================================================
+const OBJECTS = [
+
+  // ── Halle West ────────────────────────────────────────────────────────────
+  {
+    id: 'A-01', name: 'Schrank A-01', type: 'cabinet-green',
+    gridCol: 3, gridRow: 5,
+    cat: 'Elektronik', loc: 'Halle West',
+    items: 14, cap: 20,
+    link: null,
+  },
+  {
+    id: 'A-02', name: 'Schrank A-02', type: 'cabinet-green',
+    gridCol: 4, gridRow: 4,       // ← einfach col+1: steht rechts neben A-01
+    cat: 'Elektronik', loc: 'Halle West',
+    items: 18, cap: 20,
+    link: null,
+  },
+  {
+    id: 'B-01', name: 'Schrank B-01', type: 'cabinet-brown',
+    gridCol: 7, gridRow: 3,
+    cat: 'Werkzeug', loc: 'Halle West',
+    items: 7, cap: 25,
+    link: null,
+  },
+  {
+    id: 'C-01', name: 'Schrank C-01', type: 'cabinet-green',
+    gridCol: 5, gridRow: 2,
+    cat: 'Kabel & Stecker', loc: 'Halle West',
+    items: 31, cap: 40,
+    link: null,
+  },
+  {
+    id: 'WB-01', name: 'Werkbank WB-01', type: 'workbench',
+    gridCol: 1, gridRow: 6,
+    cat: 'Arbeitsplatz', loc: 'Halle West',
+    items: null, cap: null,
+    link: null,
+  },
+  {
+    id: 'SH-01', name: 'Regal SH-01', type: 'shelf',
+    gridCol: 2, gridRow: 8,
+    cat: 'Kleinteile', loc: 'Halle West',
+    items: 45, cap: 60,
+    link: null,
+  },
+
+  // ── Abstellraum ──────────────────────────────────────────────────────────
+  {
+    id: 'B-02', name: 'Schrank B-02', type: 'cabinet-brown',
+    gridCol: 12, gridRow: 1,
+    cat: 'PC-Teile', loc: 'Abstellraum',
+    items: 8, cap: 30,
+    link: null,
+  },
+
+  // ── Neues Objekt hinzufügen ───────────────────────────────────────────────
+  // {
+  //   id: 'A-03', name: 'Schrank A-03', type: 'cabinet-green',
+  //   gridCol: 5, gridRow: 5,   // ← nur col/row anpassen, fertig
+  //   cat: 'Elektronik', loc: 'Halle West',
+  //   items: 5, cap: 20,
+  //   link: '/lager/a-03',
+  // },
+];
+
+
+// =============================================================================
+//  OBJEKT-TYPEN
+//  ─────────────
+//  Hier sind die visuellen Parameter der Objekttypen definiert.
+//  Größen in Pixeln relativ zur isometrischen Projektion.
+//
+//  Felder:
+//    w         — Breite der Frontfläche in SVG-Pixeln
+//    h         — Sichtbare Höhe über dem Bodenpunkt
+//    d         — Tiefe der Deckfläche (isometrisch)
+//    color     — Objekt-Farbschema { top, front, side, label, handle }
+//    labelDy   — Y-Versatz für ID-Label (negativ = nach oben)
+//    shelfLines — (optional) horizontale Linien auf der Frontfläche (Regalböden)
+//
+//  NEUEN TYP HINZUFÜGEN:
+//    → Block kopieren, Farben und Größen anpassen.
+//    → In renderObject() wird er automatisch gefunden.
+// =============================================================================
+const OBJECT_TYPES = {
+  'cabinet-green': {
+    w: 30, h: 76, d: 16,
+    color: {
+      top:    '#4e7a3c',
+      front:  '#325228',
+      side:   '#2a4220',
+      label:  '#b8860b',
+      handle: '#b8860b',
+    },
+    shelfLines: [],    // keine Regallinien
+  },
+  'cabinet-brown': {
+    w: 30, h: 96, d: 16,
+    color: {
+      top:    '#8a5530',
+      front:  '#5a3620',
+      side:   '#4a2c18',
+      label:  '#c8a415',
+      handle: '#c8a415',
+    },
+    shelfLines: [0.33, 0.66],   // 2 Regalböden bei 33% und 66% der Höhe
+  },
+  'workbench': {
+    w: 90, h: 20, d: 60,
+    color: {
+      top:    '#d4c9a8',
+      front:  '#b8ad90',
+      side:   '#a09880',
+      label:  '#8a8270',
+      handle: null,
+    },
+    shelfLines: [],
+  },
+  'shelf': {
+    w: 30, h: 48, d: 16,
+    color: {
+      top:    '#4e7a3c',
+      front:  '#325228',
+      side:   '#2a4220',
+      label:  '#b8860b',
+      handle: '#b8860b',
+    },
+    shelfLines: [0.5],   // 1 Regalboden
+  },
+};
+
+
+// =============================================================================
+//  LEGENDE
+//  ────────
+//  Wird automatisch aus OBJECT_TYPES generiert.
+//  Nichts manuell pflegen — neue Typen erscheinen automatisch.
+// =============================================================================
+const LEGEND_LABELS = {
+  'cabinet-green': 'Grüne Schränke',
+  'cabinet-brown': 'Braune Schränke',
+  'workbench':     'Werkbank',
+  'shelf':         'Regal',
+};
+
+
+// =============================================================================
+//  RENDERING — Hier nichts ändern
+//  ────────────────────────────────
+//  Der Code unterhalb ist die Engine, die aus den Daten oben das SVG baut.
+//  Nur anfassen wenn du:
+//    • Einen neuen Objekt-Typ mit besonderer Geometrie brauchst
+//    • Das visuelle Erscheinungsbild grundlegend ändern willst
+// =============================================================================
+
+/** Hilfsfunktion: Array von Punkten in SVG-Polygon-String umwandeln */
+function pts(arr) { return arr.map(p => p.join(',')).join(' '); }
+
+/** Hilfsfunktion: Punkt [x, y] verschieben */
+function shift(pt, dx, dy) { return [pt[0] + dx, pt[1] + dy]; }
+
+/**
+ * Zeichnet ein isometrisches Quader-Objekt (Schrank, Werkbank, Regal).
+ *
+ * Geometrie: 3 Flächen — Deckfläche (top), Vorderfläche (front), Seitenfläche (side)
+ *
+ *        top
+ *       ╱   ╲
+ *      ╱─────╲
+ *     │ front │ side
+ *     └───────┘
+ *
+ * @param {Object} obj — Objekt aus OBJECTS
+ * @returns {string} — SVG-Markup-String
+ */
+function renderObject(obj) {
+  const [px, py] = isoXY(obj.gridCol, obj.gridRow);
+  const def = OBJECT_TYPES[obj.type];
+  if (!def) {
+    console.warn(`Unbekannter Objekt-Typ: "${obj.type}"`);
+    return '';
+  }
+
+  const { w, h, d, color, shelfLines } = def;
+
+  // ── Isometrische Projektion der 3 Flächen ────────────────────────────────
+  // Ankerpunkt [px, py] ist die vordere untere Ecke des Quaders.
+  //
+  //   top:   4 Punkte der Deckfläche
+  //   front: 4 Punkte der Vorderseite
+  //   side:  4 Punkte der rechten Seite
+  //
+  // Offset für Deckfläche (isometrisch: halb links-oben verschoben):
+  const tx = -d * 0.5,  ty = -d * 0.5;  // Deckflächen-Offset
+
+  const topPts = [
+    [px + tx,       py - h + ty],        // hinten-links
+    [px + tx + w,   py - h + ty],        // hinten-rechts
+    [px + w,        py - h],             // vorne-rechts
+    [px,            py - h],             // vorne-links
+  ];
+
+  const frontPts = [
+    [px,            py - h],             // oben-links
+    [px + w,        py - h],             // oben-rechts
+    [px + w,        py],                 // unten-rechts
+    [px,            py],                 // unten-links
+  ];
+
+  const sidePts = [
+    [px + tx + w,   py - h + ty],        // hinten oben
+    [px + w,        py - h],             // vorne oben
+    [px + w,        py],                 // vorne unten
+    [px + tx + w,   py + ty],            // hinten unten
+  ];
+
+  // ── Türgriff (optional) ───────────────────────────────────────────────────
+  const handleSVG = color.handle ? (() => {
+    // Griff sitzt bei 70% Breite und 55% Höhe der Frontfläche
+    const hx1 = px + w * 0.55,  hy = py - h * 0.55;
+    const hx2 = px + w * 0.75;
+    return `<line x1="${hx1}" y1="${hy}" x2="${hx2}" y2="${hy}"
+              stroke="${color.handle}" stroke-width="1.5" stroke-linecap="round"/>`;
+  })() : '';
+
+  // ── Regallinien (optional) ────────────────────────────────────────────────
+  // Horizontale Linien auf der Vorderfläche = Regalböden
+  const shelfSVG = shelfLines.map(frac => {
+    const ly = py - h * frac;
+    return `<line x1="${px}" y1="${ly}" x2="${px + w}" y2="${ly}"
+              stroke="${color.side}" stroke-width="0.8" opacity="0.6"/>`;
+  }).join('');
+
+  // ── ID-Label auf der Vorderfläche ─────────────────────────────────────────
+  const labelSVG = `<text
+    x="${px + 3}" y="${py - 2}"
+    font-family="'DM Mono',monospace" font-size="7"
+    fill="${color.label}" letter-spacing="0.05em">${obj.id}</text>`;
+
+  // ── Hover-Highlight auf der Deckfläche ────────────────────────────────────
+  // CSS-Klasse "hover-face" + opacity:0 → Hover-Effekt via CSS (kein JS nötig)
+  const hoverSVG = `<polygon class="hover-face"
+    points="${pts(topPts)}" fill="white" opacity="0"/>`;
+
+  // ── Alles zusammensetzen ──────────────────────────────────────────────────
+  return `<g class="map-object" data-objid="${obj.id}">
+    <polygon points="${pts(sidePts)}" fill="${color.side}"/>
+    <polygon points="${pts(frontPts)}" fill="${color.front}"/>
+    ${shelfSVG}
+    ${handleSVG}
+    <polygon points="${pts(topPts)}" fill="${color.top}"/>
+    ${labelSVG}
+    ${hoverSVG}
+  </g>`;
+}
+
+
+// =============================================================================
+//  OBJEKT-INDEX — für schnellen Zugriff im Tooltip-Handler
+//  ──────────────────────────────────────────────────────────
+//  Statt Daten als String-Attribute im DOM zu parken, werden
+//  die Originaldaten per ID nachgeschlagen. Das vermeidet:
+//    • String-zu-Typ-Konvertierungen ('—' !== null)
+//    • Redundante Datenhaltung im HTML
+//    • XSS-Risiken bei Sonderzeichen in Strings
+// =============================================================================
+const OBJ_MAP = Object.fromEntries(OBJECTS.map(o => [o.id, o]));
+
+
+// =============================================================================
+//  RÄUME RENDERN
+// =============================================================================
+const roomsLayer   = document.getElementById('rooms-layer');
+const objectsLayer = document.getElementById('objects-layer');
+
+const roomFragments = ROOMS.map(room => {
+  const floor = isoFloor(room.col, room.row, room.spanCols, room.spanRows);
+  const { wallL, wallR } = buildWalls(floor, room.wallH ?? 100);
+
+  // Label-Position: Mitte des Bodens
+  const lx = (floor[0][0] + floor[2][0]) / 2;
+  const ly = (floor[1][1] + floor[3][1]) / 2 + 10;
+
+  return `
+    <polygon points="${pts(wallL)}" fill="#d0ccbf" stroke="#b8b4a8" stroke-width="1"/>
+    <polygon points="${pts(wallR)}" fill="#bab6a9" stroke="#a8a49a" stroke-width="1"/>
+    <polygon points="${pts(floor)}" fill="#e8e4db" stroke="#c8c4ba" stroke-width="1.5"/>
+    <polygon points="${pts(floor)}" fill="url(#grid)" opacity="0.6"/>
+    <text x="${lx}" y="${ly}"
+      font-family="'DM Mono',monospace" font-size="11" fill="#c0bcb4"
+      letter-spacing="0.12em" text-anchor="middle">${room.label}</text>`;
+});
+
+// join statt innerHTML += in Schleife (vermeidet wiederholtes DOM-Parsen)
+roomsLayer.innerHTML = roomFragments.join('');
+
+
+// =============================================================================
+//  OBJEKTE RENDERN
+// =============================================================================
+objectsLayer.innerHTML = OBJECTS.map(renderObject).join('');
+
+
+// =============================================================================
+//  LEGENDE RENDERN
+//  ────────────────
+//  Automatisch aus den tatsächlich verwendeten Typen generiert.
+//  Kein manuelles Pflegen nötig.
+// =============================================================================
+const usedTypes = [...new Set(OBJECTS.map(o => o.type))];
+const legendEl  = document.getElementById('legend');
+
+legendEl.innerHTML = usedTypes
+  .filter(type => OBJECT_TYPES[type] && LEGEND_LABELS[type])
+  .map(type => {
+    const color = OBJECT_TYPES[type].color.top;
+    const label = LEGEND_LABELS[type] ?? type;
+    return `<div class="legend-item">
+      <div class="legend-dot" style="background:${color}"></div>${label}
+    </div>`;
+  })
+  .join('');
+
+
+// =============================================================================
+//  TOOLTIP-LOGIK
+//  ──────────────
+//  Verwendet Event Delegation: ein einziger Listener auf dem SVG statt
+//  N Listener für N Objekte. Skaliert besser bei vielen Objekten.
+// =============================================================================
+const tooltip = document.getElementById('tooltip');
+const ttId    = document.getElementById('tt-id');
+const ttName  = document.getElementById('tt-name');
+const ttCat   = document.getElementById('tt-cat');
+const ttLoc   = document.getElementById('tt-loc');
+const ttItems = document.getElementById('tt-items');
+const ttBar   = document.getElementById('tt-bar');
+const ttCap   = document.getElementById('tt-cap');
+const ttHint  = document.getElementById('tt-hint');
+
+/** Findet das nächste Elternelement mit Klasse "map-object" */
+function findObject(el) {
+  return el.closest('.map-object');
+}
+
+document.getElementById('isomap').addEventListener('mousemove', e => {
+  const objEl = findObject(e.target);
+  if (!objEl) {
+    tooltip.classList.remove('visible');
+    return;
+  }
+
+  const obj = OBJ_MAP[objEl.dataset.objid];
+  if (!obj) return;
+
+  // Daten aus Original-Objekt — kein String-Parsing nötig
+  const hasFill = obj.items != null && obj.cap != null;
+  const fillPct = hasFill ? Math.round(obj.items / obj.cap * 100) : 0;
+
+  ttId.textContent    = obj.id;
+  ttName.textContent  = obj.name;
+  ttCat.textContent   = obj.cat ?? '—';
+  ttLoc.textContent   = obj.loc ?? '—';
+  ttItems.textContent = hasFill ? `${obj.items} von ${obj.cap}` : '—';
+  ttBar.style.width   = hasFill ? fillPct + '%' : '0%';
+  ttCap.textContent   = hasFill ? `${fillPct}% belegt` : '';
+  ttHint.textContent  = obj.link ? 'Klicken um zu öffnen →' : '';
+
+  tooltip.classList.add('visible');
+
+  // Tooltip-Position: rechts vom Cursor, flippt wenn zu nah am Rand
+  let x = e.clientX + 18, y = e.clientY - 10;
+  if (x + 220 > window.innerWidth)  x = e.clientX - 230;
+  if (y + 220 > window.innerHeight) y = e.clientY - 220;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+});
+
+document.getElementById('isomap').addEventListener('mouseleave', () => {
+  tooltip.classList.remove('visible');
+});
+
+// Klick-Handler mit Event Delegation
+document.getElementById('isomap').addEventListener('click', e => {
+  const objEl = findObject(e.target);
+  if (!objEl) return;
+  const obj = OBJ_MAP[objEl.dataset.objid];
+  if (obj?.link) window.location.href = obj.link;
+});
+</script>
+</body>
+</html>

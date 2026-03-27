@@ -1,5 +1,9 @@
-
-
+// ██╗████████╗███████╗███╗░░░███╗░░░░░░░░██╗░██████╗
+// ██║╚══██╔══╝██╔════╝████╗░████║░░░░░░░░██║██╔════╝
+// ██║░░░██║░░░█████╗░░██╔████╔██║░░░░░░░░██║╚█████╗░
+// ██║░░░██║░░░██╔══╝░░██║╚██╔╝██║░░░██╗░░██║░╚═══██╗
+// ██║░░░██║░░░███████╗██║░╚═╝░██║██╗╚█████╔╝██████╔╝
+// ╚═╝░░░╚═╝░░░╚══════╝╚═╝░░░░░╚═╝╚═╝░╚════╝░╚═════╝░
 
 
 (function () {
@@ -95,9 +99,7 @@
             }
 
 
-
-
-            // Status / Meta-Infos
+            // ── Status / Meta-Infos ───────────────────────────────
             const statusDiv = document.getElementById("status");
             statusDiv.className = "status-info";
 
@@ -200,6 +202,8 @@
                 appendIf(statusDiv, infoLine("Kategorie", `<span class="item-category">${kat}</span>`));
             }
 
+
+            
             // Standort aus location-Objekt
             if (item.location) {
                 const loc = item.location;

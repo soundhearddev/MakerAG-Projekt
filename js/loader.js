@@ -59,7 +59,7 @@ async function loadHTML(id, file, useCache = true) {
     // gibt es cache?
     if (useCache && htmlCache.has(file)) {
       html = htmlCache.get(file);
-    } 
+    }
     // nein? dann fetch
     else {
       const res = await fetchWithTimeout(file);
@@ -242,6 +242,7 @@ function reloadAllComponents() {
     loadHTML("header", "/partials/header.html", false),
     loadHTML("nav", "/partials/nav.html", false),
     loadHTML("settings", "/partials/settings.html", false),
+    loadHTML("map", "/partials/map.html", false)
   ]);
 }
 if (typeof window !== "undefined") {
@@ -273,6 +274,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       loadHTML("header", "/partials/header.html"),
       loadHTML("nav", "/partials/nav.html"),
       loadHTML("settings", "/partials/settings.html"),
+      loadHTML("map", "/partials/map.html", false)
+
     ]);
 
     // Kurze Verzögerung für Animation
@@ -280,7 +283,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Seite als geladen markieren
     document.body.classList.add("loaded");
-    document.body.classList.remove("loading");  
+    document.body.classList.remove("loading");
     document.body.style.overflow = "";
 
     // Loader ausblenden
