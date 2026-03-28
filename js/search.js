@@ -327,6 +327,7 @@ function renderTable(data, query) {
       "Modell": "model",
       "Seriennummer": "serial",
       "Locker": "locker",
+      "Raum": "room", 
     };
 
     // Nur das gesuchte Feld markieren, Rest plain

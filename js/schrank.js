@@ -112,7 +112,7 @@ const OBJECTS = [
     zIndex: 1,
     cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=1', 
+    link: '/search.html?searchFor=Locker&query=1',
   },
   {
     id: '3', name: 'Schrank 3', type: 'cabinet-green',
@@ -120,7 +120,7 @@ const OBJECTS = [
     zIndex: 4,
     cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=3', 
+    link: '/search.html?searchFor=Locker&query=3',
   },
   {
     id: 'S', name: 'MakerAG Schrank', type: 'cabinet-brown',
@@ -128,7 +128,7 @@ const OBJECTS = [
     zIndex: 3,
     cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=S', 
+    link: '/search.html?searchFor=Locker&query=S',
   },
   {
     id: 'A', name: 'Abstellraum', type: 'room',
@@ -136,7 +136,7 @@ const OBJECTS = [
     zIndex: 0,
     cat: 'Allgemein', loc: 'U30',
     items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=A', 
+    link: '/search.html?searchFor=Locker&query=A',
   },
   {
     id: 'NEU-06', name: 'Neues Objekt', type: 'cabinet-green',
@@ -501,5 +501,9 @@ document.getElementById('isomap').addEventListener('click', e => {
   const objEl = e.target.closest('.map-object');
   if (!objEl) return;
   const obj = OBJ_MAP[objEl.dataset.objid];
-  if (obj?.link) window.location.href = obj.link;
+  if (obj?.link) {
+    window.location.href = obj.link;
+  } else if (obj?.loc) {
+    window.location.href = `/search.html?searchFor=Raum&query=${encodeURIComponent(obj.loc)}`;
+  }
 });

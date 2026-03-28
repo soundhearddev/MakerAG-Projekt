@@ -47,6 +47,7 @@ $searchForMap = [
     'Marke'        => 'i.brand',
     'Modell'       => 'i.model',
     'Locker'       => 'l.schrank',
+    'Raum'         => 'l.room',  
 ];
 $searchForRaw = getStringParam('searchFor', '');
 // isset() prüft ob der Key existiert. Wenn nicht → null (Vollsuche)
