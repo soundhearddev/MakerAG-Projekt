@@ -1,4 +1,4 @@
- 
+
 // =============================================================================
 // DEBUG-LOGGING SYSTEM
 // =============================================================================
@@ -99,41 +99,66 @@ function debounce(func, wait) {
 
 
 
+
+function updateUrlParams(query) {
+  const params = new URLSearchParams();
+  if (query) params.set("query", query);
+  if (state.sortField !== "id") params.set("sort", state.sortField);
+  if (state.sortOrder !== "DESC") params.set("order", state.sortOrder);
+  if (state.limit !== 50) params.set("limit", state.limit);
+  if (state.searchFor) params.set("searchFor", state.searchFor);
+  if (state.categoryId > 0) params.set("category_id", state.categoryId);
+
+  const newUrl = params.toString()
+    ? `${window.location.pathname}?${params}`
+    : window.location.pathname;
+
+  window.history.replaceState({}, "", newUrl);
+}
+
 // =============================================================================
 // INITIALIZATION
 // =============================================================================
 // log.info("Seite wird geladen...");
 
-(function initFromUrl() {
-  // log.debug("URL-Parameter werden gelesen...");
+function initFromUrl() {
   try {
     const params = new URLSearchParams(window.location.search);
 
-    const categoryId = parseInt(params.get("category_id")) || 0;
-    state.categoryId = categoryId;
-    const initial = params.get("category") || params.get("query") || params.get("q") || "";
+    state.categoryId = parseInt(params.get("category_id")) || 0;
+    if (params.get("sort")) state.sortField = params.get("sort");
+    if (params.get("order")) state.sortOrder = params.get("order");
+    if (params.get("limit")) state.limit = parseInt(params.get("limit")) || 50;
+    if (params.get("searchFor")) state.searchFor = params.get("searchFor");
 
+    const sortFieldEl = document.getElementById("sortField");
+    const sortOrderEl = document.getElementById("sortOrder");
+    const limitEl = document.getElementById("limitResults");
+    const searchForEl = document.getElementById("searchFor");
+    const searchInput = document.getElementById("searchInput");
 
-    if (initial) {
-      // log.info("Initiale Suche gefunden:", initial);
-      const searchInput = document.getElementById("searchInput");
-      if (searchInput) {
-        searchInput.value = initial;
-      }
-      searchItems(initial);
-    } else {
-      // log.debug("Keine URL-Parameter - lade alle Items");
-      searchItems("");
+    if (sortFieldEl) sortFieldEl.value = state.sortField;
+    if (sortOrderEl) sortOrderEl.value = state.sortOrder;
+    if (limitEl) limitEl.value = state.limit;
+    if (searchForEl) searchForEl.value = state.searchFor;
+
+    const initial = params.get("query") || params.get("category") || params.get("q") || "";
+    if (searchInput && initial) searchInput.value = initial;
+
+    // Zurück-Button wenn von Karte kommend
+    if (params.get("searchFor") === "Locker") {
+      const backBtn = document.getElementById("backToMap");
+      if (backBtn) backBtn.classList.remove("hidden");
     }
+
+    searchItems(initial);
   } catch (e) {
     log.error("Fehler beim Laden der URL-Parameter", e);
     showToast("Fehler beim Laden der URL-Parameter", "error");
   }
-})();
+}
 
-window.addEventListener("load", () => {
-  // log.success("Seite vollständig geladen");
-});
+
 
 // =============================================================================
 // SEARCH FUNCTIONALITY
@@ -153,6 +178,7 @@ async function searchItems(query) {
 
   // log.debug("Suche wird ausgeführt für:", query);
   state.currentQuery = query;
+  updateUrlParams(query);
   state.isLoading = true;
 
   const tbody = document.querySelector("#resultsTable tbody");
@@ -257,7 +283,8 @@ function updateSearchInfo(count, query) {
   countEl.textContent = `${count} ${count === 1 ? "Ergebnis" : "Ergebnisse"}`;
 
   if (query) {
-    queryEl.textContent = `für "${escapeHtml(query)}"`;
+    const fieldLabel = state.searchFor ? ` in ${state.searchFor}` : "";
+    queryEl.textContent = `für "${escapeHtml(query)}"${fieldLabel}`;
     queryEl.style.display = "inline";
   } else {
     queryEl.style.display = "none";
@@ -291,22 +318,35 @@ function renderTable(data, query) {
     if (isExactIdMatch) {
       row.classList.add("exact-match");
     }
-    row.innerHTML = `
-      <td class="item-id">${escapeHtml(item.id)}</td>
-      <td>${renderThumbnail(item.thumbnail, item.id)}</td>
-      <td>${renderCell(item.name, "name", index, query)}</td>
-      <td>${renderCell(item.category_name, "category", index, query)}</td>
+    // Feldname-Mapping: searchFor-Wert → item-Feldname
+    const SEARCH_FOR_FIELD_MAP = {
+      "ID": "id",
+      "Name": "name",
+      "Kategorie": "category_name",
+      "Marke": "brand",
+      "Modell": "model",
+      "Seriennummer": "serial",
+      "Locker": "locker",
+    };
 
-      <td>${renderCell(item.brand, "brand", index, query)}</td>
-      <td>${renderCell(item.model, "model", index, query)}</td>
-      <td>${renderCell(item.quantity, "quantity", index, query)}</td>
-      <td>${renderCell(item.locker, "locker", index, query)}</td>  
-      <td>${state.editorMode
-        ? renderEditableDocsLink(item.docs_link, index)
-        : renderDocsLink(item.docs_link, item.id)
-      }</td>
-      <td>${renderCell(item.notes, "notes", index, query, true)}</td>
-    `;
+    // Nur das gesuchte Feld markieren, Rest plain
+    function resolveQuery(field, query) {
+      if (!state.searchFor) return query; // kein Filter → alle Felder markieren
+      const targetField = SEARCH_FOR_FIELD_MAP[state.searchFor];
+      return targetField === field ? query : "";
+    }
+
+    row.innerHTML = `
+  <td class="item-id">${escapeHtml(item.id)}</td>
+  <td>${renderThumbnail(item.thumbnail, item.id)}</td>
+  <td>${renderCell(item.name, "name", index, resolveQuery("name", query))}</td>
+  <td>${renderCell(item.category_name, "category_name", index, resolveQuery("category_name", query))}</td>
+  <td>${renderCell(item.brand, "brand", index, resolveQuery("brand", query))}</td>
+  <td>${renderCell(item.model, "model", index, resolveQuery("model", query))}</td>
+  <td>${renderCell(item.quantity, "quantity", index, resolveQuery("quantity", query))}</td>
+  <td>${renderCell(item.locker, "locker", index, resolveQuery("locker", query))}</td>
+  <td>${renderCell(item.notes, "notes", index, resolveQuery("notes", query), true)}</td>
+`;
     fragment.appendChild(row);
   });
 
@@ -387,8 +427,9 @@ document.addEventListener("DOMContentLoaded", () => {
       searchItems(e.target.value);
     }
   });
-});
 
+  initFromUrl();
+});
 // =============================================================================
 // SORT & FILTER CONTROLS
 // =============================================================================
@@ -416,17 +457,15 @@ document.addEventListener("DOMContentLoaded", () => {
       searchItems(state.currentQuery);
     });
   }
+
+  const searchFor = document.getElementById("searchFor");
+  if (searchFor) {
+    searchFor.addEventListener("change", (e) => {
+      state.searchFor = e.target.value;
+      searchItems(state.currentQuery);
+    });
+  }
 });
-
-const searchFor = document.getElementById("searchFor");
-if (searchFor) {
-  searchFor.addEventListener("change", (e) => {
-    state.searchFor = e.target.value;
-    searchItems(state.currentQuery);
-  });
-}
-
-
 
 // =============================================================================
 // PAGE VISIBILITY
@@ -444,16 +483,6 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// =============================================================================
-// WINDOW BEFOREUNLOAD
-// =============================================================================
-window.addEventListener("beforeunload", (e) => {
-  if (Object.keys(state.editedData || {}).length > 0) {
-    e.preventDefault();
-    e.returnValue = "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?";
-    return e.returnValue;
-  }
-});
 
 // =============================================================================
 // ERROR RECOVERY

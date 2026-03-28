@@ -10,12 +10,11 @@
     rel="stylesheet">
   <style>
     :root {
-      --bg: #f0ede6;
-      --surface: #ffffff;
-      --border: #ddd9d0;
-      --text: #1a1917;
-      --muted: #8a8780;
-      --green: #3a5c2e;
+      --bg: var(--cat-primary);
+      --surface: var(--cat-secondary);
+      --border: var(--cat-accent);
+      --text: var(--cat-text);
+      --muted: var(--cat-text);
       --mono: 'DM Mono', monospace;
       --serif: 'Fraunces', Georgia, serif;
     }
@@ -84,12 +83,7 @@
       overflow: hidden;
     }
 
-    .tt-bar-fill {
-      height: 100%;
-      background: var(--green);
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
+
 
     .tt-cap {
       font-size: 10px;
@@ -120,6 +114,19 @@
     .map-object {
       cursor: pointer;
     }
+
+
+
+    .map-wrap {
+      width: 100%;
+      height: 100vh;
+    }
+
+    #isomap {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   </style>
 </head>
 
@@ -140,8 +147,28 @@
     </svg>
   </div>
 
+  <div class="tooltip" id="tooltip">
+  </div>
 
-  <script src="/js/schrank-framework.js"></script>
+
+  
+  <div class="legend" id="legend"
+    style="position:fixed;bottom:24px;left:32px;display:flex;gap:16px;font-size:11px;color:var(--muted);letter-spacing:0.04em;z-index:100;font-family:var(--mono)">
+  </div>
+
+
+
+  <script>
+    document.addEventListener('pointermove', e => {
+      const dbg = document.getElementById('dbg');
+      if (dbg) dbg.textContent = `clientX:${e.clientX} clientY:${e.clientY} innerW:${window.innerWidth} innerH:${window.innerHeight}`;
+    });
+  </script>
+  <div id="dbg"
+    style="position:fixed;top:8px;left:8px;color:rgb(253, 253, 253);font-size:12px;padding:4px 8px;z-index:9999;font-family:monospace">
+  </div>
+  <script src="/js/schrank.js"></script>
+
 </body>
 
 </html>

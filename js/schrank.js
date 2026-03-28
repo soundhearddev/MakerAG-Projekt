@@ -33,12 +33,20 @@ function buildWalls(floor, wallH = 100) {
   };
 }
 
+// ── Generiert vom MakerAG Editor ──────────────────────────────────────
+// Diesen Block in makerAG-lager-v2.html einfügen:
+// ROOMS und OBJECTS ersetzen.
+
+// ── Generiert vom MakerAG Editor ──────────────────────────────────────
+// Diesen Block in makerAG-lager-v2.html einfügen:
+// ROOMS und OBJECTS ersetzen.
+
 const ROOMS = [
   {
     id: 'raum-1',
-    label: 'Abstellraum',
+    label: 'U30',
     col: 0,
-    row: -1,
+    row: 3,
     spanCols: 6,
     spanRows: 5,
     wallH: 100,
@@ -47,14 +55,14 @@ const ROOMS = [
     id: 'raum-2',
     label: 'Flur',
     col: 6,
-    row: -2,
+    row: 0,
     spanCols: 3,
     spanRows: 24,
     wallH: 100,
   },
   {
     id: 'raum-3',
-    label: 'UO26',
+    label: 'U26',
     col: 9,
     row: 0,
     spanCols: 6,
@@ -63,7 +71,7 @@ const ROOMS = [
   },
   {
     id: 'raum-4',
-    label: 'U025 (MakerAG)',
+    label: 'U25 (MakerAG)',
     col: 9,
     row: 4,
     spanCols: 6,
@@ -72,7 +80,7 @@ const ROOMS = [
   },
   {
     id: 'raum-5',
-    label: 'U024',
+    label: 'U24',
     col: 9,
     row: 10,
     spanCols: 6,
@@ -83,114 +91,130 @@ const ROOMS = [
 
 const OBJECTS = [
   {
-    id: 'NEU-01', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '4', name: 'Schrank 4', type: 'cabinet-green',
     gridCol: 10, gridRow: 5,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 5,
+    cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: null,
+    link: '/search.html?searchFor=Locker&query=4',
   },
   {
-    id: 'NEU-02', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 6,
-    cat: 'Allgemein', loc: '—',
+    id: '2', name: 'Schrank 2', type: 'cabinet-green',
+    gridCol: 10, gridRow: 8,
+    zIndex: 2,
+    cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: null,
+    link: '/search.html?searchFor=Locker&query=2',
   },
   {
-    id: 'NEU-04', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '1', name: 'Schrank 1', type: 'cabinet-green',
     gridCol: 10, gridRow: 9,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 1,
+    cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: null,
+    link: '/search.html?searchFor=Locker&query=1', 
   },
   {
-    id: 'NEU-05', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 10,
-    cat: 'Allgemein', loc: '—',
+    id: '3', name: 'Schrank 3', type: 'cabinet-green',
+    gridCol: 10, gridRow: 6,
+    zIndex: 4,
+    cat: 'Allgemein', loc: 'U25',
     items: null, cap: null,
-    link: null,
+    link: '/search.html?searchFor=Locker&query=3', 
+  },
+  {
+    id: 'S', name: 'MakerAG Schrank', type: 'cabinet-brown',
+    gridCol: 10, gridRow: 7,
+    zIndex: 3,
+    cat: 'Allgemein', loc: 'U25',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=S', 
+  },
+  {
+    id: 'A', name: 'Abstellraum', type: 'room',
+    gridCol: 2, gridRow: 6,
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U30',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=A', 
   },
   {
     id: 'NEU-06', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 10, gridRow: 12,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 2,
+    cat: 'Allgemein', loc: 'U24',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-07', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 14,
-    cat: 'Allgemein', loc: '—',
+    gridCol: 10, gridRow: 13,
+    zIndex: 1,
+    cat: 'Allgemein', loc: 'U24',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-08', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 14, gridRow: 1,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-09', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 13, gridRow: 1,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-10', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 12, gridRow: 1,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-11', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 11, gridRow: 1,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-12', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 10, gridRow: 1,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-13', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 14, gridRow: 4,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-14', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 13, gridRow: 4,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
   {
     id: 'NEU-15', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 12, gridRow: 4,
-    cat: 'Allgemein', loc: '—',
-    items: null, cap: null,
-    link: null,
-  },
-  {
-    id: 'NEU-03', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 7,
-    cat: 'Allgemein', loc: '—',
-    items: null, cap: null,
-    link: null,
-  },
-  {
-    id: 'NEU-16', name: 'Neues Objekt', type: 'cabinet-brown',
-    gridCol: 10, gridRow: 8,
-    cat: 'Allgemein', loc: '—',
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
     items: null, cap: null,
     link: null,
   },
@@ -221,13 +245,13 @@ const OBJECT_TYPES = {
     },
     shelfLines: [0.33, 0.66],   // 2 Regalböden bei 33% und 66% der Höhe
   },
-  'workbench': {
-    w: 90, h: 20, d: 60,
+  'room': {
+    w: 90, h: 28, d: 60,
     color: {
-      top: '#d4c9a8',
-      front: '#b8ad90',
-      side: '#a09880',
-      label: '#8a8270',
+      top: '#c8c2b4',  // Betongrau
+      front: '#a8a298',
+      side: '#8a8278',
+      label: '#5a5650',
       handle: null,
     },
     shelfLines: [],
@@ -249,7 +273,7 @@ const OBJECT_TYPES = {
 const LEGEND_LABELS = {
   'cabinet-green': 'Grüne Schränke',
   'cabinet-brown': 'Braune Schränke',
-  'workbench': 'Werkbank',
+  'room': 'Raum',
   'shelf': 'Regal',
 };
 
@@ -276,42 +300,80 @@ function renderObject(obj) {
   const [px, py] = isoXY(obj.gridCol, obj.gridRow);
   const { w, h, d, color, shelfLines = [] } = def;
 
-  // FRONTALE ORIENTIERUNG (90° gedreht)
   const depthX = d * 0.5;
-  const depthY = d * 0.25;
+  const depthY = d * -0.25;
 
   const frontTL = [px, py - h];
   const frontTR = [px + w, py - h];
   const frontBR = [px + w, py];
   const frontBL = [px, py];
 
-  const sideTL = [px + depthX, py - h - depthY];
-  const sideTR = [px + w + depthX, py - h - depthY];
-  const sideBR = [px + w + depthX, py - depthY];
-  const sideBL = [px + depthX, py - depthY];
+  const sideTL = [px + depthX, py - h + depthY];
+  const sideTR = [px + w + depthX, py - h + depthY];
+  const sideBR = [px + w + depthX, py + depthY];
+  const sideBL = [px + depthX, py + depthY];
 
   const frontPts = [frontTL, frontTR, frontBR, frontBL];
-  const sidePts = [sideTR, sideTL, sideBL, sideBR];
-  const topPts = [sideTL, sideTR, frontTR, frontTL];
+  const sidePts = [frontTR, sideTR, sideBR, frontBR]; // rechte Seite sichtbar
+  const topPts = [sideTL, sideTR, frontTR, frontTL]; // Top nach oben-rechts
 
+  // --- Türlinie (vertikale Mittellinie auf Frontfläche) ---
+  const doorX = px + w * 0.5;
+  const doorLine = `<line x1="${doorX}" y1="${py - h + 2}" x2="${doorX}" y2="${py - 2}"
+    stroke="${color.side}" stroke-width="0.8" opacity="0.6"/>`;
 
+  // --- Regallinien auf Frontfläche ---
+  const shelfSVG = shelfLines.map(t => {
+    const sy = py - h + h * t;
+    return `<line x1="${px + 1}" y1="${sy}" x2="${px + w - 1}" y2="${sy}"
+      stroke="${color.side}" stroke-width="0.7" opacity="0.5"/>`;
+  }).join('');
 
+  // --- Griffe: zwei vertikale Linien || ---
+  // FIX: x1===x2 (vertikal), y variiert → gibt || statt --
   const handleSVG = color.handle ? `
-  <line x1="${px + w * 0.25}" y1="${py - h * 0.5}" x2="${px + w * 0.45}" y2="${py - h * 0.5}" 
-        stroke="${color.handle}" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="${px + w * 0.55}" y1="${py - h * 0.5}" x2="${px + w * 0.75}" y2="${py - h * 0.5}" 
-        stroke="${color.handle}" stroke-width="1.5" stroke-linecap="round"/>` : '';
+    <line x1="${px + w * 0.33}" y1="${py - h * 0.42}"
+          x2="${px + w * 0.33}" y2="${py - h * 0.32}"
+          stroke="${color.handle}" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="${px + w * 0.67}" y1="${py - h * 0.42}"
+          x2="${px + w * 0.67}" y2="${py - h * 0.32}"
+          stroke="${color.handle}" stroke-width="1.8" stroke-linecap="round"/>` : '';
 
+
+  // Bodentextur für Raum-Typ
+  const roomTexture = def === OBJECT_TYPES['room'] ? `
+  <line x1="${px + 10}" y1="${py - 8}"  x2="${px + w - 10}" y2="${py - 8}"  stroke="${color.side}" stroke-width="0.5" opacity="0.3"/>
+  <line x1="${px + 10}" y1="${py - 16}" x2="${px + w - 10}" y2="${py - 16}" stroke="${color.side}" stroke-width="0.5" opacity="0.3"/>
+  <line x1="${px + w * 0.3}" y1="${py - h + 8}" x2="${px + w * 0.3}" y2="${py - 4}" stroke="${color.side}" stroke-width="0.5" opacity="0.2"/>
+  <line x1="${px + w * 0.7}" y1="${py - h + 8}" x2="${px + w * 0.7}" y2="${py - 4}" stroke="${color.side}" stroke-width="0.5" opacity="0.2"/>
+` : '';
+
+
+  // --- Schatten-Overlay auf Frontfläche (untere Hälfte leicht dunkler) ---
+  const shadowSVG = `<polygon points="${pts([
+    [px, py - h * 0.4], [px + w, py - h * 0.4], frontBR, frontBL
+  ])}" fill="black" opacity="0.06"/>`;
+
+  // --- Hover-Highlight auf Topfläche ---
+  const hoverSVG = `<polygon class="hover-face"
+    points="${pts(topPts)}" fill="white" opacity="0"/>`;
 
   return `<g class="map-object" data-objid="${esc(obj.id)}">
-    <polygon points="${pts(sidePts)}" fill="${color.side}"/>
+    <polygon points="${pts(sidePts)}"  fill="${color.side}"/>
     <polygon points="${pts(frontPts)}" fill="${color.front}"/>
+    ${shadowSVG}
+    ${doorLine}
+    ${shelfSVG}
+    ${roomTexture}
     ${handleSVG}
-    <polygon points="${pts(topPts)}" fill="${color.top}"/>
-    <text x="${px + 3}" y="${py - 2}" font-size="7" fill="${color.label}">${esc(obj.id)}</text>
+
+    <polygon points="${pts(topPts)}"   fill="${color.top}"/>
+    ${hoverSVG}
+    <text x="${px + 2}" y="${py - 2}"
+      font-family="'DM Mono',monospace" font-size="7"
+      fill="${color.label}" letter-spacing="0.04em">${esc(obj.id)}</text>
   </g>`;
 }
-
 
 
 
@@ -375,36 +437,40 @@ legendEl.innerHTML = usedTypes
 
 // =============================================================================
 //  TOOLTIP-LOGIK
-//  ──────────────
-//  Verwendet Event Delegation: ein einziger Listener auf dem SVG statt
-//  N Listener für N Objekte. Skaliert besser bei vielen Objekten.
 // =============================================================================
-const tooltip = document.getElementById('tooltip');
-const ttId = document.getElementById('tt-id');
-const ttName = document.getElementById('tt-name');
-const ttCat = document.getElementById('tt-cat');
-const ttLoc = document.getElementById('tt-loc');
-const ttItems = document.getElementById('tt-items');
-const ttBar = document.getElementById('tt-bar');
-const ttCap = document.getElementById('tt-cap');
-const ttHint = document.getElementById('tt-hint');
+window.OBJ_MAP = Object.fromEntries(OBJECTS.map(o => [o.id, o]));
 
-/** Findet das nächste Elternelement mit Klasse "map-object" */
-function findObject(el) {
-  return el.closest('.map-object');
-}
+const tooltipEl = document.createElement('div');
+tooltipEl.className = 'tooltip';
+tooltipEl.innerHTML = `
+  <div class="tt-id"   id="tt-id"></div>
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-row"><span>Kategorie</span><span id="tt-cat"></span></div>
+  <div class="tt-row"><span>Standort</span><span id="tt-loc"></span></div>
+  <div class="tt-row"><span>Artikel</span><span id="tt-items"></span></div>
+  <div class="tt-bar"><div class="tt-bar-fill" id="tt-bar" style="width:0%"></div></div>
+  <div class="tt-cap"  id="tt-cap"></div>
+  <div class="tt-hint" id="tt-hint"></div>
+`;
+document.body.appendChild(tooltipEl);
+
+// Referenzen NACH appendChild — direkt aus tooltipEl heraus
+const ttId = tooltipEl.querySelector('#tt-id');
+const ttName = tooltipEl.querySelector('#tt-name');
+const ttCat = tooltipEl.querySelector('#tt-cat');
+const ttLoc = tooltipEl.querySelector('#tt-loc');
+const ttItems = tooltipEl.querySelector('#tt-items');
+const ttBar = tooltipEl.querySelector('#tt-bar');
+const ttCap = tooltipEl.querySelector('#tt-cap');
+const ttHint = tooltipEl.querySelector('#tt-hint');
 
 document.getElementById('isomap').addEventListener('mousemove', e => {
-  const objEl = findObject(e.target);
-  if (!objEl) {
-    tooltip.classList.remove('visible');
-    return;
-  }
+  const objEl = e.target.closest('.map-object');
+  if (!objEl) { tooltipEl.classList.remove('visible'); return; }
 
   const obj = OBJ_MAP[objEl.dataset.objid];
-  if (!obj) return;
+  if (!obj) { tooltipEl.classList.remove('visible'); return; }
 
-  // Daten aus Original-Objekt — kein String-Parsing nötig
   const hasFill = obj.items != null && obj.cap != null;
   const fillPct = hasFill ? Math.round(obj.items / obj.cap * 100) : 0;
 
@@ -412,28 +478,27 @@ document.getElementById('isomap').addEventListener('mousemove', e => {
   ttName.textContent = obj.name;
   ttCat.textContent = obj.cat ?? '—';
   ttLoc.textContent = obj.loc ?? '—';
-  ttItems.textContent = hasFill ? `${obj.items} von ${obj.cap}` : '—';
+  ttItems.textContent = hasFill ? `${obj.items} / ${obj.cap}` : '—';
   ttBar.style.width = hasFill ? fillPct + '%' : '0%';
   ttCap.textContent = hasFill ? `${fillPct}% belegt` : '';
   ttHint.textContent = obj.link ? 'Klicken um zu öffnen →' : '';
 
-  tooltip.classList.add('visible');
+  tooltipEl.classList.add('visible');
 
-  // Tooltip-Position: rechts vom Cursor, flippt wenn zu nah am Rand
-  let x = e.clientX + 18, y = e.clientY - 10;
-  if (x + 220 > window.innerWidth) x = e.clientX - 230;
-  if (y + 220 > window.innerHeight) y = e.clientY - 220;
-  tooltip.style.left = x + 'px';
-  tooltip.style.top = y + 'px';
+  let tx = e.clientX + 16;
+  let ty = e.clientY - 8;
+  if (tx + 210 > window.innerWidth) tx = e.clientX - 220;
+  if (ty + 160 > window.innerHeight) ty = e.clientY - 160;
+  tooltipEl.style.left = tx + 'px';
+  tooltipEl.style.top = ty + 'px';
 });
 
 document.getElementById('isomap').addEventListener('mouseleave', () => {
-  tooltip.classList.remove('visible');
+  tooltipEl.classList.remove('visible');
 });
 
-// Klick-Handler mit Event Delegation
 document.getElementById('isomap').addEventListener('click', e => {
-  const objEl = findObject(e.target);
+  const objEl = e.target.closest('.map-object');
   if (!objEl) return;
   const obj = OBJ_MAP[objEl.dataset.objid];
   if (obj?.link) window.location.href = obj.link;
