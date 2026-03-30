@@ -45,10 +45,10 @@ const ROOMS = [
   {
     id: 'raum-1',
     label: 'U30',
-    col: 0,
-    row: 3,
-    spanCols: 6,
-    spanRows: 5,
+    col: 1,
+    row: 2,
+    spanCols: 5,
+    spanRows: 3,
     wallH: 100,
   },
   {
@@ -132,7 +132,7 @@ const OBJECTS = [
   },
   {
     id: 'A', name: 'Abstellraum', type: 'room',
-    gridCol: 2, gridRow: 6,
+    gridCol: 2, gridRow: 5,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U30',
     items: null, cap: null,
@@ -413,26 +413,6 @@ roomsLayer.innerHTML = roomFragments.join('');
 // =============================================================================
 objectsLayer.innerHTML = OBJECTS.map(renderObject).join('');
 
-
-// =============================================================================
-//  LEGENDE RENDERN
-//  ────────────────
-//  Automatisch aus den tatsächlich verwendeten Typen generiert.
-//  Kein manuelles Pflegen nötig.
-// =============================================================================
-const usedTypes = [...new Set(OBJECTS.map(o => o.type))];
-const legendEl = document.getElementById('legend');
-
-legendEl.innerHTML = usedTypes
-  .filter(type => OBJECT_TYPES[type] && LEGEND_LABELS[type])
-  .map(type => {
-    const color = OBJECT_TYPES[type].color.top;
-    const label = LEGEND_LABELS[type] ?? type;
-    return `<div class="legend-item">
-      <div class="legend-dot" style="background:${color}"></div>${label}
-    </div>`;
-  })
-  .join('');
 
 
 // =============================================================================
