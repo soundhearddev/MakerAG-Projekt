@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MakerAG — Lager Map v2</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -15,8 +14,6 @@
       --border: var(--cat-accent);
       --text: var(--cat-text);
       --muted: var(--cat-text);
-      --mono: 'DM Mono', monospace;
-      --serif: 'Fraunces', Georgia, serif;
     }
 
     .schrank {
@@ -47,15 +44,14 @@
     }
 
     .tt-id {
-      font-size: 10px;
+      font-size: 12px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--cat-text);
       margin-bottom: 4px;
     }
 
     .tt-name {
-      font-family: var(--serif);
       font-size: 18px;
       font-weight: 300;
       margin-bottom: 10px;
@@ -65,8 +61,8 @@
       display: flex;
       justify-content: space-between;
       gap: 24px;
-      font-size: 11px;
-      color: var(--muted);
+      font-size: 20px;
+      color: var(--cat-text);
       margin-bottom: 4px;
     }
 
@@ -87,7 +83,7 @@
 
     .tt-cap {
       font-size: 10px;
-      color: var(--muted);
+      color: var(--cat-text);
       margin-top: 5px;
       letter-spacing: 0.04em;
     }
@@ -160,7 +156,7 @@
     });
   </script>
   <div id="dbg"
-    style="position:fixed;top:8px;left:8px;color:rgb(253, 253, 253);font-size:12px;padding:4px 8px;z-index:9999;font-family:monospace">
+    style="position:fixed;top:8px;left:8px;color:rgb(253, 253, 253);font-size:12px;padding:4px 8px;z-index:9999;">
   </div>
   <script src="/js/schrank.js"></script>
 

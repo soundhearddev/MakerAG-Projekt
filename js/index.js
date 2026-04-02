@@ -44,24 +44,8 @@ async function loadItemCount() {
   }
 }
 
-// =============================================================================
-// LOCKER SCROLL
-// =============================================================================
-const locker = document.getElementById("locker");
 
-document.getElementById("scrollLeft").onclick = () => {
-  locker.scrollBy({
-    left: -500,
-    behavior: "smooth"
-  });
-};
 
-document.getElementById("scrollRight").onclick = () => {
-  locker.scrollBy({
-    left: 500,
-    behavior: "smooth"
-  });
-};
 
 // =============================================================================
 // NEUESTE EINTRÄGE LADEN

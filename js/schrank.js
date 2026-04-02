@@ -369,9 +369,7 @@ function renderObject(obj) {
 
     <polygon points="${pts(topPts)}"   fill="${color.top}"/>
     ${hoverSVG}
-    <text x="${px + 2}" y="${py - 2}"
-      font-family="'DM Mono',monospace" font-size="7"
-      fill="${color.label}" letter-spacing="0.04em">${esc(obj.id)}</text>
+	
   </g>`;
 }
 
@@ -400,7 +398,7 @@ const roomFragments = ROOMS.map(room => {
     <polygon points="${pts(floor)}" fill="#e8e4db" stroke="#c8c4ba" stroke-width="1.5"/>
     <polygon points="${pts(floor)}" fill="url(#grid)" opacity="0.6"/>
     <text x="${lx}" y="${ly}"
-      font-family="'DM Mono',monospace" font-size="11" fill="#c0bcb4"
+	font-size="15" font-weight="600" fill="black"
       letter-spacing="0.12em" text-anchor="middle">${room.label}</text>`;
 });
 
