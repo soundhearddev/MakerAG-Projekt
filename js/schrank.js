@@ -1,27 +1,24 @@
-
 const GRID = {
   TILE_W: 58,
   TILE_H: 33,
   ORIGIN: [600, 50],
 };
 
-
 function isoXY(col, row) {
   const [ox, oy] = GRID.ORIGIN;
   const { TILE_W, TILE_H } = GRID;
   return [
-    ox + col * TILE_W / 2 - row * TILE_W / 2,
-    oy + col * TILE_H / 2 + row * TILE_H / 2,
+    ox + (col * TILE_W) / 2 - (row * TILE_W) / 2,
+    oy + (col * TILE_H) / 2 + (row * TILE_H) / 2,
   ];
 }
 
-
 function isoFloor(col, row, spanCols, spanRows) {
   return [
-    isoXY(col, row + spanRows),  // links
-    isoXY(col, row),             // oben
-    isoXY(col + spanCols, row),             // rechts
-    isoXY(col + spanCols, row + spanRows),  // unten
+    isoXY(col, row + spanRows), // links
+    isoXY(col, row), // oben
+    isoXY(col + spanCols, row), // rechts
+    isoXY(col + spanCols, row + spanRows), // unten
   ];
 }
 
@@ -36,8 +33,8 @@ function buildWalls(floor, wallH = 100) {
 // ── Generiert vom MakerAG Editor ──────────────────────────────────────
 const ROOMS = [
   {
-    id: 'raum-1',
-    label: 'U30',
+    id: "raum-1",
+    label: "U30",
     col: 1,
     row: 2,
     spanCols: 5,
@@ -45,8 +42,8 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-2',
-    label: 'Flur',
+    id: "raum-2",
+    label: "Flur",
     col: 6,
     row: 0,
     spanCols: 3,
@@ -54,8 +51,8 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-3',
-    label: 'U26',
+    id: "raum-3",
+    label: "U26",
     col: 9,
     row: 0,
     spanCols: 6,
@@ -63,8 +60,8 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-4',
-    label: 'U25 (MakerAG)',
+    id: "raum-4",
+    label: "U25 (MakerAG)",
     col: 9,
     row: 4,
     spanCols: 6,
@@ -72,8 +69,8 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-5',
-    label: 'U24',
+    id: "raum-5",
+    label: "U24",
     col: 9,
     row: 10,
     spanCols: 6,
@@ -84,210 +81,297 @@ const ROOMS = [
 
 const OBJECTS = [
   {
-    id: '4', name: 'Schrank 4', type: 'cabinet-green',
-    gridCol: 10, gridRow: 5,
+    id: "4",
+    name: "Schrank 4",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 5,
     zIndex: 5,
-    cat: 'Allgemein', loc: 'U25',
-    items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=4',
+    cat: "Allgemein",
+    loc: "U25",
+    items: null,
+    cap: null,
+    link: "/search.html?searchFor=Locker&query=4",
   },
   {
-    id: '2', name: 'Schrank 2', type: 'cabinet-green',
-    gridCol: 10, gridRow: 8,
+    id: "2",
+    name: "Schrank 2",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 8,
     zIndex: 2,
-    cat: 'Allgemein', loc: 'U25',
-    items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=2',
+    cat: "Allgemein",
+    loc: "U25",
+    items: null,
+    cap: null,
+    link: "/search.html?searchFor=Locker&query=2",
   },
   {
-    id: '1', name: 'Schrank 1', type: 'cabinet-green',
-    gridCol: 10, gridRow: 9,
+    id: "1",
+    name: "Schrank 1",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 9,
     zIndex: 1,
-    cat: 'Allgemein', loc: 'U25',
-    items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=1',
+    cat: "Allgemein",
+    loc: "U25",
+    items: null,
+    cap: null,
+    link: "/search.html?searchFor=Locker&query=1",
   },
   {
-    id: '3', name: 'Schrank 3', type: 'cabinet-green',
-    gridCol: 10, gridRow: 6,
+    id: "3",
+    name: "Schrank 3",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 6,
     zIndex: 4,
-    cat: 'Allgemein', loc: 'U25',
-    items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=3',
+    cat: "Allgemein",
+    loc: "U25",
+    items: null,
+    cap: null,
+    link: "/search.html?searchFor=Locker&query=3",
   },
   {
-    id: 'S', name: 'MakerAG Schrank', type: 'cabinet-brown',
-    gridCol: 10, gridRow: 7,
+    id: "S",
+    name: "MakerAG Schrank",
+    type: "cabinet-brown",
+    gridCol: 10,
+    gridRow: 7,
     zIndex: 3,
-    cat: 'Allgemein', loc: 'U25',
-    items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=S',
+    cat: "Allgemein",
+    loc: "U25",
+    items: null,
+    cap: null,
+    link: "/search.html?searchFor=Locker&query=S",
   },
   {
-    id: 'A', name: 'Abstellraum', type: 'room',
-    gridCol: 2, gridRow: 5,
+    id: "A",
+    name: "Abstellraum",
+    type: "room",
+    gridCol: 2,
+    gridRow: 5,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U30',
-    items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=A',
+    cat: "Allgemein",
+    loc: "U30",
+    items: null,
+    cap: null,
+    link: "/search.html?searchFor=Locker&query=A",
   },
   {
-    id: '5', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 12,
+    id: "5",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 12,
     zIndex: 2,
-    cat: 'Allgemein', loc: 'U24',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U24",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '6', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 13,
+    id: "6",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 13,
     zIndex: 1,
-    cat: 'Allgemein', loc: 'U24',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U24",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '7', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 14, gridRow: 1,
+    id: "7",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 14,
+    gridRow: 1,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '8', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 13, gridRow: 1,
+    id: "8",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 13,
+    gridRow: 1,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '9', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 12, gridRow: 1,
+    id: "9",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 12,
+    gridRow: 1,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '10', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 11, gridRow: 1,
+    id: "10",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 11,
+    gridRow: 1,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '11', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 10, gridRow: 1,
+    id: "11",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 10,
+    gridRow: 1,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '12', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 14, gridRow: 4,
+    id: "12",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 14,
+    gridRow: 4,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '13', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 13, gridRow: 4,
+    id: "13",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 13,
+    gridRow: 4,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
   {
-    id: '14', name: 'Neues Objekt', type: 'cabinet-green',
-    gridCol: 12, gridRow: 4,
+    id: "14",
+    name: "Neues Objekt",
+    type: "cabinet-green",
+    gridCol: 12,
+    gridRow: 4,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U26',
-    items: null, cap: null,
+    cat: "Allgemein",
+    loc: "U26",
+    items: null,
+    cap: null,
     link: null,
   },
 ];
 
 const OBJECT_TYPES = {
-  'cabinet-green': {
+  "cabinet-green": {
     w: 26,
     h: 76,
     d: 14,
     color: {
-      top: '#4e7a3c',
-      front: '#325228',
-      side: '#2a4220',
-      label: '#b8860b',
-      handle: '#b8860b',
+      top: "#4e7a3c",
+      front: "#325228",
+      side: "#2a4220",
+      label: "#b8860b",
+      handle: "#b8860b",
     },
-    shelfLines: [],    // keine Regallinien
+    shelfLines: [], // keine Regallinien
   },
-  'cabinet-brown': {
-    w: 26, h: 76, d: 14,
+  "cabinet-brown": {
+    w: 26,
+    h: 76,
+    d: 14,
     color: {
-      top: '#8a5530',
-      front: '#5a3620',
-      side: '#4a2c18',
-      label: '#c8a415',
-      handle: '#c8a415',
+      top: "#8a5530",
+      front: "#5a3620",
+      side: "#4a2c18",
+      label: "#c8a415",
+      handle: "#c8a415",
     },
   },
-  'room': {
-    w: 90, h: 28, d: 60,
+  room: {
+    w: 90,
+    h: 28,
+    d: 60,
     color: {
-      top: '#c8c2b4',  // Betongrau
-      front: '#a8a298',
-      side: '#8a8278',
-      label: '#5a5650',
+      top: "#c8c2b4", // Betongrau
+      front: "#a8a298",
+      side: "#8a8278",
+      label: "#5a5650",
       handle: null,
     },
     shelfLines: [],
   },
-  'shelf': {
-    w: 30, h: 48, d: 16,
+  shelf: {
+    w: 30,
+    h: 48,
+    d: 16,
     color: {
-      top: '#4e7a3c',
-      front: '#325228',
-      side: '#2a4220',
-      label: '#b8860b',
-      handle: '#b8860b',
+      top: "#4e7a3c",
+      front: "#325228",
+      side: "#2a4220",
+      label: "#b8860b",
+      handle: "#b8860b",
     },
-    shelfLines: [0.5],   // 1 Regalboden
+    shelfLines: [0.5], // 1 Regalboden
   },
 };
 
-
 const LEGEND_LABELS = {
-  'cabinet-green': 'Grüne Schränke',
-  'cabinet-brown': 'Braune Schränke',
-  'room': 'Raum',
-  'shelf': 'Regal',
+  "cabinet-green": "Grüne Schränke",
+  "cabinet-brown": "Braune Schränke",
+  room: "Raum",
+  shelf: "Regal",
 };
 
-
 /** Hilfsfunktion: Array von Punkten in SVG-Polygon-String umwandeln */
-function pts(arr) { return arr.map(p => p.join(',')).join(' '); }
+function pts(arr) {
+  return arr.map((p) => p.join(",")).join(" ");
+}
 
 /** Hilfsfunktion: Punkt [x, y] verschieben */
-function shift(pt, dx, dy) { return [pt[0] + dx, pt[1] + dy]; }
-
+function shift(pt, dx, dy) {
+  return [pt[0] + dx, pt[1] + dy];
+}
 
 function esc(v) {
   return String(v)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function renderObject(obj) {
   const def = OBJECT_TYPES?.[obj.type];
-  if (!def) return '';
+  if (!def) return "";
 
   const [px, py] = isoXY(obj.gridCol, obj.gridRow);
   const { w, h, d, color, shelfLines = [] } = def;
@@ -315,35 +399,43 @@ function renderObject(obj) {
     stroke="${color.side}" stroke-width="0.8" opacity="0.6"/>`;
 
   // --- Regallinien auf Frontfläche ---
-  const shelfSVG = shelfLines.map(t => {
-    const sy = py - h + h * t;
-    return `<line x1="${px + 1}" y1="${sy}" x2="${px + w - 1}" y2="${sy}"
+  const shelfSVG = shelfLines
+    .map((t) => {
+      const sy = py - h + h * t;
+      return `<line x1="${px + 1}" y1="${sy}" x2="${px + w - 1}" y2="${sy}"
       stroke="${color.side}" stroke-width="0.7" opacity="0.5"/>`;
-  }).join('');
+    })
+    .join("");
 
   // --- Griffe: zwei vertikale Linien || ---
   // FIX: x1===x2 (vertikal), y variiert → gibt || statt --
-  const handleSVG = color.handle ? `
+  const handleSVG = color.handle
+    ? `
     <line x1="${px + w * 0.33}" y1="${py - h * 0.42}"
           x2="${px + w * 0.33}" y2="${py - h * 0.32}"
           stroke="${color.handle}" stroke-width="1.8" stroke-linecap="round"/>
     <line x1="${px + w * 0.67}" y1="${py - h * 0.42}"
           x2="${px + w * 0.67}" y2="${py - h * 0.32}"
-          stroke="${color.handle}" stroke-width="1.8" stroke-linecap="round"/>` : '';
-
+          stroke="${color.handle}" stroke-width="1.8" stroke-linecap="round"/>`
+    : "";
 
   // Bodentextur für Raum-Typ
-  const roomTexture = def === OBJECT_TYPES['room'] ? `
+  const roomTexture =
+    def === OBJECT_TYPES["room"]
+      ? `
   <line x1="${px + 10}" y1="${py - 8}"  x2="${px + w - 10}" y2="${py - 8}"  stroke="${color.side}" stroke-width="0.5" opacity="0.3"/>
   <line x1="${px + 10}" y1="${py - 16}" x2="${px + w - 10}" y2="${py - 16}" stroke="${color.side}" stroke-width="0.5" opacity="0.3"/>
   <line x1="${px + w * 0.3}" y1="${py - h + 8}" x2="${px + w * 0.3}" y2="${py - 4}" stroke="${color.side}" stroke-width="0.5" opacity="0.2"/>
   <line x1="${px + w * 0.7}" y1="${py - h + 8}" x2="${px + w * 0.7}" y2="${py - 4}" stroke="${color.side}" stroke-width="0.5" opacity="0.2"/>
-` : '';
-
+`
+      : "";
 
   // --- Schatten-Overlay auf Frontfläche (untere Hälfte leicht dunkler) ---
   const shadowSVG = `<polygon points="${pts([
-    [px, py - h * 0.4], [px + w, py - h * 0.4], frontBR, frontBL
+    [px, py - h * 0.4],
+    [px + w, py - h * 0.4],
+    frontBR,
+    frontBL,
   ])}" fill="black" opacity="0.06"/>`;
 
   // --- Hover-Highlight auf Topfläche ---
@@ -365,18 +457,13 @@ function renderObject(obj) {
   </g>`;
 }
 
-
-
-
-
-
 // =============================================================================
 //  RÄUME RENDERN
 // =============================================================================
-const roomsLayer = document.getElementById('rooms-layer');
-const objectsLayer = document.getElementById('objects-layer');
+const roomsLayer = document.getElementById("rooms-layer");
+const objectsLayer = document.getElementById("objects-layer");
 
-const roomFragments = ROOMS.map(room => {
+const roomFragments = ROOMS.map((room) => {
   const floor = isoFloor(room.col, room.row, room.spanCols, room.spanRows);
   const { wallL, wallR } = buildWalls(floor, room.wallH ?? 100);
 
@@ -395,23 +482,20 @@ const roomFragments = ROOMS.map(room => {
 });
 
 // join statt innerHTML += in Schleife (vermeidet wiederholtes DOM-Parsen)
-roomsLayer.innerHTML = roomFragments.join('');
-
+roomsLayer.innerHTML = roomFragments.join("");
 
 // =============================================================================
 //  OBJEKTE RENDERN
 // =============================================================================
-objectsLayer.innerHTML = OBJECTS.map(renderObject).join('');
-
-
+objectsLayer.innerHTML = OBJECTS.map(renderObject).join("");
 
 // =============================================================================
 //  TOOLTIP-LOGIK
 // =============================================================================
-window.OBJ_MAP = Object.fromEntries(OBJECTS.map(o => [o.id, o]));
+window.OBJ_MAP = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
 
-const tooltipEl = document.createElement('div');
-tooltipEl.className = 'tooltip';
+const tooltipEl = document.createElement("div");
+tooltipEl.className = "tooltip";
 tooltipEl.innerHTML = `
   <div class="tt-id"   id="tt-id"></div>
   <div class="tt-name" id="tt-name"></div>
@@ -424,48 +508,54 @@ tooltipEl.innerHTML = `
 document.body.appendChild(tooltipEl);
 
 // Referenzen NACH appendChild — direkt aus tooltipEl heraus
-const ttId = tooltipEl.querySelector('#tt-id');
-const ttName = tooltipEl.querySelector('#tt-name');
-const ttCat = tooltipEl.querySelector('#tt-cat');
-const ttLoc = tooltipEl.querySelector('#tt-loc');
-const ttBar = tooltipEl.querySelector('#tt-bar');
-const ttCap = tooltipEl.querySelector('#tt-cap');
-const ttHint = tooltipEl.querySelector('#tt-hint');
+const ttId = tooltipEl.querySelector("#tt-id");
+const ttName = tooltipEl.querySelector("#tt-name");
+const ttCat = tooltipEl.querySelector("#tt-cat");
+const ttLoc = tooltipEl.querySelector("#tt-loc");
+const ttBar = tooltipEl.querySelector("#tt-bar");
+const ttCap = tooltipEl.querySelector("#tt-cap");
+const ttHint = tooltipEl.querySelector("#tt-hint");
 
-document.getElementById('isomap').addEventListener('mousemove', e => {
-  const objEl = e.target.closest('.map-object');
-  if (!objEl) { tooltipEl.classList.remove('visible'); return; }
+document.getElementById("isomap").addEventListener("mousemove", (e) => {
+  const objEl = e.target.closest(".map-object");
+  if (!objEl) {
+    tooltipEl.classList.remove("visible");
+    return;
+  }
 
   const obj = OBJ_MAP[objEl.dataset.objid];
-  if (!obj) { tooltipEl.classList.remove('visible'); return; }
+  if (!obj) {
+    tooltipEl.classList.remove("visible");
+    return;
+  }
 
   const hasFill = obj.items != null && obj.cap != null;
-  const fillPct = hasFill ? Math.round(obj.items / obj.cap * 100) : 0;
+  const fillPct = hasFill ? Math.round((obj.items / obj.cap) * 100) : 0;
 
   ttId.textContent = obj.id;
   ttName.textContent = obj.name;
-  ttCat.textContent = obj.cat ?? '—';
-  ttLoc.textContent = obj.loc ?? '—';
-  ttBar.style.width = hasFill ? fillPct + '%' : '0%';
-  ttCap.textContent = hasFill ? `${fillPct}% belegt` : '';
-  ttHint.textContent = obj.link ? 'Klicken um zu öffnen →' : '';
+  ttCat.textContent = obj.cat ?? "—";
+  ttLoc.textContent = obj.loc ?? "—";
+  ttBar.style.width = hasFill ? fillPct + "%" : "0%";
+  ttCap.textContent = hasFill ? `${fillPct}% belegt` : "";
+  ttHint.textContent = obj.link ? "Klicken um zu öffnen →" : "";
 
-  tooltipEl.classList.add('visible');
+  tooltipEl.classList.add("visible");
 
   let tx = e.clientX + 16;
   let ty = e.clientY - 8;
   if (tx + 210 > window.innerWidth) tx = e.clientX - 220;
   if (ty + 160 > window.innerHeight) ty = e.clientY - 160;
-  tooltipEl.style.left = tx + 'px';
-  tooltipEl.style.top = ty + 'px';
+  tooltipEl.style.left = tx + "px";
+  tooltipEl.style.top = ty + "px";
 });
 
-document.getElementById('isomap').addEventListener('mouseleave', () => {
-  tooltipEl.classList.remove('visible');
+document.getElementById("isomap").addEventListener("mouseleave", () => {
+  tooltipEl.classList.remove("visible");
 });
 
-document.getElementById('isomap').addEventListener('click', e => {
-  const objEl = e.target.closest('.map-object');
+document.getElementById("isomap").addEventListener("click", (e) => {
+  const objEl = e.target.closest(".map-object");
   if (!objEl) return;
   const obj = OBJ_MAP[objEl.dataset.objid];
   if (obj?.link) {

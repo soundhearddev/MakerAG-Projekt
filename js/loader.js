@@ -1,7 +1,6 @@
 // Der Zweg dieser datei ist es die partials, also die einzelenen html dateien wie den header, den nav oder die Settings in eine html seite zu laden.
-// Ich hatte wenig Lust in jede datei die settings datei immer anzupassen, vorallem bei den settings weil das schon so 300 zeilen an Code sind. 
+// Ich hatte wenig Lust in jede datei die settings datei immer anzupassen, vorallem bei den settings weil das schon so 300 zeilen an Code sind.
 // Diese Methode, die hier gewählt wurde ist wahrscheinlich nicht die Optimierteste version, funktioniert aber (die hälfte der Zeit)...
-
 
 // viele Probleme kamen auch durch dieses laden. So wenn man html/css daten in eine andere datei lädt sind SEHR oft die timing fehler, wo es dann einfach nichts mehr richtig anpassen kann.
 
@@ -92,7 +91,7 @@ async function loadHTML(id, file, useCache = true) {
     loadedComponents++;
 
     console.log(
-      `✓ ${file} erfolgreich geladen (${loadedComponents}/${totalComponents})`
+      `✓ ${file} erfolgreich geladen (${loadedComponents}/${totalComponents})`,
     );
     return el;
   } catch (error) {
@@ -138,7 +137,7 @@ function executeScripts(container) {
     newScript.onerror = () => {
       console.error(
         `Fehler beim Ausführen von Script:`,
-        oldScript.src || "inline"
+        oldScript.src || "inline",
       );
     };
 
@@ -189,7 +188,7 @@ function initializeSettingsEvents() {
           modal.classList.add("active");
           centerModal();
         },
-        menuCheckbox ? 400 : 0
+        menuCheckbox ? 400 : 0,
       );
     });
   }
@@ -242,7 +241,7 @@ function reloadAllComponents() {
     loadHTML("header", "/partials/header.html", false),
     loadHTML("nav", "/partials/nav.html", false),
     loadHTML("settings", "/partials/settings.html", false),
-    loadHTML("map", "/partials/map.html", false)
+    loadHTML("map", "/partials/map.html", false),
   ]);
 }
 if (typeof window !== "undefined") {
@@ -259,12 +258,10 @@ window.addEventListener("unhandledrejection", (e) => {
   console.error("Unhandled Promise Rejection:", e.reason);
 });
 
-
-
 // Initialisierung mit Error Handling
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Scroll-Position zurücksetzen 
+    // Scroll-Position zurücksetzen
     // so oft habe ich das irgentwo hingeshriebn und es hat nie was geändert
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
@@ -274,8 +271,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       loadHTML("header", "/partials/header.html"),
       loadHTML("nav", "/partials/nav.html"),
       loadHTML("settings", "/partials/settings.html"),
-      loadHTML("map", "/partials/map.html", false)
-
+      loadHTML("map", "/partials/map.html", false),
     ]);
 
     // Kurze Verzögerung für Animation
@@ -321,7 +317,6 @@ function handleGlobalClicks(e) {
     modal.classList.remove("active");
   }
 }
-
 
 // Zusammenfassend lässt sich sagen, dass der haubtteil des loaders einfahc nur aus event listeners und halt abischerung damit alles gut funktioniert.
 // das wirkliche laden der datei ist nciht sehr schwer, aber das was halt mit sich kommt und was halt in der datei ist muss halt erstmal alles gehandeld werden.

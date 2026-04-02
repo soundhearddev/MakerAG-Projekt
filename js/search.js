@@ -1,39 +1,41 @@
-
 // =============================================================================
 // DEBUG-LOGGING SYSTEM
 // =============================================================================
 const log = {
-  success: (msg, data) => console.log(`%c[SUCCESS] ${msg}`, "color: green", data || ""),
-  info: (msg, data) => console.log(`%c[INFO] ${msg}`, "color: gray", data || ""),
+  success: (msg, data) =>
+    console.log(`%c[SUCCESS] ${msg}`, "color: green", data || ""),
+  info: (msg, data) =>
+    console.log(`%c[INFO] ${msg}`, "color: gray", data || ""),
   warning: (msg, data) => console.warn(`[WARNING] ${msg}`, data || ""),
   error: (msg, data) => console.error(`[ERROR] ${msg}`, data || ""),
-  debug: (msg, data) => console.log(`%c[DEBUG] ${msg}`, "color: gray", data || ""),
+  debug: (msg, data) =>
+    console.log(`%c[DEBUG] ${msg}`, "color: gray", data || ""),
 };
 
 // =============================================================================
 // TOAST NOTIFICATIONS
 // =============================================================================
-function showToast(message, type = 'info', duration = 3000) {
-  const container = document.getElementById('toastContainer');
+function showToast(message, type = "info", duration = 3000) {
+  const container = document.getElementById("toastContainer");
   if (!container) {
     log.error("Toast-Container nicht gefunden");
     return;
   }
 
-  const toast = document.createElement('div');
+  const toast = document.createElement("div");
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
-  toast.setAttribute('role', 'alert');
-  toast.setAttribute('aria-live', 'polite');
+  toast.setAttribute("role", "alert");
+  toast.setAttribute("aria-live", "polite");
 
   container.appendChild(toast);
 
   requestAnimationFrame(() => {
-    toast.classList.add('show');
+    toast.classList.add("show");
   });
 
   setTimeout(() => {
-    toast.classList.remove('show');
+    toast.classList.remove("show");
     setTimeout(() => {
       if (toast.parentElement) {
         toast.remove();
@@ -69,7 +71,7 @@ function escapeRegExp(string) {
 
 function escapeHtml(text) {
   if (text === null || text === undefined) return "";
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.textContent = String(text);
   return div.innerHTML;
 }
@@ -96,9 +98,6 @@ function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
-
-
-
 
 function updateUrlParams(query) {
   const params = new URLSearchParams();
@@ -142,7 +141,8 @@ function initFromUrl() {
     if (limitEl) limitEl.value = state.limit;
     if (searchForEl) searchForEl.value = state.searchFor;
 
-    const initial = params.get("query") || params.get("category") || params.get("q") || "";
+    const initial =
+      params.get("query") || params.get("category") || params.get("q") || "";
     if (searchInput && initial) searchInput.value = initial;
 
     // Zurück-Button wenn von Karte kommend
@@ -157,8 +157,6 @@ function initFromUrl() {
     showToast("Fehler beim Laden der URL-Parameter", "error");
   }
 }
-
-
 
 // =============================================================================
 // SEARCH FUNCTIONALITY
@@ -206,7 +204,7 @@ async function searchItems(query) {
       order: state.sortOrder,
       limit: state.limit,
       searchFor: state.searchFor,
-      ...(state.categoryId > 0 && { category_id: state.categoryId }),  // ← neu
+      ...(state.categoryId > 0 && { category_id: state.categoryId }), // ← neu
     });
 
     // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
@@ -218,7 +216,7 @@ async function searchItems(query) {
     const res = await fetch(`/api/search.php?${params}`, {
       signal: controller.signal,
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
       },
     });
 
@@ -237,7 +235,9 @@ async function searchItems(query) {
     const response = await res.json();
 
     if (!response.success) {
-      throw new Error(response.error || response.message || "Unbekannter Fehler");
+      throw new Error(
+        response.error || response.message || "Unbekannter Fehler",
+      );
     }
 
     const data = response.data || [];
@@ -251,10 +251,17 @@ async function searchItems(query) {
   } catch (err) {
     log.error("Suchfehler", err);
 
-    if (err.name === 'AbortError') {
-      log.error("Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.");
-    } else if (err.message.includes("NetworkError") || err.message.includes("Failed to fetch")) {
-      log.error("Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.");
+    if (err.name === "AbortError") {
+      log.error(
+        "Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.",
+      );
+    } else if (
+      err.message.includes("NetworkError") ||
+      err.message.includes("Failed to fetch")
+    ) {
+      log.error(
+        "Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.",
+      );
 
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
@@ -303,7 +310,8 @@ function renderTable(data, query) {
   tbody.innerHTML = "";
 
   if (!data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="12" class="no-results">Keine Ergebnisse gefunden</td></tr>';
+    tbody.innerHTML =
+      '<tr><td colspan="12" class="no-results">Keine Ergebnisse gefunden</td></tr>';
     return;
   }
 
@@ -314,20 +322,21 @@ function renderTable(data, query) {
 
     // hier wird dann das wegählte such nach angewanht als markeiretes ding gemacht
     row.dataset.itemId = item.id;
-    const isExactIdMatch = query !== "" && String(item.id) === String(query).trim();
+    const isExactIdMatch =
+      query !== "" && String(item.id) === String(query).trim();
     if (isExactIdMatch) {
       row.classList.add("exact-match");
     }
     // Feldname-Mapping: searchFor-Wert → item-Feldname
     const SEARCH_FOR_FIELD_MAP = {
-      "ID": "id",
-      "Name": "name",
-      "Kategorie": "category_name",
-      "Marke": "brand",
-      "Modell": "model",
-      "Seriennummer": "serial",
-      "Locker": "locker",
-      "Raum": "room", 
+      ID: "id",
+      Name: "name",
+      Kategorie: "category_name",
+      Marke: "brand",
+      Modell: "model",
+      Seriennummer: "serial",
+      Locker: "locker",
+      Raum: "room",
     };
 
     // Nur das gesuchte Feld markieren, Rest plain
@@ -352,13 +361,10 @@ function renderTable(data, query) {
   });
 
   tbody.appendChild(fragment);
-
 }
 
 function renderCell(value, field, index, query, isMultiline = false) {
   const text = value === null || value === undefined ? "" : String(value);
-
-
 
   const highlighted = highlightText(text, query);
   return isMultiline ? highlighted.replace(/\n/g, "<br>") : highlighted;
@@ -366,7 +372,7 @@ function renderCell(value, field, index, query, isMultiline = false) {
 
 function renderThumbnail(path, itemId) {
   // Fallback auf /images/uhhhh.jpg wenn kein Thumbnail gefunden wurde
-  const imagePath = path || '/images/uhhhh.jpg';
+  const imagePath = path || "/images/uhhhh.jpg";
 
   return `<img src="${escapeHtml(imagePath)}"
               alt="Thumbnail für Item ${itemId}"
@@ -392,8 +398,6 @@ function renderEditableDocsLink(path, index) {
                 contenteditable="false"
                 tabindex="0">${escapedPath}</span>`;
 }
-
-
 
 // =============================================================================
 // SEARCH INPUT HANDLING
@@ -484,7 +488,6 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-
 // =============================================================================
 // ERROR RECOVERY
 // =============================================================================
@@ -493,14 +496,14 @@ window.addEventListener("error", (e) => {
     message: e.message,
     filename: e.filename,
     lineno: e.lineno,
-    colno: e.colno
+    colno: e.colno,
   });
 });
 
 window.addEventListener("unhandledrejection", (e) => {
   log.error("Unhandled Promise Rejection", {
     reason: e.reason,
-    promise: e.promise
+    promise: e.promise,
   });
 });
 
@@ -526,5 +529,3 @@ window.addEventListener("offline", () => {
     state.isLoading = false;
   }
 });
-
-

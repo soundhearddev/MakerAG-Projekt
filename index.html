@@ -1,84 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-
-<head>
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MakerAG</title>
-    <link rel="stylesheet" href="/styles/animation.css">
+    <link rel="stylesheet" href="/styles/animation.css" />
 
-    <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/index.css">
-    <link rel="icon" href="/images/icon144x144 copy.png" type="image/png">
-
-
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
+    <link rel="icon" href="/images/icon144x144 copy.png" type="image/png" />
 
     <script src="js/loader.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="page-loader">
-        <div class="loader-spinner"></div>
+      <div class="loader-spinner"></div>
     </div>
-
-
-
 
     <div id="header"></div>
     <div id="nav"></div>
     <div id="settings"></div>
 
     <div class="cool-container">
-        <div class="counter">
-            <h2>Anzahl gespeicherten Gegenstände</h2>
-            <div id="item-count" class="count">Lade...</div>
-        </div>
+      <div class="counter">
+        <h2>Anzahl gespeicherten Gegenstände</h2>
+        <div id="item-count" class="count">Lade...</div>
+      </div>
     </div>
 
     <div class="container">
-        <h2>Schränke und Räume</h2>
-        <div id="map">
-
-            <!-- Bereit machen für etwas großes :)-->
-
-        </div>
+      <h2>Schränke und Räume</h2>
+      <div id="map">
+        <!-- Bereit machen für etwas großes :)-->
+      </div>
     </div>
 
     <div id="Kategorien" class="container">
-        <h2>Kategorien</h2>
-        <div class="row">
-            <div class="category-card">
-
-            </div>
-        </div>
+      <h2>Kategorien</h2>
+      <div class="row">
+        <div class="category-card"></div>
+      </div>
     </div>
 
     <div id="neuste-eintraege" class="container">
-        <h2>Neueste Einträge</h2>
-        <button id="load-latest">Neueste Einträge laden</button>
-        <div id="latest-entries"></div>
-        <br><br>
+      <h2>Neueste Einträge</h2>
+      <button id="load-latest">Neueste Einträge laden</button>
+      <div id="latest-entries"></div>
+      <br /><br />
     </div>
-
 
     <div id="random-item-container" class="container">
-        <h2>Zufallsgenerator</h2>
-        <div class="random-item-content">
-
-            <button id="random-item-btn" class="random-item-button">
-                Zufälliges Item
-            </button>
-            <div id="random-item-status" class="random-status"></div>
-        </div>
+      <h2>Zufallsgenerator</h2>
+      <div class="random-item-content">
+        <button id="random-item-btn" class="random-item-button">
+          Zufälliges Item
+        </button>
+        <div id="random-item-status" class="random-status"></div>
+      </div>
     </div>
 
-
     <script src="js/index.js"></script>
-
-
-
-</body>
-
+  </body>
 </html>

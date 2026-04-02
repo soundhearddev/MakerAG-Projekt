@@ -1,143 +1,143 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MakerAG — Lager Map v2</title>
+    <link rel="stylesheet" />
+    <style>
+      .schrank {
+        transform: rotate(90deg);
+        transform-origin: center;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MakerAG — Lager Map v2</title>
-  <link
-    rel="stylesheet">
-  <style>
+      .tooltip {
+        position: fixed;
+        background: var(--cat-secondary);
+        border: 1px solid var(--cat-accent);
+        border-radius: 10px;
+        padding: 14px 18px;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(6px);
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
+        z-index: 200;
+        min-width: 190px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
 
-    .schrank {
-      transform: rotate(90deg);
-      transform-origin: center;
-    }
+      .tooltip.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
+      .tt-id {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cat-text);
+        margin-bottom: 4px;
+      }
 
+      .tt-name {
+        font-size: 18px;
+        font-weight: 300;
+        margin-bottom: 10px;
+      }
 
-    .tooltip {
-      position: fixed;
-      background: var(--cat-secondary);
-      border: 1px solid var(--cat-accent);
-      border-radius: 10px;
-      padding: 14px 18px;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.15s, transform 0.15s;
-      z-index: 200;
-      min-width: 190px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
-    }
+      .tt-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        font-size: 20px;
+        color: var(--cat-text);
+        margin-bottom: 4px;
+      }
 
-    .tooltip.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+      .tt-row span:last-child {
+        color: var(--cat-text);
+        font-weight: 500;
+      }
 
-    .tt-id {
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--cat-text);
-      margin-bottom: 4px;
-    }
+      .tt-bar {
+        height: 3px;
+        background: var(--cat-accent);
+        border-radius: 2px;
+        margin-top: 10px;
+        overflow: hidden;
+      }
 
-    .tt-name {
-      font-size: 18px;
-      font-weight: 300;
-      margin-bottom: 10px;
-    }
+      .tt-cap {
+        font-size: 10px;
+        color: var(--cat-text);
+        margin-top: 5px;
+        letter-spacing: 0.04em;
+      }
 
-    .tt-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      font-size: 20px;
-      color: var(--cat-text);
-      margin-bottom: 4px;
-    }
+      .tt-hint {
+        font-size: 10px;
+        color: var(--cat-text);
+        margin-top: 10px;
+        letter-spacing: 0.04em;
+      }
 
-    .tt-row span:last-child {
-      color: var(--cat-text);
-      font-weight: 500;
-    }
+      .map-object .hover-face {
+        transition: opacity 0.15s;
+        pointer-events: none;
+      }
 
-    .tt-bar {
-      height: 3px;
-      background: var(--cat-accent);
-      border-radius: 2px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
+      .map-object:hover .hover-face {
+        opacity: 0.13 !important;
+      }
 
+      .map-object {
+        cursor: pointer;
+      }
 
+      .map-wrap {
+        width: 100%;
+        height: 100vh;
+      }
 
-    .tt-cap {
-      font-size: 10px;
-      color: var(--cat-text);
-      margin-top: 5px;
-      letter-spacing: 0.04em;
-    }
+      #isomap {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
+  </head>
 
-    .tt-hint {
-      font-size: 10px;
-      color: var(--cat-text);
-      margin-top: 10px;
-      letter-spacing: 0.04em;
-    }
+  <body>
+    <div class="map-wrap">
+      <svg
+        id="isomap"
+        viewBox="0 0 1100 700"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <pattern
+            id="grid"
+            width="58"
+            height="33"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M0 16.5 L29 0 L58 16.5 L29 33 Z"
+              fill="none"
+              stroke="#ddd8d0"
+              stroke-width="0.5"
+            />
+          </pattern>
+        </defs>
+        <g id="rooms-layer"></g>
+        <g id="objects-layer"></g>
+      </svg>
+    </div>
 
+    <div class="tooltip" id="tooltip"></div>
 
-    .map-object .hover-face {
-      transition: opacity 0.15s;
-      pointer-events: none;
-    }
-
-    .map-object:hover .hover-face {
-      opacity: 0.13 !important;
-    }
-
-    .map-object {
-      cursor: pointer;
-    }
-
-
-
-    .map-wrap {
-      width: 100%;
-      height: 100vh;
-    }
-
-    #isomap {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-  </style>
-</head>
-
-<body>
-
-
-
-  <div class="map-wrap">
-    <svg id="isomap" viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="grid" width="58" height="33" patternUnits="userSpaceOnUse">
-          <path d="M0 16.5 L29 0 L58 16.5 L29 33 Z" fill="none" stroke="#ddd8d0" stroke-width="0.5" />
-        </pattern>
-      </defs>
-      <g id="rooms-layer"></g>
-      <g id="objects-layer"></g>
-    </svg>
-  </div>
-
-  <div class="tooltip" id="tooltip">
-  </div>
-
-  <script src="/js/schrank.js"></script>
-
-</body>
-
+    <script src="/js/schrank.js"></script>
+  </body>
 </html>

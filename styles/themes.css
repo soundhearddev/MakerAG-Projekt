@@ -4,7 +4,7 @@
 :root {
   --default-primary: #1a1a1a;
   --default-secondary: #202020;
-  --default-accent: #FBF3D1;
+  --default-accent: #fbf3d1;
   --default-text: #bebebe;
   --default-extra: #484655;
 }
@@ -17,7 +17,6 @@
   --hell-text: #000000;
   --hell-extra: #d7e4fa;
 }
-
 
 /* Water Theme */
 :root {
@@ -32,22 +31,19 @@
 :root {
   --green-primary: #3b5347;
   --green-secondary: #4a6755;
-  --green-accent: #90AB8B;
+  --green-accent: #90ab8b;
   --green-text: #ffdbca;
-  --green-extra: #6B8A7A;
+  --green-extra: #6b8a7a;
 }
 
 /* Redmoon Theme */
 :root {
-
   --redmoon-primary: #0e0e0e;
   --redmoon-secondary: #100806;
   --redmoon-accent: #640000;
-  --redmoon-text: #F5E6E8;
+  --redmoon-text: #f5e6e8;
   --redmoon-extra: #2f0101;
 }
-
-
 
 /* Cyberpunk Theme */
 :root {

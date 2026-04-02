@@ -1,90 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weitere Gegenstände hinzufügen</title>
-    <link rel="stylesheet" href="/styles/animation.css">
-    <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/how_to.css">
-    <link rel="icon" href="/images/logo.png">
-</head>
-<body>
+    <link rel="stylesheet" href="/styles/animation.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/how_to.css" />
+    <link rel="icon" href="/images/logo.png" />
+  </head>
+  <body>
     <!-- TODO: bisschen QoL und mehr info und halt so-->
     <script src="js/loader.js"></script>
     <div class="page-loader">
-        <div class="loader-spinner"></div>
+      <div class="loader-spinner"></div>
     </div>
     <div id="header"></div>
     <div id="nav"></div>
     <div id="settings"></div>
 
     <div class="container">
-        <h1>Wie Fügt man Weitere Gegenstände hinzu?</h1>
+      <h1>Wie Fügt man Weitere Gegenstände hinzu?</h1>
     </div>
 
     <div class="container">
-        <div class="how-to-content">
-            <h4>
-                <p>Um weitere Gegenstände hinzuzufügen muss eine Verbindung mit dem Server hergestellt werden.
-                Um dies zu tun, vergewissern Sie sich, dass Sie die benötigten SSH Keys besitzen.
-                Zum Verbinden öffnen Sie das Terminal und führen Sie diesen Befehl aus:
-                um weitere Gegenstände hinzuzufügen muss eine verbindung mit dem Server hergestellt werden.
-                um dies zu tun, vergewissern sie sich, dass sie die Benötigten SSH Keys besitzen.
-                zum Verbinden, öffnen sie das Terminal und führen sie diesen Befehl aus:
-                </p>
-            </h4>
+      <div class="how-to-content">
+        <h4>
+          <p>
+            Um weitere Gegenstände hinzuzufügen muss eine Verbindung mit dem
+            Server hergestellt werden. Um dies zu tun, vergewissern Sie sich,
+            dass Sie die benötigten SSH Keys besitzen. Zum Verbinden öffnen Sie
+            das Terminal und führen Sie diesen Befehl aus: um weitere
+            Gegenstände hinzuzufügen muss eine verbindung mit dem Server
+            hergestellt werden. um dies zu tun, vergewissern sie sich, dass sie
+            die Benötigten SSH Keys besitzen. zum Verbinden, öffnen sie das
+            Terminal und führen sie diesen Befehl aus:
+          </p>
+        </h4>
 
-            <div class="code-block">
-                <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
-                <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
-            </div>
-
-            <h4>
-                <p>Wenn dies getan ist, können Sie Ihren Browser öffnen und auf die Seite
-                    <a href="http://localhost" target="_blank">http://localhost</a> navigieren.
-                </p>
-            </h4>
+        <div class="code-block">
+          <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
+          <code
+            >ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N
+            maintain@10.1.200.8 -p 222</code
+          >
         </div>
+
+        <h4>
+          <p>
+            Wenn dies getan ist, können Sie Ihren Browser öffnen und auf die
+            Seite
+            <a href="http://localhost" target="_blank">http://localhost</a>
+            navigieren.
+          </p>
+        </h4>
+      </div>
     </div>
 
     <script>
-        // Copy Button Logik
-        document.querySelectorAll('.code-block').forEach(block => {
-            const btn = block.querySelector('.copy-btn');
-            const code = block.querySelector('code');
-            if (!btn || !code) return;
+      // Copy Button Logik
+      document.querySelectorAll(".code-block").forEach((block) => {
+        const btn = block.querySelector(".copy-btn");
+        const code = block.querySelector("code");
+        if (!btn || !code) return;
 
-            btn.addEventListener('click', () => {
-                const text = code.innerText;
-                navigator.clipboard.writeText(text).then(() => {
-                    btn.textContent = '✓ Kopiert!';
-                    btn.classList.add('copied');
-                    setTimeout(() => {
-                        btn.textContent = 'Kopieren';
-                        btn.classList.remove('copied');
-                    }, 2000);
-                }).catch(() => {
-                    // Fallback fuer aeltere Browser
-                    const ta = document.createElement('textarea');
-                    ta.value = text;
-                    ta.style.position = 'fixed';
-                    ta.style.opacity = '0';
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    btn.textContent = '✓ Kopiert!';
-                    btn.classList.add('copied');
-                    setTimeout(() => {
-                        btn.textContent = 'Kopieren';
-                        btn.classList.remove('copied');
-                    }, 2000);
-                });
+        btn.addEventListener("click", () => {
+          const text = code.innerText;
+          navigator.clipboard
+            .writeText(text)
+            .then(() => {
+              btn.textContent = "✓ Kopiert!";
+              btn.classList.add("copied");
+              setTimeout(() => {
+                btn.textContent = "Kopieren";
+                btn.classList.remove("copied");
+              }, 2000);
+            })
+            .catch(() => {
+              // Fallback fuer aeltere Browser
+              const ta = document.createElement("textarea");
+              ta.value = text;
+              ta.style.position = "fixed";
+              ta.style.opacity = "0";
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand("copy");
+              document.body.removeChild(ta);
+              btn.textContent = "✓ Kopiert!";
+              btn.classList.add("copied");
+              setTimeout(() => {
+                btn.textContent = "Kopieren";
+                btn.classList.remove("copied");
+              }, 2000);
             });
         });
+      });
     </script>
-</body>
+  </body>
 </html>
-
-

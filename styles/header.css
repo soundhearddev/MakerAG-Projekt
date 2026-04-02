@@ -7,17 +7,16 @@
   opacity: 0.8;
 }
 
+/* Pipes-Modus: Titel abdunkeln damit Pipes gut sichtbar bleiben */
+.head.pipes-over-title .title h1 {
+  opacity: 0.35;
+  animation: none;
+  transition: opacity 0.4s ease;
+}
 
-    /* Pipes-Modus: Titel abdunkeln damit Pipes gut sichtbar bleiben */
-    .head.pipes-over-title .title h1 {
-      opacity: 0.35;
-      animation: none;
-      transition: opacity 0.4s ease;
-    }
-
-    .head:not(.pipes-over-title) .title h1 {
-      transition: opacity 0.4s ease;
-    }
+.head:not(.pipes-over-title) .title h1 {
+  transition: opacity 0.4s ease;
+}
 /* Header */
 .site-header {
   position: relative;
@@ -30,7 +29,13 @@
 .head {
   position: relative;
   width: 100%;
-  background: linear-gradient(135deg, var(--cat-extra) 0%, var(--cat-primary) 40%, var(--cat-primary) 70%, var(--cat-extra) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--cat-extra) 0%,
+    var(--cat-primary) 40%,
+    var(--cat-primary) 70%,
+    var(--cat-extra) 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +57,7 @@
 }
 
 .title h1 {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 900;
   font-size: clamp(3rem, 15vw, 10rem);
   line-height: 1.1;
@@ -63,11 +68,6 @@
   letter-spacing: 0.08em;
   animation: pulse-glow 3s ease-in-out infinite;
 }
-
-
-
-
-
 
 /* 
 Seltsame sache: 
@@ -80,7 +80,6 @@ dann spawnen neue pipes richtig um neuen unterem canvas. Das habe ich erst spät
   .head {
     /*min-height: 300px;*/
     padding: 3rem 1rem;
-    
   }
 
   .title h1 {
@@ -96,8 +95,6 @@ dann spawnen neue pipes richtig um neuen unterem canvas. Das habe ich erst spät
   .blob {
     opacity: 0.8;
   }
-
-
 }
 
 @media (max-width: 480px) {
@@ -105,7 +102,7 @@ dann spawnen neue pipes richtig um neuen unterem canvas. Das habe ich erst spät
     padding: 2rem 1rem;
   }
 
-  .blob:nth-child(n+6) {
+  .blob:nth-child(n + 6) {
     display: none;
   }
 }
