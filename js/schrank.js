@@ -34,13 +34,6 @@ function buildWalls(floor, wallH = 100) {
 }
 
 // ── Generiert vom MakerAG Editor ──────────────────────────────────────
-// Diesen Block in makerAG-lager-v2.html einfügen:
-// ROOMS und OBJECTS ersetzen.
-
-// ── Generiert vom MakerAG Editor ──────────────────────────────────────
-// Diesen Block in makerAG-lager-v2.html einfügen:
-// ROOMS und OBJECTS ersetzen.
-
 const ROOMS = [
   {
     id: 'raum-1',
@@ -49,7 +42,7 @@ const ROOMS = [
     row: 2,
     spanCols: 5,
     spanRows: 3,
-    wallH: 100,
+    wallH: 50,
   },
   {
     id: 'raum-2',
@@ -58,7 +51,7 @@ const ROOMS = [
     row: 0,
     spanCols: 3,
     spanRows: 24,
-    wallH: 100,
+    wallH: 50,
   },
   {
     id: 'raum-3',
@@ -67,7 +60,7 @@ const ROOMS = [
     row: 0,
     spanCols: 6,
     spanRows: 4,
-    wallH: 100,
+    wallH: 50,
   },
   {
     id: 'raum-4',
@@ -76,7 +69,7 @@ const ROOMS = [
     row: 4,
     spanCols: 6,
     spanRows: 6,
-    wallH: 100,
+    wallH: 50,
   },
   {
     id: 'raum-5',
@@ -85,7 +78,7 @@ const ROOMS = [
     row: 10,
     spanCols: 6,
     spanRows: 8,
-    wallH: 100,
+    wallH: 50,
   },
 ];
 
@@ -139,7 +132,7 @@ const OBJECTS = [
     link: '/search.html?searchFor=Locker&query=A',
   },
   {
-    id: 'NEU-06', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '5', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 10, gridRow: 12,
     zIndex: 2,
     cat: 'Allgemein', loc: 'U24',
@@ -147,7 +140,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-07', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '6', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 10, gridRow: 13,
     zIndex: 1,
     cat: 'Allgemein', loc: 'U24',
@@ -155,7 +148,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-08', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '7', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 14, gridRow: 1,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -163,7 +156,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-09', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '8', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 13, gridRow: 1,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -171,7 +164,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-10', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '9', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 12, gridRow: 1,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -179,7 +172,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-11', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '10', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 11, gridRow: 1,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -187,7 +180,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-12', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '11', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 10, gridRow: 1,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -195,7 +188,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-13', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '12', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 14, gridRow: 4,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -203,7 +196,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-14', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '13', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 13, gridRow: 4,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -211,7 +204,7 @@ const OBJECTS = [
     link: null,
   },
   {
-    id: 'NEU-15', name: 'Neues Objekt', type: 'cabinet-green',
+    id: '14', name: 'Neues Objekt', type: 'cabinet-green',
     gridCol: 12, gridRow: 4,
     zIndex: 0,
     cat: 'Allgemein', loc: 'U26',
@@ -235,7 +228,7 @@ const OBJECT_TYPES = {
     shelfLines: [],    // keine Regallinien
   },
   'cabinet-brown': {
-    w: 30, h: 96, d: 16,
+    w: 26, h: 76, d: 14,
     color: {
       top: '#8a5530',
       front: '#5a3620',
@@ -243,7 +236,6 @@ const OBJECT_TYPES = {
       label: '#c8a415',
       handle: '#c8a415',
     },
-    shelfLines: [0.33, 0.66],   // 2 Regalböden bei 33% und 66% der Höhe
   },
   'room': {
     w: 90, h: 28, d: 60,
@@ -425,7 +417,6 @@ tooltipEl.innerHTML = `
   <div class="tt-name" id="tt-name"></div>
   <div class="tt-row"><span>Kategorie</span><span id="tt-cat"></span></div>
   <div class="tt-row"><span>Standort</span><span id="tt-loc"></span></div>
-  <div class="tt-row"><span>Artikel</span><span id="tt-items"></span></div>
   <div class="tt-bar"><div class="tt-bar-fill" id="tt-bar" style="width:0%"></div></div>
   <div class="tt-cap"  id="tt-cap"></div>
   <div class="tt-hint" id="tt-hint"></div>
@@ -437,7 +428,6 @@ const ttId = tooltipEl.querySelector('#tt-id');
 const ttName = tooltipEl.querySelector('#tt-name');
 const ttCat = tooltipEl.querySelector('#tt-cat');
 const ttLoc = tooltipEl.querySelector('#tt-loc');
-const ttItems = tooltipEl.querySelector('#tt-items');
 const ttBar = tooltipEl.querySelector('#tt-bar');
 const ttCap = tooltipEl.querySelector('#tt-cap');
 const ttHint = tooltipEl.querySelector('#tt-hint');
@@ -456,7 +446,6 @@ document.getElementById('isomap').addEventListener('mousemove', e => {
   ttName.textContent = obj.name;
   ttCat.textContent = obj.cat ?? '—';
   ttLoc.textContent = obj.loc ?? '—';
-  ttItems.textContent = hasFill ? `${obj.items} / ${obj.cap}` : '—';
   ttBar.style.width = hasFill ? fillPct + '%' : '0%';
   ttCap.textContent = hasFill ? `${fillPct}% belegt` : '';
   ttHint.textContent = obj.link ? 'Klicken um zu öffnen →' : '';

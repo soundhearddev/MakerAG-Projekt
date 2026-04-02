@@ -1,90 +1,57 @@
 <?php
-
 /**
- * API Endpoint: edit-state.php
- * Ändert den Status eines Items (z.B. "Verfügbar", "Defekt", "Ausgeliehen")
- *
- * POST { id: 17, status: "Defekt" }
+ * edit-state.php
+ * POST { id: 17, status: "defekt" }
  */
 
 require_once __DIR__ . '/init.php';
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-// ── Nur POST erlauben ─────────────────────────────────────────────────────────
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendError('Nur POST erlaubt', 405);
-    exit;
 }
 
-// ── Rate Limiting (10 Requests pro Minute pro IP) ─────────────────────────────
-$ip       = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-$rateKey  = 'rate_edit_state_' . md5($ip);
-$maxReqs  = 10;
-$window   = 60; // Sekunden
-
-// Session-basiertes Rate Limiting (kein Redis nötig)
+// Rate Limiting
 if (session_status() === PHP_SESSION_NONE) session_start();
-$now = time();
 
-if (!isset($_SESSION[$rateKey])) {
+$ip      = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$rateKey = 'rate_edit_state_' . md5($ip);
+$now     = time();
+
+if (!isset($_SESSION[$rateKey]) || $now - $_SESSION[$rateKey]['start'] > 60) {
     $_SESSION[$rateKey] = ['count' => 0, 'start' => $now];
 }
 
-if ($now - $_SESSION[$rateKey]['start'] > $window) {
-    // Fenster zurücksetzen
-    $_SESSION[$rateKey] = ['count' => 0, 'start' => $now];
-}
-
-$_SESSION[$rateKey]['count']++;
-
-if ($_SESSION[$rateKey]['count'] > $maxReqs) {
+if (++$_SESSION[$rateKey]['count'] > 10) {
     sendError('Zu viele Anfragen. Bitte warten.', 429);
-    exit;
 }
 
-// ── Input lesen (JSON Body) ───────────────────────────────────────────────────
-$body = json_decode(file_get_contents('php://input'), true);
+// Input
+$body   = json_decode(file_get_contents('php://input'), true);
+$id     = isset($body['id'])     ? (int) $body['id']                                  : 0;
+$status = isset($body['status']) ? mb_substr(trim($body['status']), 0, 100, 'UTF-8')  : '';
 
-$id     = isset($body['id'])     ? (int) $body['id']                              : 0;
-$status = isset($body['status']) ? mb_substr(trim($body['status']), 0, 100, 'UTF-8') : '';
+if ($id <= 0) sendError('Ungültige ID', 400);
 
-// ── Validierung ───────────────────────────────────────────────────────────────
-if ($id <= 0) {
-    sendError('Ungültige ID', 400);
-    exit;
-}
-
-// Whitelist erlaubter Status-Werte
-$allowedStatus = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
-
-if (!in_array($status, $allowedStatus, true)) {
+$allowed = ['verfügbar', 'ausgeliehen', 'defekt', 'verschollen', 'entsorgt'];
+if (!in_array($status, $allowed, true)) {
     sendError('Ungültiger Status: ' . $status, 400);
-    exit;
 }
 
-// ── Prüfen ob Item existiert ──────────────────────────────────────────────────
+// DB
 try {
-
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
     $check = $db->prepare("SELECT id FROM items WHERE id = ? LIMIT 1");
     $check->bind_param('i', $id);
     $check->execute();
-    if ($check->get_result()->num_rows === 0) {
-        sendError('Item nicht gefunden', 404);
-        exit;
-    }
+    if ($check->get_result()->num_rows === 0) sendError('Item nicht gefunden', 404);
 
-    // ── Update ────────────────────────────────────────────────────────────────
     $stmt = $db->prepare("UPDATE items SET status = ?, updated_at = NOW() WHERE id = ?");
     $stmt->bind_param('si', $status, $id);
     $stmt->execute();
 
-    if ($stmt->affected_rows === 0) {
-        sendSuccess(['message' => 'Status bereits gesetzt', 'id' => $id, 'status' => $status]);
-    } else {
-        sendSuccess(['message' => 'Status aktualisiert', 'id' => $id, 'status' => $status]);
-    }
-} catch (Throwable $e) {  // Throwable statt Exception fängt ALLES
-    sendError($e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(), 500);
+    sendSuccess(['id' => $id, 'status' => $status]);
+
+} catch (Throwable $e) {
+    sendError($e->getMessage(), 500);
 }

@@ -6,8 +6,7 @@
   /* ===== KONFIGURATION ===== */
 
   // diese Key wird benutzt um die Einstellungen im localStorage zu speichern. Alle Daten werden als JSON-String unter diesem Key abgelegt.
-  // eigentlich sollte man diesen villeicht verschlüsseln oder so, damit nicht jeder der die Seite benutzt einfach die Einstellungen von anderen Leuten sehen und ändern kann, aber da es hier eh nur um ein paar Farben und so geht, ist das denke ich kein großes Problem. Ich meine es wird nie wirlcih sensible Daten gespeichert wie passowort, benutzername, oder email, weil es das man ja nicht braucht so... warum bräuchte man ein login für so eine seite?
-  const SETTINGS_KEY = "SIGMA_SIGMA_SIGMA";
+  const SETTINGS_KEY = "Settings-Obj";
   const BG_PATTERN_KEY = "bg_pattern_settings";
 
   const DEFAULT_SETTINGS = {
@@ -20,6 +19,7 @@
     themePreviewMode: true,
     golMode: false,
     debugMode: false,
+    pipesOnClick: false,
   };
 
   /* ===== STATE ===== */
@@ -38,7 +38,6 @@
     }
   }
 
-
   /* ===== THEME SYSTEM===== */
   function getThemeFromCSS(themeName) {
     const rootStyles = getComputedStyle(document.documentElement);
@@ -55,7 +54,7 @@
 
     // wenn das theme nicht existiert ist primary leer → fallback zu "default"
     if (!theme.primary) {
-      const fallbackTheme = getThemeFromCSS('default');
+      const fallbackTheme = getThemeFromCSS("default");
       return fallbackTheme;
     }
 
@@ -84,7 +83,7 @@
     window.dispatchEvent(
       new CustomEvent("themeChanged", {
         detail: { theme: themeName, colors: theme },
-      })
+      }),
     );
   }
 
@@ -97,7 +96,7 @@
       opt.classList.toggle("active", opt.dataset.theme === themeName);
     });
 
-    // wenn preview-mode aktiv ist → theme sofort anwenden. 
+    // wenn preview-mode aktiv ist → theme sofort anwenden.
     if (settings.themePreviewMode) {
       applyTheme(themeName);
     }
@@ -134,7 +133,6 @@
       console.error("Fehler beim sofortigen Theme-Laden:", e);
     }
   })();
-
 
   /* ===== INITIALISIERUNG ===== */
   function init() {
@@ -272,6 +270,14 @@
         if (settings.debugMode) log("Debug-Modus aktiviert", settings);
       });
     }
+
+    const pipesOnClickEl = document.getElementById("pipes-on-click");
+    if (pipesOnClickEl) {
+      pipesOnClickEl.addEventListener("change", (e) => {
+        settings.pipesOnClick = e.target.checked;
+        log("pipesOnClick geändert:", settings.pipesOnClick);
+      });
+    }
   }
 
   /* ===== NAVIGATION ===== */
@@ -307,7 +313,7 @@
         const closeBtn = modal.querySelector(".close-modal");
         if (closeBtn) closeBtn.focus();
       },
-      menuCheckbox && menuCheckbox.checked ? 400 : 0
+      menuCheckbox && menuCheckbox.checked ? 400 : 0,
     );
 
     log("Modal geöffnet:", type);
@@ -346,7 +352,7 @@
     document.querySelectorAll(".tab-content").forEach((content) => {
       content.classList.toggle(
         "active",
-        content.dataset.tabContent === tabName
+        content.dataset.tabContent === tabName,
       );
     });
 
@@ -405,7 +411,8 @@
 
     if (inputs.animations) inputs.animations.checked = settings.animations;
     if (inputs.compactMode) inputs.compactMode.checked = settings.compactMode;
-    if (inputs.themePreviewMode) inputs.themePreviewMode.checked = settings.themePreviewMode;
+    if (inputs.themePreviewMode)
+      inputs.themePreviewMode.checked = settings.themePreviewMode;
     if (inputs.golMode) inputs.golMode.checked = settings.golMode;
     if (inputs.debugMode) inputs.debugMode.checked = settings.debugMode;
 
@@ -414,6 +421,9 @@
 
     document.body.style.fontSize = `${settings.fontSize}px`;
     document.body.classList.toggle("no-animations", !settings.animations);
+
+    const pipesOnClickEl = document.getElementById("pipes-on-click");
+    if (pipesOnClickEl) pipesOnClickEl.checked = settings.pipesOnClick;
 
     log("Alle Einstellungen angewendet");
   }
@@ -749,12 +759,18 @@
           log(`${response.data.count} Background Patterns geladen`);
           this.renderPatternList(response.data.patterns);
         } else {
-          console.warn("Keine Background Patterns verfügbar:", response.error || "Unbekannter Fehler");
+          console.warn(
+            "Keine Background Patterns verfügbar:",
+            response.error || "Unbekannter Fehler",
+          );
           this.renderPatternList([]);
         }
       } catch (err) {
         // wenn das backend nicht erreichbar ist → leere liste, kein crash
-        console.warn("Background Patterns Backend nicht verfügbar:", err.message);
+        console.warn(
+          "Background Patterns Backend nicht verfügbar:",
+          err.message,
+        );
         this.renderPatternList([]);
       }
     },
@@ -846,7 +862,8 @@
       if (!preview) return;
 
       if (!this.settings.pattern) {
-        preview.innerHTML = '<span class="preview-placeholder">Wähle ein Muster aus</span>';
+        preview.innerHTML =
+          '<span class="preview-placeholder">Wähle ein Muster aus</span>';
         preview.style.backgroundImage = "";
         return;
       }
@@ -856,7 +873,6 @@
       preview.style.backgroundSize = `${this.settings.size}px`;
       preview.style.backgroundRepeat = this.settings.repeat;
     },
-
   };
 
   setTimeout(() => {
@@ -865,6 +881,3 @@
 
   window.BackgroundPatterns = BackgroundPatterns;
 })();
-
-
-

@@ -8,13 +8,6 @@
   <link
     rel="stylesheet">
   <style>
-    :root {
-      --bg: var(--cat-primary);
-      --surface: var(--cat-secondary);
-      --border: var(--cat-accent);
-      --text: var(--cat-text);
-      --muted: var(--cat-text);
-    }
 
     .schrank {
       transform: rotate(90deg);
@@ -25,8 +18,8 @@
 
     .tooltip {
       position: fixed;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--cat-secondary);
+      border: 1px solid var(--cat-accent);
       border-radius: 10px;
       padding: 14px 18px;
       pointer-events: none;
@@ -67,13 +60,13 @@
     }
 
     .tt-row span:last-child {
-      color: var(--text);
+      color: var(--cat-text);
       font-weight: 500;
     }
 
     .tt-bar {
       height: 3px;
-      background: var(--border);
+      background: var(--cat-accent);
       border-radius: 2px;
       margin-top: 10px;
       overflow: hidden;
@@ -90,7 +83,7 @@
 
     .tt-hint {
       font-size: 10px;
-      color: var(--muted);
+      color: var(--cat-text);
       margin-top: 10px;
       letter-spacing: 0.04em;
     }
@@ -131,7 +124,6 @@
   <div class="map-wrap">
     <svg id="isomap" viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- Isometrisches Gittermuster für den Hallenboden -->
         <pattern id="grid" width="58" height="33" patternUnits="userSpaceOnUse">
           <path d="M0 16.5 L29 0 L58 16.5 L29 33 Z" fill="none" stroke="#ddd8d0" stroke-width="0.5" />
         </pattern>
@@ -144,20 +136,6 @@
   <div class="tooltip" id="tooltip">
   </div>
 
-
-
-
-
-
-  <script>
-    document.addEventListener('pointermove', e => {
-      const dbg = document.getElementById('dbg');
-      if (dbg) dbg.textContent = `clientX:${e.clientX} clientY:${e.clientY} innerW:${window.innerWidth} innerH:${window.innerHeight}`;
-    });
-  </script>
-  <div id="dbg"
-    style="position:fixed;top:8px;left:8px;color:rgb(253, 253, 253);font-size:12px;padding:4px 8px;z-index:9999;">
-  </div>
   <script src="/js/schrank.js"></script>
 
 </body>

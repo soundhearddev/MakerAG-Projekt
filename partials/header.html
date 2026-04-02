@@ -173,8 +173,14 @@
         lastFrame = performance.now();
       }
 
-      maker.addEventListener("click", startPipes);
-
+      maker.addEventListener("click", () => {
+        const pipesEnabled = JSON.parse(localStorage.getItem("Settings-Obj") || "{}").pipesOnClick;
+        if (pipesEnabled) {
+          startPipes();
+        } else {
+          window.location.href = "/";
+        }
+      });
       // ---- Loop -------------------------------------------------
       function loop(ts) {
         if (running && ts - lastFrame > CONFIG.SPEED) {
