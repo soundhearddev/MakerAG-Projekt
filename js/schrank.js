@@ -476,7 +476,7 @@ const roomFragments = ROOMS.map((room) => {
     <polygon points="${pts(wallR)}" fill="#bab6a9" stroke="#a8a49a" stroke-width="1"/>
     <polygon points="${pts(floor)}" fill="#e8e4db" stroke="#c8c4ba" stroke-width="1.5"/>
     <polygon points="${pts(floor)}" fill="url(#grid)" opacity="0.6"/>
-    <text x="${lx}" y="${ly}"
+    <text x="${lx}" y="${ly + 4}"
 	font-size="15" font-weight="600" fill="black"
       letter-spacing="0.12em" text-anchor="middle">${room.label}</text>`;
 });
