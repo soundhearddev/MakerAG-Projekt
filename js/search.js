@@ -186,16 +186,26 @@ async function searchItems(query) {
     return;
   }
 
-  tbody.innerHTML = `
-    <tr class="loading-row">
-      <td colspan="12">
-        <div class="loading-message">
-          <div class="spinner"></div>
-          <span>Lade Daten...</span>
-        </div>
-      </td>
-    </tr>
-  `;
+  function renderSkeleton() {
+    const rows = Array.from(
+      { length: 8 },
+      () => `
+    <tr class="skeleton-row">
+      <td><div class="skeleton-cell w-sm"></div></td>
+      <td><div class="skeleton-cell w-sq"></div></td>
+      <td><div class="skeleton-cell w-xl"></div></td>
+      <td><div class="skeleton-cell w-md"></div></td>
+      <td><div class="skeleton-cell w-md"></div></td>
+      <td><div class="skeleton-cell w-lg"></div></td>
+      <td><div class="skeleton-cell w-sm"></div></td>
+      <td><div class="skeleton-cell w-md"></div></td>
+      <td><div class="skeleton-cell w-sm"></div></td>
+    </tr>`,
+    ).join("");
+    return rows;
+  }
+
+  tbody.innerHTML = renderSkeleton();
 
   try {
     const params = new URLSearchParams({
@@ -247,6 +257,8 @@ async function searchItems(query) {
     // log.success(`${response.count} Ergebnisse gefunden`);
 
     updateSearchInfo(response.count, query);
+    renderFilterChips();
+
     renderTable(data, query);
   } catch (err) {
     log.error("Suchfehler", err);
@@ -300,18 +312,27 @@ function updateSearchInfo(count, query) {
   info.classList.remove("hidden");
 }
 
+function renderQuantityBadge(qty) {
+  const n = parseInt(qty);
+  if (isNaN(n)) return '<span class="no-docs">—</span>';
+  const cls = n === 0 ? "qty-zero" : n <= 2 ? "qty-low" : "qty-ok";
+  return `<span class="qty-badge ${cls}">${n}</span>`;
+}
+
+function renderCategoryBadge(name, query) {
+  if (!name) return '<span class="no-docs">—</span>';
+  return `<span class="cat-badge">${highlightText(name, query)}</span>`;
+}
+
 function renderTable(data, query) {
   const tbody = document.querySelector("#resultsTable tbody");
-  if (!tbody) {
-    log.error("Tabellen-Body nicht gefunden");
-    return;
-  }
+  if (!tbody) return;
 
   tbody.innerHTML = "";
 
   if (!data || data.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="12" class="no-results">Keine Ergebnisse gefunden</td></tr>';
+      '<tr><td colspan="9" class="no-results">Keine Ergebnisse gefunden</td></tr>';
     return;
   }
 
@@ -319,15 +340,17 @@ function renderTable(data, query) {
 
   data.forEach((item, index) => {
     const row = document.createElement("tr");
-
-    // hier wird dann das wegählte such nach angewanht als markeiretes ding gemacht
     row.dataset.itemId = item.id;
+
     const isExactIdMatch =
       query !== "" && String(item.id) === String(query).trim();
-    if (isExactIdMatch) {
-      row.classList.add("exact-match");
-    }
-    // Feldname-Mapping: searchFor-Wert → item-Feldname
+    if (isExactIdMatch) row.classList.add("exact-match");
+
+    // Zeile klickbar machen
+    row.addEventListener("click", () => {
+      window.location.href = `/docs/${item.id}/index.html`;
+    });
+
     const SEARCH_FOR_FIELD_MAP = {
       ID: "id",
       Name: "name",
@@ -339,24 +362,23 @@ function renderTable(data, query) {
       Raum: "room",
     };
 
-    // Nur das gesuchte Feld markieren, Rest plain
-    function resolveQuery(field, query) {
-      if (!state.searchFor) return query; // kein Filter → alle Felder markieren
-      const targetField = SEARCH_FOR_FIELD_MAP[state.searchFor];
-      return targetField === field ? query : "";
+    function resolveQuery(field) {
+      if (!state.searchFor) return query;
+      return SEARCH_FOR_FIELD_MAP[state.searchFor] === field ? query : "";
     }
 
     row.innerHTML = `
-  <td class="item-id">${escapeHtml(item.id)}</td>
-  <td>${renderThumbnail(item.thumbnail, item.id)}</td>
-  <td>${renderCell(item.name, "name", index, resolveQuery("name", query))}</td>
-  <td>${renderCell(item.category_name, "category_name", index, resolveQuery("category_name", query))}</td>
-  <td>${renderCell(item.brand, "brand", index, resolveQuery("brand", query))}</td>
-  <td>${renderCell(item.model, "model", index, resolveQuery("model", query))}</td>
-  <td>${renderCell(item.quantity, "quantity", index, resolveQuery("quantity", query))}</td>
-  <td>${renderCell(item.locker, "locker", index, resolveQuery("locker", query))}</td>
-  <td>${renderCell(item.notes, "notes", index, resolveQuery("notes", query), true)}</td>
-`;
+      <td class="item-id">${escapeHtml(item.id)}</td>
+      <td>${renderThumbnail(item.thumbnail, item.id)}</td>
+      <td>${highlightText(item.name, resolveQuery("name"))}</td>
+      <td>${renderCategoryBadge(item.category_name, resolveQuery("category_name"))}</td>
+      <td>${highlightText(item.brand, resolveQuery("brand"))}</td>
+      <td>${highlightText(item.model, resolveQuery("model"))}</td>
+      <td>${renderQuantityBadge(item.quantity)}</td>
+      <td>${highlightText(item.locker, resolveQuery("locker"))}${item.room ? ` <span style="opacity:0.5;font-size:0.75rem">(${escapeHtml(item.room)})</span>` : ""}</td>
+      <td>${renderDocsLink(item.id)}</td>
+    `;
+
     fragment.appendChild(row);
   });
 
@@ -381,22 +403,50 @@ function renderThumbnail(path, itemId) {
               onerror="this.src='/images/uhhhh.jpg'">`;
 }
 
-function renderDocsLink(path, itemId) {
-  if (!path) return '<span class="no-docs">-</span>';
-  return `<a href="${escapeHtml(path)}"
+function renderDocsLink(itemId) {
+  return `<a href="/docs/${itemId}/index.html"
              target="_blank"
              rel="noopener noreferrer"
              class="docs-link"
-             title="Dokumentation für Item ${itemId}">DOCS</a>`;
+             onclick="event.stopPropagation()">DOCS</a>`;
 }
 
-function renderEditableDocsLink(path, index) {
-  const escapedPath = escapeHtml(path || "");
-  return `<span class="cell"
-                data-row="${index}"
-                data-field="docs_link"
-                contenteditable="false"
-                tabindex="0">${escapedPath}</span>`;
+function renderFilterChips(query) {
+  let container = document.getElementById("filterChips");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "filterChips";
+    container.className = "filter-chips";
+    const searchInfo = document.getElementById("searchInfo");
+    searchInfo?.parentNode.insertBefore(container, searchInfo);
+  }
+
+  container.innerHTML = "";
+
+  if (state.searchFor) {
+    const chip = document.createElement("span");
+    chip.className = "filter-chip";
+    chip.innerHTML = `Feld: <strong>${escapeHtml(state.searchFor)}</strong>
+      <button class="filter-chip-remove" title="Filter entfernen">✕</button>`;
+    chip.querySelector("button").addEventListener("click", () => {
+      state.searchFor = "";
+      document.getElementById("searchFor").value = "";
+      searchItems(state.currentQuery);
+    });
+    container.appendChild(chip);
+  }
+
+  if (state.categoryId > 0) {
+    const chip = document.createElement("span");
+    chip.className = "filter-chip";
+    chip.innerHTML = `Kategorie-Filter aktiv
+      <button class="filter-chip-remove" title="Filter entfernen">✕</button>`;
+    chip.querySelector("button").addEventListener("click", () => {
+      state.categoryId = 0;
+      searchItems(state.currentQuery);
+    });
+    container.appendChild(chip);
+  }
 }
 
 // =============================================================================

@@ -1,18 +1,11 @@
 /* ==============================================
-   BACKGROUND
-============================================== */
-body {
-  background-size: 4%;
-}
-
-/* ==============================================
    SEARCH HEADER
 ============================================== */
 .search-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -28,82 +21,90 @@ body {
    SEARCH BAR & CONTROLS
 ============================================== */
 .search-bar {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .search-input-wrapper {
-  max-width: 96rem;
   position: relative;
   margin-bottom: 1rem;
 }
 
 #searchInput {
   width: 100%;
-  padding: 1rem 3rem 1rem 1rem;
+  padding: 0.9rem 3rem 0.9rem 1rem;
   font-size: 1rem;
   border: 2px solid var(--cat-extra);
   background: var(--cat-primary);
   color: var(--cat-text);
   font-family: "Montserrat", sans-serif;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 #searchInput:focus {
-  outline: none;
   border-color: var(--cat-accent);
-  box-shadow: 0 0 0 3px rgba(141, 169, 196, 0.1);
+  box-shadow: 0 0 0 3px rgba(251, 243, 209, 0.08);
 }
 
 #searchInput::placeholder {
   color: var(--cat-text);
-  opacity: 0.5;
+  opacity: 0.35;
 }
 
 .btn-clear {
   position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 15px;
+  top: 20%;
   background: transparent;
   border: none;
   color: var(--cat-text);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
-  padding: 0.5rem;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
+  padding: 0.4rem;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+  line-height: 1;
 }
 
 .btn-clear:hover {
   opacity: 1;
   transform: translateY(-50%);
+  background: transparent;
 }
 
+/* ==============================================
+   SEARCH OPTIONS
+============================================== */
 .search-options {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .option-group {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .option-group label {
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--cat-text);
+  opacity: 0.6;
+  white-space: nowrap;
 }
 
 .option-group select {
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--cat-extra);
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--cat-extra);
   background: var(--cat-primary);
   color: var(--cat-text);
   font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease;
 }
 
 .option-group select:focus {
@@ -112,15 +113,55 @@ body {
 }
 
 /* ==============================================
-   SEARCH INFO
+   ACTIVE FILTER CHIPS
+============================================== */
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  background: var(--cat-extra);
+  border: 1px solid var(--cat-accent);
+  color: var(--cat-text);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.filter-chip-remove {
+  background: none;
+  border: none;
+  color: var(--cat-text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  opacity: 0.6;
+  line-height: 1;
+  transition: opacity 0.15s;
+}
+
+.filter-chip-remove:hover {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==============================================
+   SEARCH INFO BAR
 ============================================== */
 .search-info {
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   background: var(--cat-extra);
   margin-bottom: 1rem;
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
+  font-size: 0.85rem;
 }
 
 #resultCount {
@@ -130,126 +171,312 @@ body {
 
 #searchQuery {
   font-style: italic;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 /* ==============================================
-   TABLE
+   TABLE WRAPPER
 ============================================== */
 .table-wrapper {
   overflow-x: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   background: var(--cat-secondary);
+  font-size: 0.88rem;
 }
 
+/* ==============================================
+   TABLE HEAD
+============================================== */
 thead {
   background: var(--cat-extra);
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 10;
 }
 
 th {
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   text-align: left;
   font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--cat-text);
+  opacity: 0.7;
   border-bottom: 2px solid var(--cat-accent);
-
   white-space: nowrap;
 }
 
 th[data-sort] {
   cursor: pointer;
   user-select: none;
-  transition: background 0.3s ease;
 }
 
 th[data-sort]:hover {
+  opacity: 1;
   background: var(--cat-primary);
 }
 
+th[data-sort]::after {
+  content: " ↕";
+  opacity: 0.3;
+  font-size: 0.7rem;
+}
+
+th[data-sort].sort-asc::after {
+  content: " ↑";
+  opacity: 0.8;
+}
+
+th[data-sort].sort-desc::after {
+  content: " ↓";
+  opacity: 0.8;
+}
+
+/* ==============================================
+   TABLE BODY
+============================================== */
 td {
-  padding: 0.75rem 1rem;
-  border-bottom: 2px solid var(--cat-extra);
-  border-left: 1px solid var(--cat-extra);
-  border-right: 1px solid var(--cat-extra);
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--cat-extra);
   color: var(--cat-text);
   vertical-align: middle;
 }
 
-tr:hover {
+tbody tr {
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: var(--cat-extra);
+}
+
+tbody tr:hover td {
+  color: var(--cat-text);
+}
+
+/* Zebra striping */
+tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--cat-secondary) 85%, var(--cat-extra));
+}
+
+tbody tr:nth-child(even):hover {
   background: var(--cat-extra);
 }
 
 /* ==============================================
-   DOCS LINK (SPEZIFISCH FÜR TABELLE)
+   EXACT MATCH ROW
 ============================================== */
-.docs-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.4rem 0.8rem;
-  background: var(--cat-accent);
-  color: var(--cat-primary) !important;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.docs-link:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-color: var(--cat-text);
-}
-
-.no-docs {
-  color: var(--cat-text);
-  opacity: 0.4;
-}
-
-/* ==============================================
-   LOADING STATES
-============================================== */
-.loading-row td {
-  text-align: center;
-  padding: 3rem;
-}
-
-tr.exact-match td {
-  color: var(--cat-primary);
-  font-size: 2rem;
-  font-weight: 600;
-}
-
 tr.exact-match {
   background-color: var(--cat-accent) !important;
-  color: var(--cat-primary) !important;
   outline: 2px solid var(--cat-extra);
   outline-offset: -2px;
 }
 
 tr.exact-match td {
   background-color: var(--cat-accent) !important;
+  color: var(--cat-primary) !important;
   font-weight: 600;
 }
 
 tr.exact-match td.item-id {
-  color: var(--cat-primary) !important;
+  font-size: 1.4rem;
   font-weight: 700;
+  color: var(--cat-primary) !important;
 }
 
-tr.exact-match td.item-id {
-  font-size: 2.5rem;
+/* ==============================================
+   ITEM ID
+============================================== */
+td.item-id {
   font-weight: 700;
+  font-size: 0.8rem;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
 }
+
+/* ==============================================
+   QUANTITY BADGE
+============================================== */
+.qty-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.qty-ok {
+  background: rgba(30, 100, 50, 0.25);
+  color: #7ecf90;
+  border: 1px solid rgba(126, 207, 144, 0.3);
+}
+
+.qty-low {
+  background: rgba(120, 80, 0, 0.25);
+  color: #f5c26b;
+  border: 1px solid rgba(245, 194, 107, 0.3);
+}
+
+.qty-zero {
+  background: rgba(100, 20, 20, 0.25);
+  color: #f08080;
+  border: 1px solid rgba(240, 128, 128, 0.3);
+}
+
+/* ==============================================
+   CATEGORY BADGE
+============================================== */
+.cat-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--cat-primary);
+  color: var(--cat-text);
+  opacity: 0.9;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  white-space: nowrap;
+}
+
+/* ==============================================
+   THUMBNAIL
+============================================== */
+.thumbnail {
+  max-width: 52px;
+  max-height: 52px;
+  width: auto;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border: none;
+  transition: transform 0.2s ease, z-index 0s;
+}
+
+.thumbnail:hover {
+  transform: scale(3.5);
+  z-index: 100;
+  position: relative;
+  border-color: var(--cat-accent);
+}
+
+/* ==============================================
+   DOCS LINK BUTTON
+============================================== */
+.docs-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  background: transparent;
+  color: var(--cat-accent) !important;
+  border: 1px solid var(--cat-accent);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.docs-link:hover {
+  background: var(--cat-accent);
+  color: var(--cat-primary) !important;
+  transform: none;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.no-docs {
+  color: var(--cat-text);
+  opacity: 0.2;
+}
+
+/* ==============================================
+   SKELETON LOADING
+============================================== */
+.skeleton-row td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--cat-extra);
+}
+
+.skeleton-cell {
+  height: 14px;
+  background: linear-gradient(
+    90deg,
+    var(--cat-extra) 25%,
+    color-mix(in srgb, var(--cat-extra) 60%, var(--cat-secondary)) 50%,
+    var(--cat-extra) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+.skeleton-cell.w-sm  { width: 40px; }
+.skeleton-cell.w-md  { width: 80px; }
+.skeleton-cell.w-lg  { width: 140px; }
+.skeleton-cell.w-xl  { width: 200px; }
+.skeleton-cell.w-sq  { width: 40px; height: 40px; }
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==============================================
+   EMPTY / ERROR STATES
+============================================== */
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--cat-text);
+  opacity: 0.4;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ==============================================
+   TOAST NOTIFICATIONS
+============================================== */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 0.65rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--cat-text);
+  background: var(--cat-secondary);
+  border-left: 3px solid var(--cat-extra);
+  opacity: 0;
+  transform: translateX(1rem);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: auto;
+  max-width: 320px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast-success { border-left-color: #7ecf90; }
+.toast-warning { border-left-color: #f5c26b; }
+.toast-error   { border-left-color: #f08080; }
+.toast-info    { border-left-color: var(--cat-accent); }
 
 /* ==============================================
    RESPONSIVE
@@ -271,38 +498,20 @@ tr.exact-match td.item-id {
 
   .option-group {
     width: 100%;
+    justify-content: space-between;
   }
 
   .option-group select {
     flex: 1;
   }
 
-  table {
-    font-size: 0.85rem;
-  }
-
-  th,
-  td {
-    padding: 0.5rem;
-  }
-
-  .editor-actions {
-    flex-direction: column;
-  }
-
-  .btn-save,
-  .btn-cancel {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .change-counter {
-    margin-left: 0;
+  th, td {
+    padding: 0.5rem 0.65rem;
   }
 
   .docs-link {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
   }
 }
 
@@ -313,11 +522,10 @@ tr.exact-match td.item-id {
   }
 
   table {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
   }
 
-  th,
-  td {
-    padding: 0.4rem;
+  th, td {
+    padding: 0.4rem 0.5rem;
   }
 }

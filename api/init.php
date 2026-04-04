@@ -274,8 +274,11 @@ function enrichItem(array $item): array
 
     if (!empty($item['location_id'])) {
         $stmt = $db->prepare(
-            "SELECT room, schrank, regal, position FROM locations WHERE id = ?"
-        );
+        "SELECT r.name AS room, l.schrank, l.regal, l.position
+        FROM locations l
+        LEFT JOIN rooms r ON r.id = l.room_id
+        WHERE l.id = ?"
+         );
         $stmt->bind_param('i', $item['location_id']);
         $stmt->execute();
         $loc = $stmt->get_result()->fetch_assoc();

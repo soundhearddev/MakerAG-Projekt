@@ -271,7 +271,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       loadHTML("header", "/partials/header.html"),
       loadHTML("nav", "/partials/nav.html"),
       loadHTML("settings", "/partials/settings.html"),
-      loadHTML("map", "/partials/map.html", false),
+      document.getElementById("map")
+        ? loadHTML("map", "/partials/map.html", false)
+        : Promise.resolve(),
     ]);
 
     // Kurze Verzögerung für Animation

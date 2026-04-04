@@ -47,7 +47,7 @@ $searchForMap = [
     'Marke'        => 'i.brand',
     'Modell'       => 'i.model',
     'Locker'       => 'l.schrank',
-    'Raum'         => 'l.room',  
+    'Raum'         => 'r.name',  
 ];
 $searchForRaw = getStringParam('searchFor', '');
 // isset() prüft ob der Key existiert. Wenn nicht → null (Vollsuche)
@@ -60,11 +60,12 @@ try {
     if ($query === '') {
         // ── Kein Suchbegriff ──────────────────────────────────────────────────
         $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
-                       l.room, l.schrank AS locker, l.regal AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.regal AS shelf, l.position
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
-                LEFT JOIN locations l ON l.id = i.location_id
+                LEFT JOIN locations l ON l.id = i.location_id   
+                LEFT JOIN rooms r ON r.id = l.room_id
                 WHERE 1=1 {$categoryWhere}
                 ORDER BY i.`{$sortField}` {$sortOrder}
                 LIMIT ?";
@@ -78,11 +79,12 @@ try {
     } elseif ($searchForCol !== null) {
         // ── Nur ein bestimmtes Feld durchsuchen ───────────────────────────────
         $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                       l.room, l.schrank AS locker, l.regal AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.regal AS shelf, l.position
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
                 LEFT JOIN locations l ON l.id = i.location_id
+                LEFT JOIN rooms r ON r.id = l.room_id
                 WHERE {$searchForCol} LIKE CONCAT('%', ?, '%') {$categoryWhere}
                 ORDER BY i.`{$sortField}` {$sortOrder}
                 LIMIT ?";
@@ -96,11 +98,12 @@ try {
     } else {
         // ── Vollsuche über ALLE Felder ────────────────────────────────────────
         $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                       l.room, l.schrank AS locker, l.regal AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.regal AS shelf, l.position
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
                 LEFT JOIN locations l ON l.id = i.location_id
+                LEFT JOIN rooms r ON r.id = l.room_id
                 LEFT JOIN specs s ON s.item_id = i.id
                 LEFT JOIN item_tags it ON it.item_id = i.id
                 LEFT JOIN tags t ON t.id = it.tag_id
@@ -114,7 +117,7 @@ try {
                     c.name              LIKE CONCAT('%', ?, '%') OR
                     l.schrank           LIKE CONCAT('%', ?, '%') OR
                     l.regal             LIKE CONCAT('%', ?, '%') OR
-                    l.room              LIKE CONCAT('%', ?, '%') OR
+                    r.name              LIKE CONCAT('%', ?, '%') OR
                     s.value             LIKE CONCAT('%', ?, '%') OR
                     t.name              LIKE CONCAT('%', ?, '%')
                 ) {$categoryWhere}

@@ -54,8 +54,8 @@
 
     // wenn das theme nicht existiert ist primary leer → fallback zu "default"
     if (!theme.primary) {
-      const fallbackTheme = getThemeFromCSS("default");
-      return fallbackTheme;
+      if (themeName === "default") return theme; // ← Rekursion stoppen
+      return getThemeFromCSS("default");
     }
 
     return theme;
@@ -108,29 +108,57 @@
   // Das hat so mittelmßig funktioniert. Persönlich habe ich nie ein unterschied bemerkt.
   (function immediateThemeLoad() {
     try {
-      const saved = localStorage.getItem(SETTINGS_KEY);
+      const saved = localStorage.getItem("Settings-Obj");
+      if (!saved) return;
 
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      const theme = parsed.theme || "default";
 
-        if (parsed.theme) {
-          const theme = getThemeFromCSS(parsed.theme);
-          const root = document.documentElement;
+      const themes = {
+        default: {
+          primary: "#1a1a1a",
+          secondary: "#202020",
+          accent: "#fbf3d1",
+          text: "#bebebe",
+          extra: "#484655",
+        },
+        hell: {
+          primary: "#ffffff",
+          secondary: "#f7f7f8",
+          accent: "#5a5a5a",
+          text: "#000000",
+          extra: "#d7e4fa",
+        },
+        water: {
+          primary: "#062346",
+          secondary: "#0e233f",
+          accent: "#305577",
+          text: "#f4f2ed",
+          extra: "#173791",
+        },
+        green: {
+          primary: "#3b5347",
+          secondary: "#4a6755",
+          accent: "#90ab8b",
+          text: "#ffdbca",
+          extra: "#6b8a7a",
+        },
+        redmoon: {
+          primary: "#0e0e0e",
+          secondary: "#100806",
+          accent: "#640000",
+          text: "#f5e6e8",
+          extra: "#2f0101",
+        },
+      };
 
-          root.style.setProperty("--cat-primary", theme.primary);
-          root.style.setProperty("--cat-secondary", theme.secondary);
-          root.style.setProperty("--cat-accent", theme.accent);
-          root.style.setProperty("--cat-text", theme.text);
-          root.style.setProperty("--cat-extra", theme.extra);
-
-          document.body.setAttribute("data-theme", parsed.theme);
-          root.setAttribute("data-theme", parsed.theme);
-
-          console.log("Theme sofort geladen:", parsed.theme);
-        }
-      }
+      const t = themes[theme] || themes.default;
+      const s = document.createElement("style");
+      s.id = "theme-preload";
+      s.textContent = `:root{--cat-primary:${t.primary};--cat-secondary:${t.secondary};--cat-accent:${t.accent};--cat-text:${t.text};--cat-extra:${t.extra}}`;
+      document.head.appendChild(s);
     } catch (e) {
-      console.error("Fehler beim sofortigen Theme-Laden:", e);
+      /* silent */
     }
   })();
 
