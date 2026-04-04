@@ -70,8 +70,9 @@ try {
     //
     // LEFT JOIN = auch Items ohne Kategorie/Location kommen in die Ergebnisse
     // (INNER JOIN würde Items ohne Location komplett rausfiltern)
+    
     $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
-                   l.room, l.schrank AS locker, l.regal AS shelf, l.position
+                   l.room_id, l.schrank AS locker, l.regal AS shelf, l.position
             FROM items i
             LEFT JOIN categories c ON c.id = i.category_id
             LEFT JOIN categories p ON p.id = c.parent_id

@@ -20,10 +20,10 @@ try {
                 l.schrank AS locker,
                 COUNT(i.id) AS item_count,
                 GROUP_CONCAT(DISTINCT l.regal ORDER BY l.regal ASC SEPARATOR ',') AS shelves,
-                l.room
+                l.room_id
              FROM locations l
              LEFT JOIN items i ON i.location_id = l.id
-             GROUP BY l.schrank, l.room
+             GROUP BY l.schrank, l.room_id
              ORDER BY l.schrank ASC"
         );
         $lockers = $result->fetch_all(MYSQLI_ASSOC);
@@ -40,7 +40,7 @@ try {
             "SELECT i.*, 
                     c.name AS category_name, 
                     p.name AS parent_category,
-                    l.room, 
+                    l.room_id, 
                     l.schrank AS locker, 
                     l.regal AS shelf, 
                     l.position

@@ -20,6 +20,7 @@
     golMode: false,
     debugMode: false,
     pipesOnClick: false,
+    vimMode: true,
   };
 
   /* ===== STATE ===== */
@@ -78,7 +79,7 @@
 
     log("Theme angewendet:", themeName);
 
-    // custom Event feuern damit andere JS-Dateien (z.B. GoL, Background) mitbekommen, dass sich das theme geändert hat, ohne dass sie sich direkt kennen müssen
+    // custom Event feuern damit andere JS-Dateien (z.B. GoL) mitbekommen, dass sich das theme geändert hat, ohne dass sie sich direkt kennen müssen
     // JavaScript Events sind damit eine super flexible Möglichkeit zur Kommunikation zwischen verschiedenen Teilen der Anwendung, ohne dass sie direkt voneinander abhängig sind
     window.dispatchEvent(
       new CustomEvent("themeChanged", {
@@ -103,64 +104,6 @@
 
     log("Theme ausgewählt:", themeName);
   }
-
-  // IIFE (immediately invoked function expression) läuft sofort beim Script-Load, noch bevor das DOM fertig ist. Ziel: theme schon setzen bevor init() läuft, damit kein sichtbares Flackern zum default-theme entsteht.
-  // Das hat so mittelmßig funktioniert. Persönlich habe ich nie ein unterschied bemerkt.
-  (function immediateThemeLoad() {
-    try {
-      const saved = localStorage.getItem("Settings-Obj");
-      if (!saved) return;
-
-      const parsed = JSON.parse(saved);
-      const theme = parsed.theme || "default";
-
-      const themes = {
-        default: {
-          primary: "#1a1a1a",
-          secondary: "#202020",
-          accent: "#fbf3d1",
-          text: "#bebebe",
-          extra: "#484655",
-        },
-        hell: {
-          primary: "#ffffff",
-          secondary: "#f7f7f8",
-          accent: "#5a5a5a",
-          text: "#000000",
-          extra: "#d7e4fa",
-        },
-        water: {
-          primary: "#062346",
-          secondary: "#0e233f",
-          accent: "#305577",
-          text: "#f4f2ed",
-          extra: "#173791",
-        },
-        green: {
-          primary: "#3b5347",
-          secondary: "#4a6755",
-          accent: "#90ab8b",
-          text: "#ffdbca",
-          extra: "#6b8a7a",
-        },
-        redmoon: {
-          primary: "#0e0e0e",
-          secondary: "#100806",
-          accent: "#640000",
-          text: "#f5e6e8",
-          extra: "#2f0101",
-        },
-      };
-
-      const t = themes[theme] || themes.default;
-      const s = document.createElement("style");
-      s.id = "theme-preload";
-      s.textContent = `:root{--cat-primary:${t.primary};--cat-secondary:${t.secondary};--cat-accent:${t.accent};--cat-text:${t.text};--cat-extra:${t.extra}}`;
-      document.head.appendChild(s);
-    } catch (e) {
-      /* silent */
-    }
-  })();
 
   /* ===== INITIALISIERUNG ===== */
   function init() {
@@ -308,6 +251,35 @@
     }
   }
 
+  const vimModeEl = document.getElementById("vim-mode");
+  if (vimModeEl) {
+    vimModeEl.addEventListener("change", (e) => {
+      settings.vimMode = e.target.checked;
+      applyVimMode(settings.vimMode);
+      log("Vim-Modus geändert:", settings.vimMode);
+    });
+  }
+
+  function applyVimMode(enabled) {
+    if (enabled) {
+      // VimBar laden falls noch nicht im DOM
+      if (typeof window.VimBar === "undefined") {
+        const s = document.createElement("script");
+        s.src = "vim-bar.js";
+        document.body.appendChild(s);
+      }
+      document.getElementById("vim-bar").style.display !== undefined &&
+        (document.getElementById("vim-bar").style.pointerEvents = "auto");
+      // Tastatur-Listener in vim-bar.js reagiert automatisch auf ":"
+      document.body.dataset.vimMode = "true";
+    } else {
+      document.body.dataset.vimMode = "false";
+      if (window.VimBar) window.VimBar.close();
+      const bar = document.getElementById("vim-bar");
+      if (bar) bar.style.display = "none";
+    }
+  }
+
   /* ===== NAVIGATION ===== */
   function handleNavClick(e) {
     e.preventDefault();
@@ -369,6 +341,67 @@
     content.style.top = "50%";
     content.style.transform = "translate(-50%, -50%)";
     content.style.margin = "0";
+  }
+
+  function showModal(title, contentHTML) {
+    const c = {
+      primary: getComputedStyle(document.documentElement)
+        .getPropertyValue("--cat-primary")
+        .trim(),
+      accent: getComputedStyle(document.documentElement)
+        .getPropertyValue("--cat-accent")
+        .trim(),
+      text: getComputedStyle(document.documentElement)
+        .getPropertyValue("--cat-text")
+        .trim(),
+      extra: getComputedStyle(document.documentElement)
+        .getPropertyValue("--cat-extra")
+        .trim(),
+    };
+
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 99997;
+    display: flex; align-items: center; justify-content: center;
+  `;
+
+    const box = document.createElement("div");
+    box.style.cssText = `
+    background: ${c.primary};
+    border: 1px solid ${c.accent};
+    border-radius: 6px;
+    padding: 20px 24px;
+    min-width: 300px; max-width: 600px;
+    max-height: 70vh; overflow-y: auto;
+    color: ${c.text};
+    font-family: inherit;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  `;
+
+    box.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid ${c.extra}44; padding-bottom:10px;">
+      <strong style="color:${c.accent};">${title}</strong>
+      <span data-close style="cursor:pointer; color:${c.extra}; font-size:18px; line-height:1;">✕</span>
+    </div>
+    ${contentHTML}
+  `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    const close = () => overlay.remove();
+    box.querySelector("[data-close]").addEventListener("click", close);
+    overlay.addEventListener("mousedown", (e) => {
+      if (e.target === overlay) close();
+    });
+    document.addEventListener("keydown", function esc(e) {
+      if (e.key === "Escape") {
+        close();
+        document.removeEventListener("keydown", esc);
+      }
+    });
   }
 
   /* ===== TAB SYSTEM ===== */
@@ -679,6 +712,29 @@
     }, 3000);
   }
 
+  function applyVimMode(enabled) {
+    if (enabled) {
+      // Nur laden wenn noch nicht vorhanden
+      if (!window.VimBar) {
+        const s1 = document.createElement("script");
+        s1.src = "/js/vim-commands.js";
+        s1.onload = () => {
+          // erst wenn vim-commands.js fertig ist → vim-bar.js laden
+          const s2 = document.createElement("script");
+          s2.src = "/js/vim-bar.js";
+          document.body.appendChild(s2);
+        };
+        document.body.appendChild(s1);
+      }
+      document.body.dataset.vimMode = "true";
+    } else {
+      document.body.dataset.vimMode = "false";
+      if (window.VimBar) window.VimBar.close();
+      const bar = document.getElementById("vim-bar");
+      if (bar) bar.style.display = "none";
+    }
+  }
+
   /* ===== AUTO-SAVE ===== */
   // alle 60 sekunden speichern wenn autoSave aktiv ist
   setInterval(() => {
@@ -707,205 +763,5 @@
 
   window.getThemeFromCSS = getThemeFromCSS;
   window.applyTheme = applyTheme;
-  window.handleThemeSelect = handleThemeSelect;
-
-  // =============================================================================
-  // BACKGROUND PATTERNS MODULE
-  // =============================================================================
-  const BackgroundPatterns = {
-    settings: {
-      enabled: false,
-      pattern: "",
-      size: 120,
-      repeat: "repeat",
-    },
-
-    init: async function () {
-      log("Background Patterns initialisieren...");
-
-      this.loadSettings();
-      await this.loadPatterns();
-      this.setupEventListeners();
-      this.applyPattern();
-
-      log("Background Patterns initialisiert");
-    },
-
-    loadSettings: function () {
-      const saved = localStorage.getItem(BG_PATTERN_KEY);
-      if (saved) {
-        try {
-          this.settings = JSON.parse(saved);
-          log("BG Pattern Settings geladen:", this.settings);
-        } catch (e) {
-          console.error("Fehler beim Laden der BG-Pattern-Settings:", e);
-        }
-      }
-
-      // timeout weil das DOM beim ersten aufruf manchmal noch nicht bereit ist
-      // (BackgroundPatterns.init() wird mit setTimeout(100) aufgerufen, aber loadSettings
-      // läuft sofort synchron – die inputs sind dann ggf. noch nicht im DOM)
-      setTimeout(() => {
-        const enabled = document.getElementById("bg-pattern-enabled");
-        const size = document.getElementById("bg-pattern-size");
-        const repeat = document.getElementById("bg-pattern-repeat");
-        const controls = document.getElementById("bg-pattern-controls");
-
-        if (enabled) enabled.checked = this.settings.enabled;
-
-        if (size) {
-          size.value = this.settings.size;
-          const valueSpan = size.nextElementSibling;
-          if (valueSpan) valueSpan.textContent = this.settings.size + "px";
-        }
-
-        if (repeat) repeat.value = this.settings.repeat;
-
-        if (controls) {
-          controls.style.display = this.settings.enabled ? "block" : "none";
-        }
-      }, 100);
-    },
-
-    saveSettings: function () {
-      localStorage.setItem(BG_PATTERN_KEY, JSON.stringify(this.settings));
-      log("BG Pattern Settings gespeichert");
-    },
-
-    loadPatterns: async function () {
-      try {
-        // patterns werden vom server geholt (PHP backend gibt JSON zurück)
-        const res = await fetch("/api/background.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "action=list",
-        });
-
-        const response = await res.json();
-
-        if (response.success && response.data && response.data.patterns) {
-          log(`${response.data.count} Background Patterns geladen`);
-          this.renderPatternList(response.data.patterns);
-        } else {
-          console.warn(
-            "Keine Background Patterns verfügbar:",
-            response.error || "Unbekannter Fehler",
-          );
-          this.renderPatternList([]);
-        }
-      } catch (err) {
-        // wenn das backend nicht erreichbar ist → leere liste, kein crash
-        console.warn(
-          "Background Patterns Backend nicht verfügbar:",
-          err.message,
-        );
-        this.renderPatternList([]);
-      }
-    },
-
-    renderPatternList: function (patterns) {
-      const select = document.getElementById("bg-pattern-select");
-      if (!select) return;
-
-      // dropdown neu aufbauen
-      select.innerHTML = '<option value="">-- Kein Muster --</option>';
-
-      patterns.forEach((pattern) => {
-        const option = document.createElement("option");
-        option.value = pattern.path;
-        option.textContent = pattern.name;
-        // gespeichertes pattern direkt vorauswählen
-        if (pattern.path === this.settings.pattern) {
-          option.selected = true;
-        }
-        select.appendChild(option);
-      });
-    },
-
-    setupEventListeners: function () {
-      const enabled = document.getElementById("bg-pattern-enabled");
-      const select = document.getElementById("bg-pattern-select");
-      const size = document.getElementById("bg-pattern-size");
-      const repeat = document.getElementById("bg-pattern-repeat");
-      const controls = document.getElementById("bg-pattern-controls");
-
-      if (enabled) {
-        enabled.addEventListener("change", (e) => {
-          this.settings.enabled = e.target.checked;
-          if (controls) {
-            controls.style.display = e.target.checked ? "block" : "none";
-          }
-          this.applyPattern();
-          this.saveSettings();
-        });
-      }
-
-      if (select) {
-        select.addEventListener("change", (e) => {
-          this.settings.pattern = e.target.value;
-          this.applyPattern();
-          this.updatePreview();
-          this.saveSettings();
-        });
-      }
-
-      if (size) {
-        size.addEventListener("input", (e) => {
-          this.settings.size = parseInt(e.target.value);
-          const valueSpan = e.target.nextElementSibling;
-          if (valueSpan) valueSpan.textContent = this.settings.size + "px";
-          this.applyPattern();
-          this.updatePreview();
-          this.saveSettings();
-        });
-      }
-
-      if (repeat) {
-        repeat.addEventListener("change", (e) => {
-          this.settings.repeat = e.target.value;
-          this.applyPattern();
-          this.updatePreview();
-          this.saveSettings();
-        });
-      }
-    },
-
-    applyPattern: function () {
-      // wenn deaktiviert oder kein pattern gewählt → background entfernen
-      if (!this.settings.enabled || !this.settings.pattern) {
-        document.body.style.backgroundImage = "";
-        return;
-      }
-
-      document.body.style.backgroundImage = `url("${this.settings.pattern}")`;
-      document.body.style.backgroundSize = `${this.settings.size}px`;
-      document.body.style.backgroundRepeat = this.settings.repeat;
-      document.body.style.backgroundAttachment = "fixed"; // pattern scrollt nicht mit dem inhalt
-
-      log("Background Pattern angewendet:", this.settings.pattern);
-    },
-
-    updatePreview: function () {
-      const preview = document.getElementById("bg-pattern-preview");
-      if (!preview) return;
-
-      if (!this.settings.pattern) {
-        preview.innerHTML =
-          '<span class="preview-placeholder">Wähle ein Muster aus</span>';
-        preview.style.backgroundImage = "";
-        return;
-      }
-
-      preview.innerHTML = "";
-      preview.style.backgroundImage = `url("${this.settings.pattern}")`;
-      preview.style.backgroundSize = `${this.settings.size}px`;
-      preview.style.backgroundRepeat = this.settings.repeat;
-    },
-  };
-
-  setTimeout(() => {
-    BackgroundPatterns.init();
-  }, 100);
-
-  window.BackgroundPatterns = BackgroundPatterns;
+  window.showModal = showModal;
 })();

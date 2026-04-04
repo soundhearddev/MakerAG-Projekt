@@ -137,6 +137,24 @@
                   </label>
                 </div>
 
+
+
+                <div class="setting-item">
+                  <div class="setting-label">
+                    <label for="vim-mode" class="setting-title"
+                      >Vim-Modus</label
+                    >
+                    <span class="setting-description"
+                      >Aktiviere den Vim Modus für maximale effizientz</span
+                    >
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="vim-mode" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+
                 <div class="setting-item">
                   <div class="setting-label">
                     <label for="debug-mode" class="setting-title"
@@ -279,9 +297,6 @@
             <button class="tab-btn active" data-tab="theme">
               <span class="tab-text">Theme</span>
             </button>
-            <button class="tab-btn" data-tab="background">
-              <span class="tab-text">Hintergrund</span>
-            </button>
           </div>
 
           <div class="settings-body">
@@ -384,85 +399,7 @@
               </div>
             </div>
 
-            <!-- Tab: Background Patterns -->
-            <div class="tab-content" data-tab-content="background">
-              <h3 class="tab-heading">Hintergrundmuster</h3>
-
-              <div class="setting-group">
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label class="setting-title"
-                      >Hintergrundmuster aktivieren</label
-                    >
-                    <span class="setting-description"
-                      >Zeige ein SVG-Muster als Seitenhintergrund</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="bg-pattern-enabled" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div
-                  id="bg-pattern-controls"
-                  class="bg-pattern-controls"
-                  style="display: none"
-                >
-                  <div class="setting-item">
-                    <div class="setting-label">
-                      <label for="bg-pattern-select" class="setting-title"
-                        >Muster wählen</label
-                      >
-                      <span class="setting-description"
-                        >Wähle ein Hintergrundmuster</span
-                      >
-                    </div>
-                    <select id="bg-pattern-select" class="setting-input">
-                      <option value="">Lade Muster...</option>
-                    </select>
-                  </div>
-
-                  <div class="setting-item">
-                    <div class="setting-label">
-                      <label for="bg-pattern-size" class="setting-title"
-                        >Mustergröße</label
-                      >
-                      <span class="setting-description"
-                        >Anpassen der Musterwiederholung (20-400px)</span
-                      >
-                    </div>
-                    <div class="slider-container">
-                      <input
-                        type="range"
-                        id="bg-pattern-size"
-                        min="20"
-                        max="400"
-                        value="120"
-                        class="setting-slider"
-                      />
-                      <span class="slider-value">120px</span>
-                    </div>
-                  </div>
-
-                  <div class="setting-item">
-                    <div class="setting-label">
-                      <label class="setting-title">Vorschau</label>
-                      <span class="setting-description"
-                        >Live-Vorschau des ausgewählten Musters</span
-                      >
-                    </div>
-                    <div id="bg-pattern-preview" class="bg-pattern-preview">
-                      <span class="preview-placeholder"
-                        >Wähle ein Muster aus</span
-                      >
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+            
           <div class="settings-footer">
             <button class="btn-secondary" data-action="close">
               <span class="button-icon">←</span>

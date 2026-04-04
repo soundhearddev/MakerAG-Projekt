@@ -37,7 +37,7 @@ async function loadItemCount() {
     if (data.success) {
       state.totalCount = data.count;
       document.getElementById("item-count").textContent = data.count;
-      log.success("Item-Count geladen:", data.count);
+      // log.success("Item-Count geladen:", data.count);
     } else {
       throw new Error(data.message || "Unbekannter Fehler");
     }
@@ -77,7 +77,7 @@ async function loadLatestEntries() {
       return;
     }
 
-    log.success("Neueste Einträge geladen:", items.length);
+    //log.success("Neueste Einträge geladen:", items.length);
 
     // Render Items
     container.innerHTML = items
@@ -154,7 +154,7 @@ async function loadRandomItem() {
     }
 
     const item = response.data[0];
-    log.success("Zufälliges Item geladen:", item.name);
+    //log.success("Zufälliges Item geladen:", item.name);
 
     statusDiv.innerHTML = `
   <div class="random-item-result random-item-button">
@@ -265,7 +265,7 @@ async function loadCategories() {
 
     const categories = response.data || [];
 
-    log.success("Kategorien geladen:", categories.length);
+    //log.success("Kategorien geladen:", categories.length);
 
     // Render Kategorien
     const container = document.querySelector("#Kategorien .row");
@@ -296,11 +296,11 @@ async function loadCategories() {
 // INITIALISIERUNG
 // =============================================================================
 async function init() {
-  log.info("Initialisiere Startseite...");
+  //log.info("Initialisiere Startseite...");
 
   try {
     await Promise.all([loadItemCount(), loadCategories()]);
-    log.success("Startseite erfolgreich geladen");
+    //log.success("Startseite erfolgreich geladen");
   } catch (err) {
     log.error("Fehler bei der Initialisierung:", err);
   }
@@ -325,6 +325,6 @@ function formatDate(dateString) {
   });
 }
 
-log.info("index.js geladen - ID-basierte Pfade aktiv");
+// log.info("index.js geladen");
 
 window.scrollTo(0, 0);
