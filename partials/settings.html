@@ -1,405 +1,297 @@
 <!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Settings V3.0</title>
-    <link rel="stylesheet" href="/styles/settings.css" />
-    <link rel="stylesheet" href="/styles/themes.css" />
-  </head>
 
-  <body>
-    <!-- Settings Container -->
-    <div class="settings-container">
-      <!-- Settings Icon (Hamburger Menu) -->
-      <input
-        class="settings-icon"
-        type="checkbox"
-        id="settings-icon"
-        name="settings-icon"
-      />
-      <label for="settings-icon" aria-label="Einstellungen Menü"></label>
+<link rel="stylesheet" href="/styles/settings.css" />
+<link rel="stylesheet" href="/styles/themes.css" />
 
-      <!-- Settings Navigation (Fullscreen Menu) -->
-      <nav class="settings-nav">
-        <ul>
-          <li>
-            <a href="#" data-modal="settings" data-title="Einstellungen"
-              >Einstellungen</a
-            >
-          </li>
-          <li>
-            <a href="#" data-modal="themes" data-title="Themes">Themes</a>
-          </li>
-          <li><a href="#" data-modal="help" data-title="Hilfe">Hilfe</a></li>
-        </ul>
-      </nav>
+<body>
+  <!-- Settings Container -->
+  <div class="settings-container">
+    <!-- Settings Icon (Hamburger Menu) -->
+    <input class="settings-icon" type="checkbox" id="settings-icon" name="settings-icon" />
+    <label for="settings-icon" aria-label="Einstellungen Menü"></label>
 
-      <!-- MODAL 1: EINSTELLUNGEN -->
-      <div
-        id="modal-settings"
-        class="settings-modal"
-        data-modal-type="settings"
-      >
-        <div class="settings-modal-content">
-          <div class="settings-titlebar" data-drag-handle>
-            <span class="modal-title-text">Einstellungen</span>
-            <button class="close-modal" aria-label="Schließen">×</button>
-          </div>
+    <!-- Settings Navigation (Fullscreen Menu) -->
+    <nav class="settings-nav">
+      <ul>
+        <li>
+          <a href="#" data-modal="settings" data-title="Einstellungen">Einstellungen</a>
+        </li>
+        <li>
+          <a href="#" data-modal="themes" data-title="Themes">Themes</a>
+        </li>
+        <li><a href="#" data-modal="help" data-title="Hilfe">Hilfe</a></li>
+      </ul>
+    </nav>
 
-          <div class="tab-navigation">
-            <button class="tab-btn active" data-tab="general">
-              <span class="tab-text">Allgemein</span>
-            </button>
-            <button class="tab-btn" data-tab="advanced">
-              <span class="tab-text">Experimentell</span>
-            </button>
-          </div>
+    <!-- MODAL 1: EINSTELLUNGEN -->
+    <div id="modal-settings" class="settings-modal" data-modal-type="settings">
+      <div class="settings-modal-content">
+        <div class="settings-titlebar" data-drag-handle>
+          <span class="modal-title-text">Einstellungen</span>
+          <button class="close-modal" aria-label="Schließen">×</button>
+        </div>
 
-          <div class="settings-body">
-            <!-- Tab: Allgemein -->
-            <div class="tab-content active" data-tab-content="general">
-              <h3 class="tab-heading">Allgemeine Einstellungen</h3>
+        <div class="tab-navigation">
+          <button class="tab-btn active" data-tab="general">
+            <span class="tab-text">Allgemein</span>
+          </button>
+          <button class="tab-btn" data-tab="advanced">
+            <span class="tab-text">Experimentell</span>
+          </button>
+        </div>
 
-              <div class="setting-group">
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="language-select" class="setting-title"
-                      >Sprache</label
-                    >
-                    <span class="setting-description"
-                      >Wähle deine bevorzugte Sprache</span
-                    >
-                  </div>
-                  <select id="language-select" class="setting-input">
-                    <option value="de" selected>Deutsch</option>
-                    <option value="en">English</option>
-                  </select>
+        <div class="settings-body">
+          <!-- Tab: Allgemein -->
+          <div class="tab-content active" data-tab-content="general">
+            <h3 class="tab-heading">Allgemeine Einstellungen</h3>
+
+            <div class="setting-group">
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="language-select" class="setting-title">Sprache</label>
+                  <span class="setting-description">Wähle deine bevorzugte Sprache</span>
                 </div>
-
-                <div class="setting-group">
-                  <div class="setting-item">
-                    <div class="setting-label">
-                      <label for="font-size" class="setting-title"
-                        >Schriftgröße</label
-                      >
-                      <span class="setting-description"
-                        >Passe die Textgröße an (12-20px)</span
-                      >
-                    </div>
-
-                    <div class="slider-container">
-                      <input
-                        type="range"
-                        id="font-size"
-                        min="12"
-                        max="20"
-                        value="15"
-                        class="setting-slider"
-                      />
-                      <span class="slider-value">15px</span>
-                    </div>
-                  </div>
-                </div>
+                <select id="language-select" class="setting-input">
+                  <option value="de" selected>Deutsch</option>
+                  <option value="en">English</option>
+                </select>
               </div>
-            </div>
-
-            <!-- Tab: Experimentell -->
-            <div class="tab-content" data-tab-content="advanced">
-              <h3 class="tab-heading">Experimentelle Einstellungen</h3>
 
               <div class="setting-group">
                 <div class="setting-item">
                   <div class="setting-label">
-                    <label for="auto-save" class="setting-title"
-                      >Auto-Save</label
-                    >
-                    <span class="setting-description"
-                      >Automatisch speichern (alle 60 Sekunden)</span
-                    >
+                    <label for="font-size" class="setting-title">Schriftgröße</label>
+                    <span class="setting-description">Passe die Textgröße an (12-20px)</span>
                   </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="auto-save" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
 
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="golMode" class="setting-title"
-                      >Game of Life</label
-                    >
-                    <span class="setting-description">???</span>
+                  <div class="slider-container">
+                    <input type="range" id="font-size" min="12" max="20" value="15" class="setting-slider" />
+                    <span class="slider-value">15px</span>
                   </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="golMode" name="golMode" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="vim-mode" class="setting-title"
-                      >Vim-Modus</label
-                    >
-                    <span class="setting-description"
-                      >Aktiviere den Vim Modus für maximale effizientz</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="vim-mode" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="debug-mode" class="setting-title"
-                      >Debug-Modus</label
-                    >
-                    <span class="setting-description"
-                      >Zeige zusätzliche Informationen in der Konsole</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="debug-mode" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="fps-display" class="setting-title"
-                      >FPS anzeigen</label
-                    >
-                    <span class="setting-description"
-                      >zeige die Anzahl an Frames pro sekunde
-                    </span>
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="fps-display" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="pipes-on-click" class="setting-title"
-                      >Pipes aktivieren</label
-                    >
-                    <span class="setting-description"
-                      >Logo startet eine Pipes animation statt zur Startseite zu
-                      navigieren</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="pipes-on-click" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="REAL-mode" class="setting-title"
-                      >Titel in den Hintergrund</label
-                    >
-                    <span class="setting-description"
-                      >Setze den Titel in den Hintergrund</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="REAL-mode" />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="animations" class="setting-title"
-                      >Animationen</label
-                    >
-                    <span
-                      class="setting-description"
-                      style="color: red; font-size: 1.5rem"
-                      >FUNKTIONUNFÄHIG - Aktiviert lassen</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="animations" checked />
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label class="setting-title">Cache leeren</label>
-                    <span class="setting-description"
-                      >Lösche temporäre Daten und Session-Storage</span
-                    >
-                  </div>
-                  <button id="cache-clear" class="action-button">
-                    Cache löschen
-                  </button>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label class="setting-title">Daten exportieren</label>
-                    <span class="setting-description"
-                      >Exportiere deine Einstellungen als JSON-Datei</span
-                    >
-                  </div>
-                  <button id="export-settings" class="action-button">
-                    Exportieren
-                  </button>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label class="setting-title">Daten importieren</label>
-                    <span class="setting-description"
-                      >Importiere gespeicherte Einstellungen</span
-                    >
-                  </div>
-                  <button id="import-settings" class="action-button">
-                    Importieren
-                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="settings-footer">
-            <button class="btn-secondary" data-action="reset">
-              <span class="button-icon">↺</span>
-              Zurücksetzen
-            </button>
-            <button class="btn-primary" data-action="save">
-              <span class="button-icon">✓</span>
-              Speichern
-            </button>
+          <!-- Tab: Experimentell -->
+          <div class="tab-content" data-tab-content="advanced">
+            <h3 class="tab-heading">Experimentelle Einstellungen</h3>
+
+            <div class="setting-group">
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="auto-save" class="setting-title">Auto-Save</label>
+                  <span class="setting-description">Automatisch speichern (alle 60 Sekunden)</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="auto-save" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="golMode" class="setting-title">Game of Life</label>
+                  <span class="setting-description">???</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="golMode" name="golMode" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="vim-mode" class="setting-title">Vim-Modus</label>
+                  <span class="setting-description">Aktiviere den Vim Modus für maximale effizientz</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="vim-mode" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="debug-mode" class="setting-title">Debug-Modus</label>
+                  <span class="setting-description">Zeige zusätzliche Informationen in der Konsole</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="debug-mode" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="fps-display" class="setting-title">FPS anzeigen</label>
+                  <span class="setting-description">zeige die Anzahl an Frames pro sekunde
+                  </span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="fps-display" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="pipes-on-click" class="setting-title">Pipes aktivieren</label>
+                  <span class="setting-description">Logo startet eine Pipes animation statt zur Startseite zu
+                    navigieren</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="pipes-on-click" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="REAL-mode" class="setting-title">Titel in den Hintergrund</label>
+                  <span class="setting-description">Setze den Titel in den Hintergrund</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="REAL-mode" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="animations" class="setting-title">Animationen</label>
+                  <span class="setting-description" style="color: red; font-size: 1.5rem">FUNKTIONUNFÄHIG - Aktiviert
+                    lassen</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="animations" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label class="setting-title">Cache leeren</label>
+                  <span class="setting-description">Lösche temporäre Daten und Session-Storage</span>
+                </div>
+                <button id="cache-clear" class="action-button">
+                  Cache löschen
+                </button>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label class="setting-title">Daten exportieren</label>
+                  <span class="setting-description">Exportiere deine Einstellungen als JSON-Datei</span>
+                </div>
+                <button id="export-settings" class="action-button">
+                  Exportieren
+                </button>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label class="setting-title">Daten importieren</label>
+                  <span class="setting-description">Importiere gespeicherte Einstellungen</span>
+                </div>
+                <button id="import-settings" class="action-button">
+                  Importieren
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="settings-footer">
+          <button class="btn-secondary" data-action="reset">
+            <span class="button-icon">↺</span>
+            Zurücksetzen
+          </button>
+          <button class="btn-primary" data-action="save">
+            <span class="button-icon">✓</span>
+            Speichern
+          </button>
+        </div>
       </div>
+    </div>
 
-      <!-- MODAL 2: THEMES -->
-      <div id="modal-themes" class="settings-modal" data-modal-type="themes">
-        <div class="settings-modal-content">
-          <div class="settings-titlebar" data-drag-handle>
-            <span class="modal-title-text">Themes & Hintergrund</span>
-            <button class="close-modal" aria-label="Schließen">×</button>
-          </div>
+    <!-- MODAL 2: THEMES -->
+    <div id="modal-themes" class="settings-modal" data-modal-type="themes">
+      <div class="settings-modal-content">
+        <div class="settings-titlebar" data-drag-handle>
+          <span class="modal-title-text">Themes & Hintergrund</span>
+          <button class="close-modal" aria-label="Schließen">×</button>
+        </div>
 
-          <div class="tab-navigation">
-            <button class="tab-btn active" data-tab="theme">
-              <span class="tab-text">Theme</span>
-            </button>
-          </div>
+        <div class="tab-navigation">
+          <button class="tab-btn active" data-tab="theme">
+            <span class="tab-text">Theme</span>
+          </button>
+        </div>
 
-          <div class="settings-body">
-            <!-- Tab: Theme -->
-            <div class="tab-content active" data-tab-content="theme">
-              <h3 class="tab-heading">Theme Auswahl</h3>
+        <div class="settings-body">
+          <!-- Tab: Theme -->
+          <div class="tab-content active" data-tab-content="theme">
+            <h3 class="tab-heading">Theme Auswahl</h3>
 
-              <div class="setting-group">
-                <div class="setting-item theme-setting">
-                  <div class="setting-label">
-                    <label class="setting-title">Wähle dein Theme</label>
-                    <span class="setting-description"
-                      >Personalisiere das Aussehen der Anwendung</span
-                    >
-                  </div>
-                </div>
-
-                <div class="theme-selector">
-                  <div
-                    class="theme-option active"
-                    data-theme="default"
-                    title="Standard Theme"
-                  >
-                    <div
-                      class="theme-preview"
-                      style="
-                        background: linear-gradient(135deg, #1a1a1a, #bebebe);
-                      "
-                    ></div>
-                    <span class="theme-name">Standard</span>
-                  </div>
-                  <div
-                    class="theme-option"
-                    data-theme="hell"
-                    title="Hell Theme"
-                  >
-                    <div
-                      class="theme-preview"
-                      style="
-                        background: linear-gradient(135deg, #ffffff, #d7e4fa);
-                      "
-                    ></div>
-                    <span class="theme-name">Hell</span>
-                  </div>
-                  <div
-                    class="theme-option"
-                    data-theme="water"
-                    title="Water Theme"
-                  >
-                    <div
-                      class="theme-preview"
-                      style="
-                        background: linear-gradient(135deg, #062346, #173791);
-                      "
-                    ></div>
-                    <span class="theme-name">Water</span>
-                  </div>
-                  <div
-                    class="theme-option"
-                    data-theme="green"
-                    title="Green Theme"
-                  >
-                    <div
-                      class="theme-preview"
-                      style="
-                        background: linear-gradient(135deg, #3b5347, #4a6755);
-                      "
-                    ></div>
-                    <span class="theme-name">Green</span>
-                  </div>
-                  <div
-                    class="theme-option"
-                    data-theme="redmoon"
-                    title="Red Moon Theme"
-                  >
-                    <div
-                      class="theme-preview"
-                      style="
-                        background: linear-gradient(135deg, #0e0e0e, #640000);
-                      "
-                    ></div>
-                    <span class="theme-name">Red Moon</span>
-                  </div>
-                </div>
-
-                <div class="setting-item">
-                  <div class="setting-label">
-                    <label for="theme-preview-mode" class="setting-title"
-                      >Live-Vorschau</label
-                    >
-                    <span class="setting-description"
-                      >Theme sofort anwenden beim Auswählen</span
-                    >
-                  </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" id="theme-preview-mode" checked />
-                    <span class="toggle-slider"></span>
-                  </label>
+            <div class="setting-group">
+              <div class="setting-item theme-setting">
+                <div class="setting-label">
+                  <label class="setting-title">Wähle dein Theme</label>
+                  <span class="setting-description">Personalisiere das Aussehen der Anwendung</span>
                 </div>
               </div>
-            </div>
 
-            
+              <div class="theme-selector">
+                <div class="theme-option active" data-theme="default" title="Standard Theme">
+                  <div class="theme-preview" style="
+                        background: linear-gradient(135deg, #1a1a1a, #bebebe);
+                      "></div>
+                  <span class="theme-name">Standard</span>
+                </div>
+                <div class="theme-option" data-theme="hell" title="Hell Theme">
+                  <div class="theme-preview" style="
+                        background: linear-gradient(135deg, #ffffff, #d7e4fa);
+                      "></div>
+                  <span class="theme-name">Hell</span>
+                </div>
+                <div class="theme-option" data-theme="water" title="Water Theme">
+                  <div class="theme-preview" style="
+                        background: linear-gradient(135deg, #062346, #173791);
+                      "></div>
+                  <span class="theme-name">Water</span>
+                </div>
+                <div class="theme-option" data-theme="green" title="Green Theme">
+                  <div class="theme-preview" style="
+                        background: linear-gradient(135deg, #3b5347, #4a6755);
+                      "></div>
+                  <span class="theme-name">Green</span>
+                </div>
+                <div class="theme-option" data-theme="redmoon" title="Red Moon Theme">
+                  <div class="theme-preview" style="
+                        background: linear-gradient(135deg, #0e0e0e, #640000);
+                      "></div>
+                  <span class="theme-name">Red Moon</span>
+                </div>
+              </div>
+
+              <div class="setting-item">
+                <div class="setting-label">
+                  <label for="theme-preview-mode" class="setting-title">Live-Vorschau</label>
+                  <span class="setting-description">Theme sofort anwenden beim Auswählen</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="theme-preview-mode" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+
           <div class="settings-footer">
             <button class="btn-secondary" data-action="close">
               <span class="button-icon">←</span>
@@ -427,11 +319,7 @@
             <div class="help-section">
               <h4 class="help-section-title">Dokumentation</h4>
               <div class="docs-buttons">
-                <a
-                  class="action-button"
-                  href="/docs/1/Dokumentation.html"
-                  target="_blank"
-                >
+                <a class="action-button" href="/docs/1/Dokumentation.html" target="_blank">
                   Dokumentation öffnen
                 </a>
               </div>
@@ -441,25 +329,18 @@
               <p><strong>Version:</strong> 0.4.0</p>
               <p><strong>Letzte Aktualisierung:</strong> April 2026</p> <!-- Hardcoded :P-->
               <p>
-                <img
-                  src="/images/github.png"
-                  style="
+                <img src="/images/github.png" style="
                     max-height: 1rem;
                     max-width: 1rem;
                     filter: invert(100%);
-                  "
-                />
-                <a href="https://github.com/soundhearddev/MakerAG-Projekt"
-                  >GitHub
+                  " />
+                <a href="https://github.com/soundhearddev/MakerAG-Projekt">GitHub
                 </a>
-                <img
-                  src="/images/portfolio.png"
-                  style="
+                <img src="/images/portfolio.png" style="
                     max-height: 1rem;
                     max-width: 1rem;
                     filter: invert(100%);
-                  "
-                />
+                  " />
                 <a href="/portfolio/index.html" target="_blank">Über mich</a>
               </p>
             </div>
@@ -470,5 +351,6 @@
 
     <script type="module" src="/docs/RNG/overlay.js"></script>
     <script src="/js/settings.js"></script>
-  </body>
+</body>
+
 </html>

@@ -366,20 +366,20 @@ window.VimCommands = [
           `
           <table style="width:100%; border-collapse:collapse; font-family:monospace; font-size:13px;">
             ${[
-              ["Version", "0.4.0"],
-              ["Befehle", cmds],
-              ["Theme", theme],
-              ["Schriftgröße", fs],
-              ["Seite", window.location.pathname],
-            ]
-              .map(
-                ([k, v]) => `
+            ["Version", "0.4.0"],
+            ["Befehle", cmds],
+            ["Theme", theme],
+            ["Schriftgröße", fs],
+            ["Seite", window.location.pathname],
+          ]
+            .map(
+              ([k, v]) => `
               <tr>
                 <td style="padding:4px 12px 4px 0; opacity:0.55; white-space:nowrap;">${k}</td>
                 <td style="padding:4px 0; font-weight:500;">${v}</td>
               </tr>`,
-              )
-              .join("")}
+            )
+            .join("")}
           </table>
         `,
         );
@@ -658,7 +658,7 @@ window.VimCommands = [
 
   // ── Easter Eggs ───────────────────────────────────────────────────────────
   {
-    match: /^rm -rf \/$/,
+    match: /^!rm -rf \/$/,
     desc: "???",
     group: "Extras",
     run() {
@@ -673,8 +673,89 @@ Operation not permitted.
       );
     },
   },
+
+
+
+
+
   {
-    match: /^cowsay (.+)$/,
+    match: /^!fastfetch$/,
+    desc: ":fastfetch – System-Info im neofetch-Stil anzeigen",
+    group: "System",
+    run() {
+      if (typeof window.showModal !== "function") return;
+
+      const ua = navigator.userAgent;
+
+      // OS erkennen
+      let os = "Unknown";
+      let asciiKey = "unknown";
+      if (ua.includes("Windows NT 10.0")) { os = "Windows 10/11"; asciiKey = "windows"; }
+      else if (ua.includes("Windows")) { os = "Windows"; asciiKey = "windows"; }
+      else if (ua.includes("Mac OS X")) { os = "macOS"; asciiKey = "macos"; }
+      else if (ua.includes("Android")) { os = "Android"; asciiKey = "android"; }
+      else if (ua.includes("iPhone") || ua.includes("iPad")) { os = "iOS"; asciiKey = "ios"; }
+      else if (ua.includes("Linux")) { os = "Linux"; asciiKey = "linux"; }
+
+      // Browser erkennen
+      let browser = "Unknown";
+      if (ua.includes("Firefox")) browser = "Firefox";
+      else if (ua.includes("Edg")) browser = "Edge";
+      else if (ua.includes("OPR")) browser = "Opera";
+      else if (ua.includes("Chrome")) browser = "Chrome";
+      else if (ua.includes("Safari")) browser = "Safari";
+
+      const screen = `${window.screen.width}x${window.screen.height}`;
+      const viewport = `${window.innerWidth}x${window.innerHeight}`;
+      const dpr = window.devicePixelRatio || 1;
+      const lang = navigator.language || "–";
+      const cores = navigator.hardwareConcurrency || "–";
+      const touch = navigator.maxTouchPoints > 0 ? "Ja" : "Nein";
+      const memory = navigator.deviceMemory ? navigator.deviceMemory + " GB" : "–";
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "–";
+      const theme = document.body.getAttribute("data-theme") || "default";
+
+      const icons = {
+        windows: `/images/os/windows.png`,
+        macos: `/images/os/macos.png`,
+        linux: `/images/os/linux.png`,
+        android: `/images/os/android.svg`,
+        ios: `/images/os/ios.png`,
+        unknown: `/images/os/unknown.svg`,
+      };
+
+      const fields = [
+        ["OS", os],
+        ["Browser", browser],
+        ["Sprache", lang],
+        ["Zeitzone", tz],
+        ["Auflösung", screen],
+        ["Viewport", viewport],
+        ["DPR", dpr],
+        ["CPU Kerne", cores],
+        ["RAM", memory],
+        ["Touch", touch],
+        ["Theme", theme],
+      ];
+
+      const rows = fields.map(([k, v]) => `
+      <tr>
+        <td style="padding:2px 14px 2px 0; opacity:0.55; white-space:nowrap; font-weight:600;">${k}</td>
+        <td style="padding:2px 0;">${v}</td>
+      </tr>`).join("");
+
+      window.showModal("fastfetch", `
+      <div style="display:flex; gap:24px; align-items:flex-start; font-family:monospace; font-size:13px;">
+        <img src="${icons[asciiKey]}" style="width:250px; height:250px; object-fit:contain; flex-shrink:0;" />
+        <table style="border-collapse:collapse;">${rows}</table>
+      </div>
+    `);
+    },
+  },
+
+
+  {
+    match: /^!cowsay (.+)$/,
     desc: "???",
     group: "Extras",
     run(m) {
@@ -697,6 +778,9 @@ Operation not permitted.
     },
   },
 ];
+
+
+
 
 // ── Private Helfer ────────────────────────────────────────────────────────
 

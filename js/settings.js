@@ -252,6 +252,7 @@
   }
 
   const vimModeEl = document.getElementById("vim-mode");
+
   if (vimModeEl) {
     vimModeEl.addEventListener("change", (e) => {
       settings.vimMode = e.target.checked;
@@ -485,6 +486,14 @@
 
     const pipesOnClickEl = document.getElementById("pipes-on-click");
     if (pipesOnClickEl) pipesOnClickEl.checked = settings.pipesOnClick;
+
+
+
+
+    const vimModeEl = document.getElementById("vim-mode");
+    if (vimModeEl) vimModeEl.checked = settings.vimMode;
+    applyVimMode(settings.vimMode);
+
 
     log("Alle Einstellungen angewendet");
   }

@@ -84,30 +84,27 @@ async function loadLatestEntries() {
       .map(
         (item) => `
             <div class="latest-item-card">
-                ${
-                  item.thumbnail
-                    ? `<img src="${item.thumbnail}" alt="${item.name}" class="item-thumbnail">`
-                    : `<img src="/images/uhhhh.jpg" alt="Kein Bild" class="item-thumbnail placeholder">`
-                }
+                ${item.thumbnail
+            ? `<img src="${item.thumbnail}" alt="${item.name}" class="item-thumbnail">`
+            : `<img src="/images/uhhhh.jpg" alt="Kein Bild" class="item-thumbnail placeholder">`
+          }
                 <div class="item-info">
                     <h3>${item.name}</h3>
                     <p class="item-meta">
                         <span class="category">${item.category_name || "Keine Kategorie"}</span>
-                        ${
-                          item.brand
-                            ? `<span class="brand">${item.brand}</span>`
-                            : ""
-                        }
+                        ${item.brand
+            ? `<span class="brand">${item.brand}</span>`
+            : ""
+          }
                     </p>
                     <div class="item-actions">
-                        ${
-                          item.docs_link
-                            ? `<a href="${item.docs_link}" class="btn-docs" target="_blank">Docs</a>`
-                            : ""
-                        }
+                        ${item.docs_link
+            ? `<a href="${item.docs_link}" class="btn-docs" target="_blank">Docs</a>`
+            : ""
+          }
                         <a href="/search.html?query=${encodeURIComponent(
-                          item.name,
-                        )}" class="btn-search">Details</a>
+            item.name,
+          )}" class="btn-search">Details</a>
                     </div>
                 </div>
             </div>
@@ -158,47 +155,41 @@ async function loadRandomItem() {
 
     statusDiv.innerHTML = `
   <div class="random-item-result random-item-button">
-    ${
-      item.thumbnail
+    ${item.thumbnail
         ? `<img src="${item.thumbnail}" alt="${item.name}" class="random-thumbnail">`
         : `<img src="/images/uhhhh.jpg" alt="Kein Bild" class="random-thumbnail placeholder">`
-    }
+      }
                 <div class="random-item-details">
                     <h3>${item.name}</h3>
                     <div class="random-meta">
-                        ${
-                          item.category_name
-                            ? `<span class="badge">${item.category_name}</span>`
-                            : ""
-                        }
-                        ${
-                          item.brand
-                            ? `<span class="badge">${item.brand}</span>`
-                            : ""
-                        }
-                        ${
-                          item.model
-                            ? `<span class="badge">${item.model}</span>`
-                            : ""
-                        }
+                        ${item.category_name
+        ? `<span class="badge">${item.category_name}</span>`
+        : ""
+      }
+                        ${item.brand
+        ? `<span class="badge">${item.brand}</span>`
+        : ""
+      }
+                        ${item.model
+        ? `<span class="badge">${item.model}</span>`
+        : ""
+      }
                     </div>
-                    ${
-                      item.notes
-                        ? `<p class="random-notes">${item.notes.substring(
-                            0,
-                            150,
-                          )}${item.notes.length > 150 ? "..." : ""}</p>`
-                        : ""
-                    }
+                    ${item.notes
+        ? `<p class="random-notes">${item.notes.substring(
+          0,
+          150,
+        )}${item.notes.length > 150 ? "..." : ""}</p>`
+        : ""
+      }
                     <div class="random-actions">
-                        ${
-                          item.docs_link
-                            ? `<a href="${item.docs_link}" class="btn-docs random-item-button" target="_blank">Dokumentation</a>`
-                            : ""
-                        }
+                        ${item.docs_link
+        ? `<a href="${item.docs_link}" class="btn-docs random-item-button" target="_blank">Dokumentation</a>`
+        : ""
+      }
                         <a href="/search.html?query=${encodeURIComponent(
-                          item.name,
-                        )}" class="btn-details random-item-button">Alle Details</a>
+        item.name,
+      )}" class="btn-details random-item-button">Alle Details</a>
                     </div>
                 </div>
             </div>

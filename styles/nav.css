@@ -2,6 +2,8 @@
    NAVIGATION (Standard)
 ============================================== */
 nav {
+  justify-content: flex-start;
+
   display: flex;
   align-items: center;
   background-color: var(--cat-secondary);
@@ -26,4 +28,36 @@ nav a:hover,
 .nav-links a:hover {
   color: var(--cat-accent);
   text-decoration: underline;
+}
+
+#fps-counter {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  color: var(--cat-accent, #aaa);
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+  user-select: none;
+  min-width: 4.5ch;
+  text-align: right;
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* Farbe je nach FPS */
+#fps-counter.fps-good {
+  color: #4ecf7a;
+  opacity: 0.8;
+}
+
+#fps-counter.fps-medium {
+  color: #f0c040;
+  opacity: 0.8;
+}
+
+#fps-counter.fps-bad {
+  color: #e05050;
+  opacity: 0.8;
 }

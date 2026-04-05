@@ -1,5 +1,8 @@
+<!doctype html>
+
 <link rel="stylesheet" href="/styles/nav.css" />
 
+<body>
 <nav role="navigation" aria-label="Hauptnavigation">
   <a href="/index.html" class="nav-link">Startseite</a>
   <a href="/index.html#Kategorien" class="nav-link">Kategorien</a>
@@ -9,42 +12,6 @@
 
   <span id="fps-counter" title="Frames per Second">-- FPS</span>
 </nav>
-
-<style>
-  nav {
-    justify-content: flex-start;
-  }
-
-  #fps-counter {
-    margin-left: auto;
-    font-size: 0.75rem;
-    font-family: "Courier New", monospace;
-    font-weight: bold;
-    color: var(--cat-accent, #aaa);
-    opacity: 0.6;
-    letter-spacing: 0.05em;
-    user-select: none;
-    min-width: 4.5ch;
-    text-align: right;
-    transition:
-      color 0.3s ease,
-      opacity 0.3s ease;
-  }
-
-  /* Farbe je nach FPS */
-  #fps-counter.fps-good {
-    color: #4ecf7a;
-    opacity: 0.8;
-  }
-  #fps-counter.fps-medium {
-    color: #f0c040;
-    opacity: 0.8;
-  }
-  #fps-counter.fps-bad {
-    color: #e05050;
-    opacity: 0.8;
-  }
-</style>
 
 <script>
   (function () {
@@ -135,3 +102,4 @@
     fpsObserver.observe(document.body, { childList: true, subtree: true });
   })();
 </script>
+</body>
