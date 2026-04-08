@@ -1,366 +1,182 @@
+// ============================================================
+//  GITTER-EINSTELLUNGEN (Das Raster der Karte)
+// ============================================================
+
+// GRID = die Grundeinstellungen für das isometrische Raster.
+// Isometrisch bedeutet: Die Karte ist leicht schräg gekippt,
+// wie in klassischen Aufbau-Spielen (z.B. SimCity).
 const GRID = {
-  TILE_W: 58,
-  TILE_H: 33,
-  ORIGIN: [600, 50],
+  TILE_W: 58,         // Breite einer Kachel in Pixeln
+  TILE_H: 33,         // Höhe einer Kachel in Pixeln (halb so hoch wie breit → schräger Effekt)
+  ORIGIN: [600, 50],  // Startpunkt (x, y) der Karte auf dem Bildschirm
 };
 
+// ============================================================
+//  HILFSFUNKTION: Rasterposition → Bildschirmposition umrechnen
+// ============================================================
+
+// isoXY rechnet eine Rasterposition (col = Spalte, row = Zeile)
+// in echte Bildschirmkoordinaten um.
+// Das ist die Kerntransformation für die isometrische Ansicht.
 function isoXY(col, row) {
-  const [ox, oy] = GRID.ORIGIN;
-  const { TILE_W, TILE_H } = GRID;
+  const [ox, oy] = GRID.ORIGIN;        // Startpunkt auslesen
+  const { TILE_W, TILE_H } = GRID;     // Kachelgröße auslesen
+
   return [
+    // x-Position: Spalten gehen nach rechts, Zeilen nach links
     ox + (col * TILE_W) / 2 - (row * TILE_W) / 2,
+    // y-Position: Beide Richtungen gehen nach unten (isometrischer Effekt)
     oy + (col * TILE_H) / 2 + (row * TILE_H) / 2,
   ];
 }
 
+// ============================================================
+//  HILFSFUNKTION: Boden-Viereck eines Raumes berechnen
+// ============================================================
+
+// isoFloor berechnet die 4 Eckpunkte der Bodenfläche eines Raumes.
+// col/row = Position im Raster, spanCols/spanRows = Größe des Raumes
+// Gibt ein Array mit 4 Punkten zurück: links, oben, rechts, unten.
 function isoFloor(col, row, spanCols, spanRows) {
   return [
-    isoXY(col, row + spanRows), // links
-    isoXY(col, row), // oben
-    isoXY(col + spanCols, row), // rechts
-    isoXY(col + spanCols, row + spanRows), // unten
+    isoXY(col, row + spanRows), // Linke Ecke
+    isoXY(col, row),            // Obere Ecke
+    isoXY(col + spanCols, row),           // Rechte Ecke
+    isoXY(col + spanCols, row + spanRows),// Untere Ecke
   ];
 }
 
+// ============================================================
+//  HILFSFUNKTION: Wände aus dem Boden ableiten
+// ============================================================
+
+// buildWalls berechnet die linke und rechte Wand eines Raumes.
+// Es nimmt die Bodenpunkte und verschiebt sie nach oben (um wallH Pixel),
+// um die Höhe der Wände darzustellen.
 function buildWalls(floor, wallH = 100) {
+  // shift verschiebt einen Punkt um wallH Pixel nach oben
   const shift = (pt) => [pt[0], pt[1] + wallH];
+
   return {
+    // Linke Wand: von links-unten nach links-oben
     wallL: [floor[0], shift(floor[0]), shift(floor[3]), floor[3]],
+    // Rechte Wand: von rechts-unten nach rechts-oben
     wallR: [floor[2], shift(floor[2]), shift(floor[3]), floor[3]],
   };
 }
 
-// ── Generiert vom MakerAG Editor ──────────────────────────────────────
+
+// ============================================================
+//  DATEN: RÄUME
+// ============================================================
+
+// ROOMS = Liste aller Räume auf der Karte.
+// Jeder Raum hat:
+//   id       = eindeutiger Name (intern)
+//   label    = sichtbare Beschriftung auf der Karte
+//   col/row  = Position im Raster (Spalte / Zeile)
+//   spanCols/spanRows = Größe des Raumes in Rasterzellen
+//   wallH    = Wandhöhe in Pixeln
 const ROOMS = [
-  {
-    id: "raum-1",
-    label: "U30",
-    col: 1,
-    row: 2,
-    spanCols: 5,
-    spanRows: 3,
-    wallH: 50,
-  },
-  {
-    id: "raum-2",
-    label: "Flur",
-    col: 6,
-    row: 0,
-    spanCols: 3,
-    spanRows: 24,
-    wallH: 50,
-  },
-  {
-    id: "raum-3",
-    label: "U26",
-    col: 9,
-    row: 0,
-    spanCols: 6,
-    spanRows: 4,
-    wallH: 50,
-  },
-  {
-    id: "raum-4",
-    label: "U25 (MakerAG)",
-    col: 9,
-    row: 4,
-    spanCols: 6,
-    spanRows: 6,
-    wallH: 50,
-  },
-  {
-    id: "raum-5",
-    label: "U24",
-    col: 9,
-    row: 10,
-    spanCols: 6,
-    spanRows: 8,
-    wallH: 50,
-  },
+  { id: "raum-1", label: "U30", col: 1, row: 2, spanCols: 5, spanRows: 3, wallH: 50 },
+  { id: "raum-2", label: "Flur", col: 6, row: 0, spanCols: 3, spanRows: 24, wallH: 50 },
+  { id: "raum-3", label: "U26", col: 9, row: 0, spanCols: 6, spanRows: 4, wallH: 50 },
+  { id: "raum-4", label: "U25 (MakerAG)", col: 9, row: 4, spanCols: 6, spanRows: 6, wallH: 50 },
+  { id: "raum-5", label: "U24", col: 9, row: 10, spanCols: 6, spanRows: 8, wallH: 50 },
 ];
 
+
+// ============================================================
+//  DATEN: OBJEKTE (Schränke, Räume, Regale usw.)
+// ============================================================
+
+// OBJECTS = Liste aller platzierten Objekte auf der Karte.
+// Jedes Objekt hat:
+//   id       = eindeutiger Name (z.B. "1", "S", "A")
+//   name     = Anzeigename im Tooltip
+//   type     = welches Aussehen? (z.B. "cabinet-green", "room")
+//   gridCol/gridRow = Rasterposition auf der Karte
+//   zIndex   = Anzeigereihenfolge (höher = weiter vorne)
+//   cat      = Kategorie (z.B. "Allgemein")
+//   loc      = In welchem Raum befindet sich das Objekt?
+//   items/cap = Belegung (wie voll ist der Schrank?)
+//   link     = URL, die beim Klicken geöffnet wird
 const OBJECTS = [
-  {
-    id: "4",
-    name: "Schrank 4",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 5,
-    zIndex: 5,
-    cat: "Allgemein",
-    loc: "U25",
-    items: null,
-    cap: null,
-    link: "/search.html?searchFor=Locker&query=4",
-  },
-  {
-    id: "2",
-    name: "Schrank 2",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 8,
-    zIndex: 2,
-    cat: "Allgemein",
-    loc: "U25",
-    items: null,
-    cap: null,
-    link: "/search.html?searchFor=Locker&query=2",
-  },
-  {
-    id: "1",
-    name: "Schrank 1",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 9,
-    zIndex: 1,
-    cat: "Allgemein",
-    loc: "U25",
-    items: null,
-    cap: null,
-    link: "/search.html?searchFor=Locker&query=1",
-  },
-  {
-    id: "3",
-    name: "Schrank 3",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 6,
-    zIndex: 4,
-    cat: "Allgemein",
-    loc: "U25",
-    items: null,
-    cap: null,
-    link: "/search.html?searchFor=Locker&query=3",
-  },
-  {
-    id: "S",
-    name: "MakerAG Schrank",
-    type: "cabinet-brown",
-    gridCol: 10,
-    gridRow: 7,
-    zIndex: 3,
-    cat: "Allgemein",
-    loc: "U25",
-    items: null,
-    cap: null,
-    link: "/search.html?searchFor=Locker&query=S",
-  },
-  {
-    id: "A",
-    name: "Abstellraum",
-    type: "room",
-    gridCol: 2,
-    gridRow: 5,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U30",
-    items: null,
-    cap: null,
-    link: "/search.html?searchFor=Locker&query=A",
-  },
-  {
-    id: "5",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 12,
-    zIndex: 2,
-    cat: "Allgemein",
-    loc: "U24",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "6",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 13,
-    zIndex: 1,
-    cat: "Allgemein",
-    loc: "U24",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "7",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 14,
-    gridRow: 1,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "8",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 13,
-    gridRow: 1,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "9",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 12,
-    gridRow: 1,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "10",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 11,
-    gridRow: 1,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "11",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 10,
-    gridRow: 1,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "12",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 14,
-    gridRow: 4,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "13",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 13,
-    gridRow: 4,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
-  {
-    id: "14",
-    name: "Neues Objekt",
-    type: "cabinet-green",
-    gridCol: 12,
-    gridRow: 4,
-    zIndex: 0,
-    cat: "Allgemein",
-    loc: "U26",
-    items: null,
-    cap: null,
-    link: null,
-  },
+  { id: "4", name: "Schrank 4", type: "cabinet-green", gridCol: 10, gridRow: 5, zIndex: 5, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=4" },
+  { id: "2", name: "Schrank 2", type: "cabinet-green", gridCol: 10, gridRow: 8, zIndex: 2, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=2" },
+  { id: "1", name: "Schrank 1", type: "cabinet-green", gridCol: 10, gridRow: 9, zIndex: 1, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=1" },
+  { id: "3", name: "Schrank 3", type: "cabinet-green", gridCol: 10, gridRow: 6, zIndex: 4, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=3" },
+  { id: "S", name: "MakerAG Schrank", type: "cabinet-brown", gridCol: 10, gridRow: 7, zIndex: 3, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=S" },
+  { id: "A", name: "Abstellraum", type: "room", gridCol: 2, gridRow: 5, zIndex: 0, cat: "Allgemein", loc: "U30", items: null, cap: null, link: "/search.html?searchFor=Locker&query=A" },
+  { id: "5", name: "Neues Objekt", type: "cabinet-green", gridCol: 10, gridRow: 12, zIndex: 2, cat: "Allgemein", loc: "U24", items: null, cap: null, link: null },
+  { id: "6", name: "Neues Objekt", type: "cabinet-green", gridCol: 10, gridRow: 13, zIndex: 1, cat: "Allgemein", loc: "U24", items: null, cap: null, link: null },
+  { id: "7", name: "Neues Objekt", type: "cabinet-green", gridCol: 14, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "8", name: "Neues Objekt", type: "cabinet-green", gridCol: 13, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "9", name: "Neues Objekt", type: "cabinet-green", gridCol: 12, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "10", name: "Neues Objekt", type: "cabinet-green", gridCol: 11, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "11", name: "Neues Objekt", type: "cabinet-green", gridCol: 10, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "12", name: "Neues Objekt", type: "cabinet-green", gridCol: 14, gridRow: 4, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "13", name: "Neues Objekt", type: "cabinet-green", gridCol: 13, gridRow: 4, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  { id: "14", name: "Neues Objekt", type: "cabinet-green", gridCol: 12, gridRow: 4, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
 ];
 
+
+// ============================================================
+//  DATEN: OBJEKT-TYPEN (Aussehen & Farbe)
+// ============================================================
+
+// OBJECT_TYPES = definiert, wie jeder Objekttyp aussieht.
+// w = Breite, h = Höhe, d = Tiefe (in Pixeln, für die 3D-Darstellung)
+// color = Farben für die verschiedenen Flächen (top, front, side, label, handle)
+// shelfLines = auf welcher Höhe werden Regalböden gezeichnet (als Anteil 0-1)
 const OBJECT_TYPES = {
   "cabinet-green": {
-    w: 26,
-    h: 76,
-    d: 14,
-    color: {
-      top: "#4e7a3c",
-      front: "#325228",
-      side: "#2a4220",
-      label: "#b8860b",
-      handle: "#b8860b",
-    },
-    shelfLines: [], // keine Regallinien
+    w: 26, h: 76, d: 14,
+    color: { top: "#4e7a3c", front: "#325228", side: "#2a4220", label: "#b8860b", handle: "#b8860b" },
+    shelfLines: [], // keine Regalböden
   },
   "cabinet-brown": {
-    w: 26,
-    h: 76,
-    d: 14,
-    color: {
-      top: "#8a5530",
-      front: "#5a3620",
-      side: "#4a2c18",
-      label: "#c8a415",
-      handle: "#c8a415",
-    },
+    w: 26, h: 76, d: 14,
+    color: { top: "#8a5530", front: "#5a3620", side: "#4a2c18", label: "#c8a415", handle: "#c8a415" },
   },
-  room: {
-    w: 90,
-    h: 28,
-    d: 60,
-    color: {
-      top: "#c8c2b4", // Betongrau
-      front: "#a8a298",
-      side: "#8a8278",
-      label: "#5a5650",
-      handle: null,
-    },
+  "room": {
+    w: 90, h: 28, d: 60,
+    color: { top: "#c8c2b4", front: "#a8a298", side: "#8a8278", label: "#5a5650", handle: null },
     shelfLines: [],
   },
-  shelf: {
-    w: 30,
-    h: 48,
-    d: 16,
-    color: {
-      top: "#4e7a3c",
-      front: "#325228",
-      side: "#2a4220",
-      label: "#b8860b",
-      handle: "#b8860b",
-    },
-    shelfLines: [0.5], // 1 Regalboden
+  "shelf": {
+    w: 30, h: 48, d: 16,
+    color: { top: "#4e7a3c", front: "#325228", side: "#2a4220", label: "#b8860b", handle: "#b8860b" },
+    shelfLines: [0.5], // 1 Regalboden in der Mitte
   },
 };
 
+// Beschriftungen für die Legende (was bedeutet welcher Typ?)
 const LEGEND_LABELS = {
   "cabinet-green": "Grüne Schränke",
   "cabinet-brown": "Braune Schränke",
-  room: "Raum",
-  shelf: "Regal",
+  "room": "Raum",
+  "shelf": "Regal",
 };
 
-/** Hilfsfunktion: Array von Punkten in SVG-Polygon-String umwandeln */
+
+// ============================================================
+//  KLEINE HILFSFUNKTIONEN
+// ============================================================
+
+// pts wandelt ein Array von [x,y]-Punkten in einen SVG-Polygon-String um.
+// Beispiel: [[10,20],[30,40]] → "10,20 30,40"
 function pts(arr) {
   return arr.map((p) => p.join(",")).join(" ");
 }
 
-/** Hilfsfunktion: Punkt [x, y] verschieben */
+// shift verschiebt einen Punkt [x,y] um (dx, dy) Pixel.
 function shift(pt, dx, dy) {
   return [pt[0] + dx, pt[1] + dy];
 }
 
+// esc macht Sonderzeichen in Texten für HTML sicher (verhindert Angriffe).
+// z.B. "<" wird zu "&lt;" damit es nicht als HTML-Tag interpretiert wird.
 function esc(v) {
   return String(v)
     .replace(/&/g, "&amp;")
@@ -369,46 +185,63 @@ function esc(v) {
     .replace(/"/g, "&quot;");
 }
 
+
+// ============================================================
+//  FUNKTION: Ein einzelnes Objekt als SVG zeichnen
+// ============================================================
+
+// renderObject nimmt ein Objekt aus OBJECTS und gibt SVG-Code zurück,
+// der das Objekt als 3D-Klotz auf der Karte darstellt.
 function renderObject(obj) {
+  // Prüfen ob der Typ bekannt ist. Wenn nicht → nichts zeichnen.
   const def = OBJECT_TYPES?.[obj.type];
   if (!def) return "";
 
+  // Bildschirmposition berechnen (aus Rasterposition)
   const [px, py] = isoXY(obj.gridCol, obj.gridRow);
+
+  // Maße und Farben aus der Typdefinition lesen
   const { w, h, d, color, shelfLines = [] } = def;
 
-  const depthX = d * 0.5;
-  const depthY = d * -0.25;
+  // Tiefe = wie weit das Objekt nach hinten ragt (isometrischer Versatz)
+  const depthX = d * 0.5;   // nach rechts versetzt
+  const depthY = d * -0.25; // nach oben versetzt
 
-  const frontTL = [px, py - h];
-  const frontTR = [px + w, py - h];
-  const frontBR = [px + w, py];
-  const frontBL = [px, py];
+  // ── Die 4 Ecken der Frontfläche berechnen ──
+  // Das Objekt hängt "oben" am Punkt (px, py), die Höhe geht nach oben
+  const frontTL = [px, py - h]; // Vorne oben links
+  const frontTR = [px + w, py - h]; // Vorne oben rechts
+  const frontBR = [px + w, py];     // Vorne unten rechts
+  const frontBL = [px, py];     // Vorne unten links
 
-  const sideTL = [px + depthX, py - h + depthY];
-  const sideTR = [px + w + depthX, py - h + depthY];
-  const sideBR = [px + w + depthX, py + depthY];
-  const sideBL = [px + depthX, py + depthY];
+  // ── Die 4 Ecken der hinteren Seite berechnen (nach rechts/oben versetzt) ──
+  const sideTL = [px + depthX, py - h + depthY]; // Hinten oben links
+  const sideTR = [px + w + depthX, py - h + depthY]; // Hinten oben rechts
+  const sideBR = [px + w + depthX, py + depthY];     // Hinten unten rechts
+  const sideBL = [px + depthX, py + depthY];     // Hinten unten links
 
-  const frontPts = [frontTL, frontTR, frontBR, frontBL];
-  const sidePts = [frontTR, sideTR, sideBR, frontBR]; // rechte Seite sichtbar
-  const topPts = [sideTL, sideTR, frontTR, frontTL]; // Top nach oben-rechts
+  // ── Die 3 sichtbaren Flächen festlegen ──
+  const frontPts = [frontTL, frontTR, frontBR, frontBL]; // Vorderseite
+  const sidePts = [frontTR, sideTR, sideBR, frontBR]; // Rechte Seite (sichtbar)
+  const topPts = [sideTL, sideTR, frontTR, frontTL]; // Oberseite (Deckel)
 
-  // --- Türlinie (vertikale Mittellinie auf Frontfläche) ---
+  // ── Türlinie: vertikale Linie in der Mitte der Vorderseite ──
   const doorX = px + w * 0.5;
   const doorLine = `<line x1="${doorX}" y1="${py - h + 2}" x2="${doorX}" y2="${py - 2}"
     stroke="${color.side}" stroke-width="0.8" opacity="0.6"/>`;
 
-  // --- Regallinien auf Frontfläche ---
+  // ── Regalböden: horizontale Linien auf der Vorderseite ──
+  // shelfLines enthält Prozentwerte (0=oben, 1=unten), wo Regalböden sind
   const shelfSVG = shelfLines
     .map((t) => {
-      const sy = py - h + h * t;
+      const sy = py - h + h * t; // y-Position des Regalbodens
       return `<line x1="${px + 1}" y1="${sy}" x2="${px + w - 1}" y2="${sy}"
       stroke="${color.side}" stroke-width="0.7" opacity="0.5"/>`;
     })
     .join("");
 
-  // --- Griffe: zwei vertikale Linien || ---
-  // FIX: x1===x2 (vertikal), y variiert → gibt || statt --
+  // ── Griffe: zwei kurze vertikale Linien ( || ) auf der Vorderseite ──
+  // Nur zeichnen wenn handle-Farbe definiert ist (Räume haben keinen Griff)
   const handleSVG = color.handle
     ? `
     <line x1="${px + w * 0.33}" y1="${py - h * 0.42}"
@@ -419,7 +252,8 @@ function renderObject(obj) {
           stroke="${color.handle}" stroke-width="1.8" stroke-linecap="round"/>`
     : "";
 
-  // Bodentextur für Raum-Typ
+  // ── Bodentextur für Raum-Objekte (Gitterlinien) ──
+  // Nur bei Typ "room" werden schwache Rasterlinien eingezeichnet
   const roomTexture =
     def === OBJECT_TYPES["room"]
       ? `
@@ -430,18 +264,21 @@ function renderObject(obj) {
 `
       : "";
 
-  // --- Schatten-Overlay auf Frontfläche (untere Hälfte leicht dunkler) ---
+  // ── Schatten-Overlay: dunkle Fläche im unteren Bereich der Vorderseite ──
+  // Gibt den Schränken einen leichten 3D-Schatteneffekt
   const shadowSVG = `<polygon points="${pts([
-    [px, py - h * 0.4],
-    [px + w, py - h * 0.4],
-    frontBR,
-    frontBL,
+    [px, py - h * 0.4],  // links, 40% Höhe
+    [px + w, py - h * 0.4], // rechts, 40% Höhe
+    frontBR, frontBL,
   ])}" fill="black" opacity="0.06"/>`;
 
-  // --- Hover-Highlight auf Topfläche ---
+  // ── Hover-Highlight: unsichtbares Polygon auf der Oberseite ──
+  // Wird per CSS sichtbar gemacht wenn man mit der Maus drüber fährt
   const hoverSVG = `<polygon class="hover-face"
     points="${pts(topPts)}" fill="white" opacity="0"/>`;
 
+  // ── Alles zusammenbauen: Objekt als SVG-Gruppe (<g>) zurückgeben ──
+  // Reihenfolge: erst rechte Seite, dann Vorderseite, dann Deckel (hinten → vorne)
   return `<g class="map-object" data-objid="${esc(obj.id)}">
     <polygon points="${pts(sidePts)}"  fill="${color.side}"/>
     <polygon points="${pts(frontPts)}" fill="${color.front}"/>
@@ -450,50 +287,64 @@ function renderObject(obj) {
     ${shelfSVG}
     ${roomTexture}
     ${handleSVG}
-
     <polygon points="${pts(topPts)}"   fill="${color.top}"/>
     ${hoverSVG}
-	
   </g>`;
 }
 
-// =============================================================================
-//  RÄUME RENDERN
-// =============================================================================
+
+// ============================================================
+//  RÄUME AUF DIE KARTE ZEICHNEN
+// ============================================================
+
+// Die SVG-Gruppen für Räume und Objekte aus dem HTML holen
 const roomsLayer = document.getElementById("rooms-layer");
 const objectsLayer = document.getElementById("objects-layer");
 
+// Für jeden Raum: Boden und Wände berechnen, dann als SVG-String speichern
 const roomFragments = ROOMS.map((room) => {
+  // Boden-Viereck berechnen
   const floor = isoFloor(room.col, room.row, room.spanCols, room.spanRows);
+  // Wände aus dem Boden ableiten
   const { wallL, wallR } = buildWalls(floor, room.wallH ?? 100);
 
-  // Label-Position: Mitte des Bodens
+  // Mitte des Bodens berechnen → dort kommt das Label hin
   const lx = (floor[0][0] + floor[2][0]) / 2;
   const ly = (floor[1][1] + floor[3][1]) / 2 + 10;
 
+  // SVG-Polygone für linke Wand, rechte Wand, Boden und Beschriftung
   return `
     <polygon points="${pts(wallL)}" fill="#d0ccbf" stroke="#b8b4a8" stroke-width="1"/>
     <polygon points="${pts(wallR)}" fill="#bab6a9" stroke="#a8a49a" stroke-width="1"/>
     <polygon points="${pts(floor)}" fill="#e8e4db" stroke="#c8c4ba" stroke-width="1.5"/>
     <polygon points="${pts(floor)}" fill="url(#grid)" opacity="0.6"/>
     <text x="${lx}" y="${ly + 4}"
-	font-size="15" font-weight="600" fill="black"
+      font-size="15" font-weight="600" fill="black"
       letter-spacing="0.12em" text-anchor="middle">${room.label}</text>`;
 });
 
-// join statt innerHTML += in Schleife (vermeidet wiederholtes DOM-Parsen)
+// Alle Raum-SVGs auf einmal ins DOM einfügen (effizienter als einzelne Inserts)
 roomsLayer.innerHTML = roomFragments.join("");
 
-// =============================================================================
-//  OBJEKTE RENDERN
-// =============================================================================
+
+// ============================================================
+//  OBJEKTE AUF DIE KARTE ZEICHNEN
+// ============================================================
+
+// Für jedes Objekt renderObject() aufrufen und das Ergebnis einfügen
 objectsLayer.innerHTML = OBJECTS.map(renderObject).join("");
 
-// =============================================================================
-//  TOOLTIP-LOGIK
-// =============================================================================
+
+// ============================================================
+//  TOOLTIP-LOGIK (Info-Kasten beim Hover)
+// ============================================================
+
+// OBJ_MAP = schnelle Suche: Objekt-ID → Objekt-Daten
+// So kann man bei Mausbewegung sofort das richtige Objekt finden
 window.OBJ_MAP = Object.fromEntries(OBJECTS.map((o) => [o.id, o]));
 
+// Tooltip-Element erstellen und mit HTML befüllen
+// Dieser Kasten erscheint wenn man mit der Maus über ein Objekt fährt
 const tooltipEl = document.createElement("div");
 tooltipEl.className = "tooltip";
 tooltipEl.innerHTML = `
@@ -507,7 +358,7 @@ tooltipEl.innerHTML = `
 `;
 document.body.appendChild(tooltipEl);
 
-// Referenzen NACH appendChild — direkt aus tooltipEl heraus
+// Einzelne Elemente im Tooltip für schnellen Zugriff speichern
 const ttId = tooltipEl.querySelector("#tt-id");
 const ttName = tooltipEl.querySelector("#tt-name");
 const ttCat = tooltipEl.querySelector("#tt-cat");
@@ -516,51 +367,63 @@ const ttBar = tooltipEl.querySelector("#tt-bar");
 const ttCap = tooltipEl.querySelector("#tt-cap");
 const ttHint = tooltipEl.querySelector("#tt-hint");
 
+// ── Mausbewegung: Tooltip anzeigen und positionieren ──
 document.getElementById("isomap").addEventListener("mousemove", (e) => {
+  // Prüfen ob die Maus über einem Objekt ist (.map-object Klasse)
   const objEl = e.target.closest(".map-object");
   if (!objEl) {
-    tooltipEl.classList.remove("visible");
+    tooltipEl.classList.remove("visible"); // kein Objekt → Tooltip verstecken
     return;
   }
 
+  // Daten des angeklickten Objekts aus OBJ_MAP laden
   const obj = OBJ_MAP[objEl.dataset.objid];
   if (!obj) {
     tooltipEl.classList.remove("visible");
     return;
   }
 
+  // Belegung berechnen (items/cap = wie voll ist der Schrank?)
   const hasFill = obj.items != null && obj.cap != null;
   const fillPct = hasFill ? Math.round((obj.items / obj.cap) * 100) : 0;
 
+  // Tooltip-Inhalt befüllen
   ttId.textContent = obj.id;
   ttName.textContent = obj.name;
   ttCat.textContent = obj.cat ?? "—";
   ttLoc.textContent = obj.loc ?? "—";
-  ttBar.style.width = hasFill ? fillPct + "%" : "0%";
+  ttBar.style.width = hasFill ? fillPct + "%" : "0%"; // Fortschrittsbalken
   ttCap.textContent = hasFill ? `${fillPct}% belegt` : "";
   ttHint.textContent = obj.link ? "Klicken um zu öffnen →" : "";
 
-  tooltipEl.classList.add("visible");
+  tooltipEl.classList.add("visible"); // Tooltip sichtbar machen
 
+  // Tooltip-Position: normalerweise rechts/oben von der Maus
+  // Falls er aus dem Bildschirm ragt → auf die andere Seite klappen
   let tx = e.clientX + 16;
   let ty = e.clientY - 8;
-  if (tx + 210 > window.innerWidth) tx = e.clientX - 220;
-  if (ty + 160 > window.innerHeight) ty = e.clientY - 160;
+  if (tx + 210 > window.innerWidth) tx = e.clientX - 220; // zu weit rechts → nach links
+  if (ty + 160 > window.innerHeight) ty = e.clientY - 160; // zu weit unten → nach oben
   tooltipEl.style.left = tx + "px";
   tooltipEl.style.top = ty + "px";
 });
 
+// ── Maus verlässt die Karte: Tooltip verstecken ──
 document.getElementById("isomap").addEventListener("mouseleave", () => {
   tooltipEl.classList.remove("visible");
 });
 
+// ── Klick auf ein Objekt: zur verlinkten Seite navigieren ──
 document.getElementById("isomap").addEventListener("click", (e) => {
   const objEl = e.target.closest(".map-object");
   if (!objEl) return;
+
   const obj = OBJ_MAP[objEl.dataset.objid];
   if (obj?.link) {
+    // Objekt hat einen direkten Link → dorthin navigieren
     window.location.href = obj.link;
   } else if (obj?.loc) {
+    // Kein Link, aber ein Raumname → Suche nach dem Raum öffnen
     window.location.href = `/search.html?searchFor=Raum&query=${encodeURIComponent(obj.loc)}`;
   }
 });

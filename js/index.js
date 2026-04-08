@@ -234,6 +234,14 @@ document.addEventListener("DOMContentLoaded", () => {
             </svg>
         `;
     randomBtn.insertAdjacentHTML("afterbegin", starSVG);
+
+    const textNode = [...randomBtn.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    if (textNode) {
+      const span = document.createElement("span");
+      span.style.cssText = "position: relative; z-index: 3;";
+      span.textContent = textNode.textContent;
+      textNode.replaceWith(span);
+    }
   }
 });
 

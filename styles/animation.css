@@ -1,22 +1,15 @@
-/* ============================================
-   PAGE LOAD ANIMATIONS - HYBRID CONCEPT
-   ============================================ */
-
-/* 1. PAGE LOADER */
+/* ==============================================
+   PAGE LOADER
+============================================== */
 .page-loader {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: black;
+  inset: 0;
+  background: var(--cat-primary);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  transition:
-    opacity 0.5s ease,
-    visibility 0.5s ease;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
 .page-loader.hidden {
@@ -27,119 +20,124 @@
 
 .loader-spinner {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 64px;
+  height: 64px;
 }
 
 .loader-spinner::before,
 .loader-spinner::after {
   content: "";
   position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 4px solid transparent;
+  inset: 0;
+  border: 2px solid transparent;
   border-radius: 50%;
-  animation: pipeRotate 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
 }
 
 .loader-spinner::before {
-  border-top-color: hsla(358, 100%, 70%, 0.9);
-  border-right-color: hsla(177, 62%, 60%, 0.9);
-  animation-delay: 0s;
+  border-top-color: var(--cat-accent);
+  border-right-color: var(--cat-extra);
+  animation: spin-a 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .loader-spinner::after {
-  border-bottom-color: hsla(47, 100%, 71%, 0.9);
-  border-left-color: hsla(358, 100%, 70%, 0.9);
-  animation-delay: 0.3s;
+  inset: 10px;
+  border-bottom-color: var(--cat-accent);
+  border-left-color: var(--cat-text);
+  opacity: 0.4;
+  animation: spin-b 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite reverse;
 }
 
-@keyframes pipeRotate {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.1);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
+@keyframes spin-a {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* 2. INITIAL STATE */
-body.loading {
-  overflow: hidden;
+@keyframes spin-b {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-body.loading .site-header,
-body.loading nav,
-body.loading .cool-container,
+/* ==============================================
+   LOADING STATE — alles unsichtbar
+============================================== */
+
+
+body.loading #header,
+body.loading #nav,
+body.loading #settings,
 body.loading .container,
+body.loading .cool-container,
 body.loading .search {
   opacity: 0;
   visibility: hidden;
 }
 
-/* 3. HEADER ANIMATION */
-.site-header {
-  animation: fadeSlideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-delay: 0.2s;
-  opacity: 0;
-  transform: translateY(-20px);
-}
+/* ==============================================
+   BASE KEYFRAMES
+============================================== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
 
-@keyframes fadeSlideDown {
   to {
     opacity: 1;
     transform: translateY(0);
-    visibility: visible;
   }
 }
 
-/* 4. NAVIGATION ANIMATION */
-nav {
-  animation: fadeSlideRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  animation-delay: 0.5s;
-  opacity: 0;
-  transform: translateX(-30px);
-}
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
 
-nav .nav-link {
-  opacity: 0;
-  transform: translateX(-20px);
-  animation: navLinkAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-nav .nav-link:nth-child(1) {
-  animation-delay: 0.6s;
-}
-nav .nav-link:nth-child(2) {
-  animation-delay: 0.7s;
-}
-nav .nav-link:nth-child(3) {
-  animation-delay: 0.8s;
-}
-nav .nav-link:nth-child(4) {
-  animation-delay: 0.9s;
-}
-nav .nav-link:nth-child(5) {
-  animation-delay: 1s;
-}
-
-@keyframes fadeSlideRight {
   to {
     opacity: 1;
-    transform: translateX(0);
-    visibility: visible;
+    transform: translateY(0);
   }
 }
 
-@keyframes navLinkAppear {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scaleX(0.92) translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1) translateY(0);
+  }
+}
+
+/* ==============================================
+   HEADER & NAV
+============================================== */
+#header {
+  animation: fadeDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+#nav {
+  animation: fadeDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
 
 
+/* ==============================================
+   SEARCH PAGE — search container
+============================================== */
+.search {
+  animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.35s both;
+}

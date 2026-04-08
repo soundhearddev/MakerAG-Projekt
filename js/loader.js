@@ -86,6 +86,8 @@ async function loadHTML(id, file, useCache = true) {
     // Event Listener für Settings initialisieren
     initializeSettingsEvents();
 
+    
+
     // Komponente als geladen markieren
     // variabel ++ = +1
     loadedComponents++;
@@ -244,6 +246,9 @@ function reloadAllComponents() {
     loadHTML("map", "/partials/map.html", false),
   ]);
 }
+
+
+
 if (typeof window !== "undefined") {
   window.loadHTML = loadHTML;
   window.reloadAllComponents = reloadAllComponents;

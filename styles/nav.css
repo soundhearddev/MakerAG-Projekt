@@ -27,7 +27,6 @@ nav a,
 nav a:hover,
 .nav-links a:hover {
   color: var(--cat-accent);
-  text-decoration: underline;
 }
 
 #fps-counter {

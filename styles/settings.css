@@ -35,7 +35,7 @@ body:has(.settings-icon:checked) .cool-container {
 }
 
 /* Settings Icon NICHT blurren */
-body:has(.settings-icon:checked) .settings-icon + label {
+body:has(.settings-icon:checked) .settings-icon+label {
   filter: none !important;
   transform: none !important;
 }
@@ -80,8 +80,8 @@ input.settings-icon[type="checkbox"] {
 }
 
 /* ===== SETTINGS ICON (HAMBURGER) ===== */
-.settings-icon:checked + label,
-.settings-icon:not(:checked) + label {
+.settings-icon:checked+label,
+.settings-icon:not(:checked)+label {
   position: fixed;
   top: 63px;
   right: 100px;
@@ -95,13 +95,13 @@ input.settings-icon[type="checkbox"] {
   transition: transform 0.3s ease;
 }
 
-.settings-icon:checked + label:hover,
-.settings-icon:not(:checked) + label:hover {
+.settings-icon:checked+label:hover,
+.settings-icon:not(:checked)+label:hover {
   transform: scale(1.1);
 }
 
-.settings-icon:checked + label:before,
-.settings-icon:not(:checked) + label:before {
+.settings-icon:checked+label:before,
+.settings-icon:not(:checked)+label:before {
   position: absolute;
   content: "";
   display: block;
@@ -120,8 +120,8 @@ input.settings-icon[type="checkbox"] {
     transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.settings-icon:checked + label:after,
-.settings-icon:not(:checked) + label:after {
+.settings-icon:checked+label:after,
+.settings-icon:not(:checked)+label:after {
   position: absolute;
   content: "";
   display: block;
@@ -139,7 +139,7 @@ input.settings-icon[type="checkbox"] {
     transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.settings-icon:checked + label:before {
+.settings-icon:checked+label:before {
   top: 10px;
   transform: rotate(45deg);
   height: 2px;
@@ -153,7 +153,7 @@ input.settings-icon[type="checkbox"] {
     transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.settings-icon:checked + label:after {
+.settings-icon:checked+label:after {
   width: 30px;
   margin-top: 0;
   right: 0;
@@ -190,6 +190,7 @@ input.settings-icon[type="checkbox"] {
 }
 
 @keyframes border-transform {
+
   0%,
   100% {
     border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
@@ -220,7 +221,7 @@ input.settings-icon[type="checkbox"] {
   }
 }
 
-.settings-icon:checked ~ .settings-nav {
+.settings-icon:checked~.settings-nav {
   animation-play-state: paused;
   top: 50%;
   right: 50%;
@@ -302,7 +303,7 @@ input.settings-icon[type="checkbox"] {
   transform: scale(1.05);
 }
 
-.settings-icon:checked ~ .settings-nav ul li {
+.settings-icon:checked~.settings-nav ul li {
   pointer-events: auto;
   visibility: visible;
   opacity: 1;
@@ -312,23 +313,23 @@ input.settings-icon[type="checkbox"] {
     transform 250ms ease;
 }
 
-.settings-icon:checked ~ .settings-nav ul li:nth-child(1) {
+.settings-icon:checked~.settings-nav ul li:nth-child(1) {
   transition-delay: 1400ms;
 }
 
-.settings-icon:checked ~ .settings-nav ul li:nth-child(2) {
+.settings-icon:checked~.settings-nav ul li:nth-child(2) {
   transition-delay: 1480ms;
 }
 
-.settings-icon:checked ~ .settings-nav ul li:nth-child(3) {
+.settings-icon:checked~.settings-nav ul li:nth-child(3) {
   transition-delay: 1560ms;
 }
 
-.settings-icon:checked ~ .settings-nav ul li:nth-child(4) {
+.settings-icon:checked~.settings-nav ul li:nth-child(4) {
   transition-delay: 1640ms;
 }
 
-.settings-icon:checked ~ .settings-nav ul li:nth-child(5) {
+.settings-icon:checked~.settings-nav ul li:nth-child(5) {
   transition-delay: 1720ms;
 }
 
@@ -431,14 +432,16 @@ input.settings-icon[type="checkbox"] {
 }
 
 .close-modal {
+  min-height: unset;
+  padding: 0;
+  width: 32px;
+  height: 32px;
   background: rgba(0, 0, 0, 0.15);
   border: 2px solid transparent;
   color: var(--cat-text);
-  font-size: 28px;
+  font-size: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 36px;
-  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -447,7 +450,7 @@ input.settings-icon[type="checkbox"] {
 }
 
 .close-modal:hover {
-  transform: scale(1.1) rotate(90deg);
+  transform: rotate(90deg);
   background: rgba(255, 50, 50, 0.3);
   border-color: rgba(255, 50, 50, 0.5);
   box-shadow: 0 0 15px rgba(255, 50, 50, 0.3);
@@ -694,17 +697,17 @@ input.settings-icon[type="checkbox"] {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-.toggle-switch input:checked + .toggle-slider {
+.toggle-switch input:checked+.toggle-slider {
   filter: saturate(-200%) brightness(250%);
   background-color: var(--cat-extra);
   box-shadow: 0 0 15px var(--cat-accent);
 }
 
-.toggle-switch input:checked + .toggle-slider:before {
+.toggle-switch input:checked+.toggle-slider:before {
   transform: translateX(26px);
 }
 
-.toggle-switch input:focus + .toggle-slider {
+.toggle-switch input:focus+.toggle-slider {
   box-shadow: 0 0 1px var(--cat-accent);
 }
 
@@ -1161,8 +1164,8 @@ input.settings-icon[type="checkbox"] {
   color: white;
   border-color: #0b7dda;
 }
-t
 
+t
 
 /* ===== NO ANIMATIONS MODE ===== */
 body.no-animations * {
@@ -1172,8 +1175,9 @@ body.no-animations * {
 
 /* ===== RESPONSIVE DESIGN ===== */
 @media screen and (max-width: 991px) {
-  .settings-icon:checked + label,
-  .settings-icon:not(:checked) + label {
+
+  .settings-icon:checked+label,
+  .settings-icon:not(:checked)+label {
     right: 55px;
   }
 
@@ -1358,7 +1362,7 @@ body.no-animations * {
   outline-offset: 3px;
 }
 
-.toggle-switch input:focus-visible + .toggle-slider {
+.toggle-switch input:focus-visible+.toggle-slider {
   box-shadow: 0 0 0 4px rgba(141, 169, 196, 0.3);
 }
 
@@ -1376,6 +1380,7 @@ body.no-animations * {
 
 /* ===== PRINT STYLES ===== */
 @media print {
+
   .settings-container,
   .settings-modal,
   .settings-nav,
@@ -1398,7 +1403,7 @@ body.no-animations * {
     border-width: 3px;
   }
 
-  .toggle-switch input:checked + .toggle-slider {
+  .toggle-switch input:checked+.toggle-slider {
     box-shadow: 0 0 0 4px var(--cat-accent);
   }
 }
@@ -1427,6 +1432,7 @@ body.no-animations * {
 }
 
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
@@ -1454,6 +1460,7 @@ body.no-animations * {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -1542,7 +1549,7 @@ body {
 }
 
 /* ===== Z-INDEX MANAGEMENT ===== */
-.settings-icon + label {
+.settings-icon+label {
   z-index: 10;
 }
 

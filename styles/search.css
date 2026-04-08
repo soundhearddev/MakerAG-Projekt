@@ -66,11 +66,7 @@
   line-height: 1;
 }
 
-.btn-clear:hover {
-  opacity: 1;
-  transform: translateY(-50%);
-  background: transparent;
-}
+
 
 /* ==============================================
    SEARCH OPTIONS

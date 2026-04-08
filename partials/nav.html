@@ -3,103 +3,104 @@
 <link rel="stylesheet" href="/styles/nav.css" />
 
 <body>
-<nav role="navigation" aria-label="Hauptnavigation">
-  <a href="/index.html" class="nav-link">Startseite</a>
-  <a href="/index.html#Kategorien" class="nav-link">Kategorien</a>
-  <a href="/index.html#neuste-eintraege" class="nav-link">Neueste Einträge</a>
-  <a href="/search.html" class="nav-link">Suchen</a>
-  <a href="/FAQ.html" class="nav-link">FAQ</a>
+  <nav role="navigation" aria-label="Hauptnavigation">
+    <a href="/index.html" class="nav-link">Startseite</a>
+    <a href="/index.html#Kategorien" class="nav-link">Kategorien</a>
+    <a href="/index.html#neuste-eintraege" class="nav-link">Neueste Einträge</a>
+    <a href="/search.html" class="nav-link">Suchen</a>
+    <a href="/FAQ.html" class="nav-link">FAQ</a>
 
-  <span id="fps-counter" title="Frames per Second">-- FPS</span>
-</nav>
+    <!-- Settings ding. Wurde nur zum testen der performance hinzugefügt wegen der Pipes animation. Nennt man das animation? Keine ahung... -->
+    <span id="fps-counter" title="Frames per Second">-- FPS</span>
+  </nav>
 
-<script>
-  (function () {
-    "use strict";
+  <script>
+    (function () {
+      "use strict";
 
-    // Aktuelle Seite markieren
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll("nav .nav-link");
+      // Aktuelle Seite markieren
+      const currentPath = window.location.pathname;
+      const navLinks = document.querySelectorAll("nav .nav-link");
 
-    navLinks.forEach((link) => {
-      const linkPath = new URL(link.href).pathname;
-      if (linkPath === currentPath) {
-        link.classList.add("active");
-        link.setAttribute("aria-current", "page");
-      }
-    });
-
-    // Smooth Scroll für Anker-Links
-    navLinks.forEach((link) => {
-      if (link.hash) {
-        link.addEventListener("click", (e) => {
-          const targetId = link.hash.substring(1);
-          const targetElement = document.getElementById(targetId);
-          if (targetElement) {
-            e.preventDefault();
-            targetElement.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-            history.pushState(null, "", link.hash);
-          }
-        });
-      }
-    });
-
-    // ---- FPS Counter ----------------------------------------
-    const fpsEl = document.getElementById("fps-counter");
-    if (!fpsEl) return;
-
-    let frames = 0;
-    let lastTime = performance.now();
-    let active = true;
-
-    function updateFPS(now) {
-      frames++;
-      const delta = now - lastTime;
-
-      if (delta >= 500) {
-        if (active) {
-          const fps = Math.round((frames / delta) * 1000);
-          fpsEl.textContent = fps + " FPS";
-          fpsEl.classList.remove("fps-good", "fps-medium", "fps-bad");
-          if (fps >= 50) fpsEl.classList.add("fps-good");
-          else if (fps >= 30) fpsEl.classList.add("fps-medium");
-          else fpsEl.classList.add("fps-bad");
+      navLinks.forEach((link) => {
+        const linkPath = new URL(link.href).pathname;
+        if (linkPath === currentPath) {
+          link.classList.add("active");
+          link.setAttribute("aria-current", "page");
         }
-        frames = 0;
-        lastTime = now;
+      });
+
+      // Smooth Scroll für Anker-Links
+      navLinks.forEach((link) => {
+        if (link.hash) {
+          link.addEventListener("click", (e) => {
+            const targetId = link.hash.substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+              e.preventDefault();
+              targetElement.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+              history.pushState(null, "", link.hash);
+            }
+          });
+        }
+      });
+
+      // ---- FPS Counter ----------------------------------------
+      const fpsEl = document.getElementById("fps-counter");
+      if (!fpsEl) return;
+
+      let frames = 0;
+      let lastTime = performance.now();
+      let active = true;
+
+      function updateFPS(now) {
+        frames++;
+        const delta = now - lastTime;
+
+        if (delta >= 500) {
+          if (active) {
+            const fps = Math.round((frames / delta) * 1000);
+            fpsEl.textContent = fps + " FPS";
+            fpsEl.classList.remove("fps-good", "fps-medium", "fps-bad");
+            if (fps >= 50) fpsEl.classList.add("fps-good");
+            else if (fps >= 30) fpsEl.classList.add("fps-medium");
+            else fpsEl.classList.add("fps-bad");
+          }
+          frames = 0;
+          lastTime = now;
+        }
+
+        requestAnimationFrame(updateFPS);
       }
 
       requestAnimationFrame(updateFPS);
-    }
 
-    requestAnimationFrame(updateFPS);
-
-    // Toggle über Settings-Checkbox (auch wenn Partial später geladen wird)
-    function applyFpsToggle(checked) {
-      active = checked;
-      fpsEl.style.display = checked ? "" : "none";
-      if (checked) {
-        frames = 0;
-        lastTime = performance.now();
+      // Toggle über Settings-Checkbox (auch wenn Partial später geladen wird)
+      function applyFpsToggle(checked) {
+        active = checked;
+        fpsEl.style.display = checked ? "" : "none";
+        if (checked) {
+          frames = 0;
+          lastTime = performance.now();
+        }
       }
-    }
 
-    document.addEventListener("change", (e) => {
-      if (e.target.id === "fps-display") applyFpsToggle(e.target.checked);
-    });
+      document.addEventListener("change", (e) => {
+        if (e.target.id === "fps-display") applyFpsToggle(e.target.checked);
+      });
 
-    // Startzustand synchronisieren sobald Checkbox im DOM ist
-    const fpsObserver = new MutationObserver(() => {
-      const chk = document.getElementById("fps-display");
-      if (chk) {
-        applyFpsToggle(chk.checked);
-        fpsObserver.disconnect();
-      }
-    });
-    fpsObserver.observe(document.body, { childList: true, subtree: true });
-  })();
-</script>
+      // Startzustand synchronisieren sobald Checkbox im DOM ist
+      const fpsObserver = new MutationObserver(() => {
+        const chk = document.getElementById("fps-display");
+        if (chk) {
+          applyFpsToggle(chk.checked);
+          fpsObserver.disconnect();
+        }
+      });
+      fpsObserver.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
 </body>

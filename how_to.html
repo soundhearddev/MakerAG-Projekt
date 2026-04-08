@@ -46,61 +46,20 @@
       </h4>
 
       <div class="code-block">
-        <button class="copy-btn" aria-label="Code kopieren">Kopieren</button>
-        <code>ssh -i /path/to/your/key.pem -L 80:127.0.0.1:80 -N
-            maintain@10.1.200.8 -p 222</code>
+        <code>ssh -L 80:127.0.0.1:8080 -N maintain@10.1.200.8 -p 222</code>
       </div>
 
       <h4>
         <p>
           Wenn dies getan ist, können Sie Ihren Browser öffnen und auf die
           Seite
-          <a href="http://localhost" target="_blank">http://localhost</a>
+          <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
           navigieren.
         </p>
       </h4>
     </div>
   </div>
 
-  <script>
-    // Copy Button Logik
-    document.querySelectorAll(".code-block").forEach((block) => {
-      const btn = block.querySelector(".copy-btn");
-      const code = block.querySelector("code");
-      if (!btn || !code) return;
-
-      btn.addEventListener("click", () => {
-        const text = code.innerText;
-        navigator.clipboard
-          .writeText(text)
-          .then(() => {
-            btn.textContent = "✓ Kopiert!";
-            btn.classList.add("copied");
-            setTimeout(() => {
-              btn.textContent = "Kopieren";
-              btn.classList.remove("copied");
-            }, 2000);
-          })
-          .catch(() => {
-            // Fallback fuer aeltere Browser
-            const ta = document.createElement("textarea");
-            ta.value = text;
-            ta.style.position = "fixed";
-            ta.style.opacity = "0";
-            document.body.appendChild(ta);
-            ta.select();
-            document.execCommand("copy");
-            document.body.removeChild(ta);
-            btn.textContent = "✓ Kopiert!";
-            btn.classList.add("copied");
-            setTimeout(() => {
-              btn.textContent = "Kopieren";
-              btn.classList.remove("copied");
-            }, 2000);
-          });
-      });
-    });
-  </script>
 </body>
 
 </html>
