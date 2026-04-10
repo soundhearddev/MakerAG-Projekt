@@ -69,31 +69,41 @@
   font-size: 1.5rem;
   font-weight: 600;
   color: #157515;
-} /* grün */
+}
+
+/* grün */
 .condition-beschädigt {
   font-size: 1.5rem;
   font-weight: 600;
 
   color: #d26b00;
-} /* orange */
+}
+
+/* orange */
 .condition-defekt {
   font-size: 1.5rem;
   font-weight: 600;
 
   color: #b71c1c;
-} /* rot */
+}
+
+/* rot */
 .condition-neu {
   font-size: 1.5rem;
   font-weight: 600;
 
   color: #0b63d6;
-} /* blau */
+}
+
+/* blau */
 .condition-unbekannt {
   font-size: 1.5rem;
   font-weight: 600;
 
   color: #666;
-} /* grau */
+}
+
+/* grau */
 
 /* Beschreibungstext unter dem Header */
 #item-description {
@@ -107,4 +117,193 @@
   font-weight: 600;
   margin-top: 15px;
   padding-left: 20px;
+}
+
+
+/* ── Editor-Layout-Helfer ──────────────────────────────────────────────── */
+
+.editor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.editor-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 280px;
+}
+
+/* ── Popup ─────────────────────────────────────────────────────────────── */
+
+.edit-popup {
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--cat-secondary, #1e1e1e);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+
+.edit-btn {
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+  border: 1px solid transparent;
+}
+
+.edit-btn--primary {
+  background: var(--accent-color, #2563eb);
+  color: #fff;
+  border-color: var(--accent-color, #2563eb);
+}
+
+.edit-btn--primary:hover {
+  opacity: 0.85;
+}
+
+.edit-btn--primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.edit-btn--secondary {
+  background: transparent;
+  color: var(--text-muted, #888);
+  border-color: var(--text-muted, #888);
+}
+
+.edit-btn--secondary:hover {
+  opacity: 0.7;
+}
+
+/* ── Inputs & Selects ──────────────────────────────────────────────────── */
+
+.edit-input,
+.edit-select {
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color, #555);
+  background: var(--cat-primary, #2a2a2a);
+  color: inherit;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.edit-input:focus,
+.edit-select:focus {
+  outline: none;
+  border-color: var(--accent-color, #2563eb);
+}
+
+/* ── Feldlabel im Editor ───────────────────────────────────────────────── */
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.edit-field__label {
+  font-size: 0.82rem;
+  color: var(--text-muted, #888);
+  font-weight: 600;
+}
+
+/* ── Galerie-Bild ──────────────────────────────────────────────────────── */
+
+.gallery-img {
+  height: 300px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.15s;
+}
+
+.gallery-img:hover {
+  opacity: 0.85;
+}
+
+
+
+/* ── Location Drawer ───────────────────────────────────────────────────── */
+
+.loc-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--cat-secondary, #1a1a1a);
+  border: 1px solid var(--border-color, #333);
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+/* Suchfeld — volle Breite */
+.loc-search {
+  width: 100%;
+}
+
+/* Scrollbare Location-Liste */
+.loc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 6px;
+}
+
+.loc-list__item {
+  padding: 7px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border-color, #2a2a2a);
+}
+
+.loc-list__item:last-child {
+  border-bottom: none;
+}
+
+.loc-list__item:hover {
+  background: var(--cat-primary, #252525);
+}
+
+.loc-list__item.is-selected {
+  background: var(--accent-color, #2563eb);
+  color: #fff;
+  font-weight: 600;
+}
+
+.loc-list__empty {
+  padding: 10px;
+  font-size: 0.85rem;
+  color: var(--text-muted, #777);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Notiz-Bereich */
+.loc-note-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Aktionszeile */
+.loc-actions {
+  margin-top: 2px;
+}
+
+[hidden] {
+  display: none !important;
 }

@@ -111,6 +111,7 @@
     loadSettings();
     applyAllSettings();
     setupEventListeners();
+    loadUpdateInfo();
 
     const container = document.querySelector(".settings-container");
     if (container) {
@@ -118,6 +119,8 @@
       // ohne timeout würde man die animation nie sehen weil sie schon beim ersten paint fertig wäre
       setTimeout(() => (container.style.opacity = "1"), 50);
     }
+
+    // Hier soll das mit ding config.json oder in utillity
 
     log("Settings System initialisiert");
   }
@@ -487,13 +490,9 @@
     const pipesOnClickEl = document.getElementById("pipes-on-click");
     if (pipesOnClickEl) pipesOnClickEl.checked = settings.pipesOnClick;
 
-
-
-
     const vimModeEl = document.getElementById("vim-mode");
     if (vimModeEl) vimModeEl.checked = settings.vimMode;
     applyVimMode(settings.vimMode);
-
 
     log("Alle Einstellungen angewendet");
   }
@@ -741,6 +740,50 @@
       if (window.VimBar) window.VimBar.close();
       const bar = document.getElementById("vim-bar");
       if (bar) bar.style.display = "none";
+    }
+  }
+
+  // Lädt infos
+  async function loadUpdateInfo() {
+    const updateEl = document.getElementById("update");
+    const versionEl = document.getElementById("app-version");
+
+    if (!updateEl && !versionEl) {
+      log("Keine Update/Version-Elemente gefunden");
+      return;
+    }
+
+    const formatDate = (date) =>
+      date.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+
+    try {
+      const res = await fetch("/config.json", { cache: "no-store" });
+
+      if (!res.ok) throw new Error("config.json nicht gefunden");
+
+      const data = await res.json();
+
+      if (versionEl) {
+        versionEl.textContent = data.version ?? "unknown";
+        if (!data.version) log("Version fehlt in config.json");
+      }
+
+      if (updateEl) {
+        if (!data.lastUpdate) throw new Error("lastUpdate fehlt");
+
+        const date = new Date(data.lastUpdate);
+        if (isNaN(date)) throw new Error("Ungültiges Datum");
+
+        updateEl.textContent = formatDate(date);
+      }
+
+      log("Version & Update geladen:", data);
+
+    } catch (err) {
+      log("Fallback aktiv:", err.message);
+
+      if (versionEl) versionEl.textContent = "dev";
+      if (updateEl) updateEl.textContent = formatDate(new Date(document.lastModified));
     }
   }
 

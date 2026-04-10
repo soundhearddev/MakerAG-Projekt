@@ -79,12 +79,12 @@ input.settings-icon[type="checkbox"] {
   left: -9999px;
 }
 
-/* ===== SETTINGS ICON (HAMBURGER) ===== */
+/* ===== SETTINGS ICON ===== */
 .settings-icon:checked+label,
 .settings-icon:not(:checked)+label {
   position: fixed;
   top: 63px;
-  right: 100px;
+  right: 75px;
   display: block;
   width: 30px;
   height: 30px;

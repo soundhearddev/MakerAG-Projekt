@@ -1,34 +1,35 @@
-// vim-bar.js
-// Keine externe Abhängigkeit, kein CSS-Framework.
-// Einzige Voraussetzung: vim-commands.js vorher geladen (window.VimCommands).
+// WICHTIG: vim_commands.js muss vor diesem Script eingebunden werden!!!
+
+// Diese ganze Vim Sache ist alles SEHR simpel gehalten. Nichts wirklich besonderes hier. Es ist wirklich eigentlich traditioneller Javscript code wie bei jeder anderen datei auch. Aber es ist halt trotzdem ziemlich gut rausgekommen. Es hat auch lowkey Spaß gemacht die bar und die befehle zu erstellen. 
+
 
 (function () {
   "use strict";
 
   // ── CSS-Variablen aus dem aktiven Theme lesen ─────────────────────────────
   // Liest die --cat-* Variablen die vom Settings-Theme-System gesetzt werden.
-  // Fallback auf Hardcoded-Werte falls kein Theme aktiv ist.
-  function themeVar(name, fallback) {
+  function themeVar(name) {
     const val = getComputedStyle(document.documentElement)
       .getPropertyValue(name)
       .trim();
-    return val || fallback;
+    return val;
   }
+
 
   function getColors() {
     return {
-      primary: themeVar("--cat-primary", "#1a1a1a"),
-      secondary: themeVar("--cat-secondary", "#2a2a2a"),
-      accent: themeVar("--cat-accent", "#4a9eff"),
-      text: themeVar("--cat-text", "#ffffff"),
-      extra: themeVar("--cat-extra", "#666666"),
+      primary: themeVar("--cat-primary"),
+      secondary: themeVar("--cat-secondary"),
+      accent: themeVar("--cat-accent"),
+      text: themeVar("--cat-text"),
+      extra: themeVar("--cat-extra"),
     };
   }
 
-  // ── Styles setzen (auch nach Theme-Wechsel neu aufrufbar) ─────────────────
+  // ── Styles setzen ─────────────────
   function applyStyles() {
     const c = getColors();
-
+    // jaja etwas schlecht CSS in JS
     bar.style.cssText = `
       display: none;
       position: fixed;
@@ -114,9 +115,9 @@
 
   // Styles initial setzen
   applyStyles();
-  bar.style.display = "none"; // nach applyStyles wieder verstecken
-
-  // Theme-Wechsel mithören → Farben neu setzen
+  bar.style.display = "none"; 
+  
+  // Theme-Wechsel → Farben neu setzen
   window.addEventListener("themeChanged", () => {
     const wasVisible = bar.style.display !== "none";
     applyStyles();
@@ -136,6 +137,7 @@
   let helpOverlay = null;
   let isHelpOpen = false;
 
+  // Ich habe die Help funktion als aller erstes erstellt und dann ist mir beim version befehl erst eingefallen, dass ich ja schon ein fertiges Framework für so fenster habe... Deswegen ist jetzt halt :help das einzige besondere Fenster welches halt so dieses Terminal artige layout hat. Das ganze ist sogar ziemlich simpel gehalten: Es erstellt ein Overlay-Div, welches am unteren Bildschirmrand erscheint und dann dort halt inhalt anzeigt. 
   function renderHelp() {
     const c = getColors();
     const cmds = window.VimCommands || [];
@@ -219,6 +221,7 @@
     for (const cmd of cmds) {
       if (cmd.match instanceof RegExp) {
         const src = cmd.match.source
+        // Regex ist so unglaublich grauenvoll.
           .replace(/^\^/, "")
           .replace(/\$$/, "")
           .replace(/\(\\S\+\)/g, "<arg>")
