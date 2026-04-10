@@ -85,7 +85,7 @@
   padding: 1.5rem;
   background: var(--cat-secondary);
   border: 1px solid var(--cat-extra);
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
   transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
