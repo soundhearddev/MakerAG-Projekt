@@ -14,7 +14,7 @@
 require_once __DIR__ . '/init.php';
 
 $itemId = getIntParam('id');
-$type   = getStringParam('type', 'pdf'); // Standard: nur PDFs
+$type = getStringParam('type', 'pdf'); // Standard: nur PDFs
 
 if ($itemId <= 0) {
     sendError('Fehlende oder ungültige id', 400);
@@ -22,8 +22,8 @@ if ($itemId <= 0) {
 
 // ─── Erlaubte Dateierweiterungen je Typ ───────────────────────────────────────
 $imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'];
-$pdfExts   = ['pdf'];
-$dataExts  = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'csv', 'zip'];
+$pdfExts = ['pdf'];
+$dataExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'csv', 'zip'];
 
 // ─── Zu durchsuchende Verzeichnisse bestimmen ────────────────────────────────
 // rtrim entfernt den abschließenden / falls DOCUMENT_ROOT ihn hat
@@ -34,34 +34,49 @@ $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '/var/www/public', '/');
 // 'path' = absoluter Pfad auf dem Server (für is_dir, scandir, filesize usw.)
 // 'webBase' = relativer Web-Pfad der im JSON zurückgegeben wird (für den Browser)
 $dirs = match ($type) {
-    'image' => [[
-        'path'    => "{$docRoot}/docs/{$itemId}/images/",
-        'webBase' => "/docs/{$itemId}/images/",
-        'exts'    => $imageExts,
-    ]],
-    'pdf' => [[
-        'path'    => "{$docRoot}/docs/{$itemId}/data/",
-        'webBase' => "/docs/{$itemId}/data/",
-        'exts'    => $pdfExts,
-    ]],
+    'image' => [
+        [
+            'path' => "{$docRoot}/docs/{$itemId}/images/",
+            'webBase' => "/docs/{$itemId}/images/",
+            'exts' => $imageExts,
+        ]
+    ],
+    'pdf' => [
+        [
+            'path' => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts' => $pdfExts,
+        ]
+    ],
+
+    'html' => [
+        [
+            'path' => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts' => ['html', 'htm'],
+        ]
+    ],
+
     'all' => [
         [
-            'path'    => "{$docRoot}/docs/{$itemId}/images/",
+            'path' => "{$docRoot}/docs/{$itemId}/images/",
             'webBase' => "/docs/{$itemId}/images/",
-            'exts'    => $imageExts,
+            'exts' => $imageExts,
         ],
         [
-            'path'    => "{$docRoot}/docs/{$itemId}/data/",
+            'path' => "{$docRoot}/docs/{$itemId}/data/",
             'webBase' => "/docs/{$itemId}/data/",
-            'exts'    => $dataExts,
+            'exts' => $dataExts,
         ],
     ],
     // default = alles was nicht 'image', 'pdf', 'all' ist → data-Ordner
-    default => [[
-        'path'    => "{$docRoot}/docs/{$itemId}/data/",
-        'webBase' => "/docs/{$itemId}/data/",
-        'exts'    => $dataExts,
-    ]],
+    default => [
+        [
+            'path' => "{$docRoot}/docs/{$itemId}/data/",
+            'webBase' => "/docs/{$itemId}/data/",
+            'exts' => $dataExts,
+        ]
+    ],
 };
 
 // ─── Dateien einlesen ─────────────────────────────────────────────────────────
@@ -103,21 +118,22 @@ foreach ($dirs as $dir) {
         // match(true) = der erste case der true ergibt wird genommen
         // in_array für Listen, direkter Vergleich für einzelne Werte
         $fileType = match (true) {
-            in_array($ext, $imageExts, true)           => 'image',
-            $ext === 'pdf'                             => 'pdf',
-            in_array($ext, ['doc', 'docx'], true)      => 'document',
-            in_array($ext, ['xls', 'xlsx'], true)      => 'spreadsheet',
-            default                                    => 'file',
+            in_array($ext, $imageExts, true) => 'image',
+            $ext === 'pdf' => 'pdf',
+            in_array($ext, ['html', 'htm'], true) => 'html',
+            in_array($ext, ['doc', 'docx'], true) => 'document',
+            in_array($ext, ['xls', 'xlsx'], true) => 'spreadsheet',
+            default => 'file',
         };
 
         $files[] = [
-            'filename'   => $filename,
-            'path'       => $dir['webBase'] . $filename,  // Web-Pfad für den Browser
-            'type'       => $fileType,
-            'ext'        => $ext,
-            'size'       => filesize($fullPath),           // Dateigröße in Bytes
+            'filename' => $filename,
+            'path' => $dir['webBase'] . $filename,  // Web-Pfad für den Browser
+            'type' => $fileType,
+            'ext' => $ext,
+            'size' => filesize($fullPath),           // Dateigröße in Bytes
             // date() mit filemtime() = letzte Änderungszeit als lesbaren String
-            'modified'   => date('Y-m-d H:i:s', filemtime($fullPath)),
+            'modified' => date('Y-m-d H:i:s', filemtime($fullPath)),
         ];
     }
 }

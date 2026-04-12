@@ -195,7 +195,7 @@ async function loadRandomItem() {
             </div>
         `;
 
-    button.textContent = "Neues zufälliges Item";
+    button.textContent = "Neuen zufälligen Gegenstand";
   } catch (err) {
     log.error("Fehler beim Laden des zufälligen Items:", err);
     statusDiv.innerHTML = `<p class="error-message">Fehler: ${err.message}</p>`;

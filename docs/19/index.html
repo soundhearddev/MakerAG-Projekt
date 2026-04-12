@@ -1,48 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MakerAG</title>
+    <script src="/js/theme-loader.js"></script>
+    <link rel="stylesheet" href="/styles/animation.css" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Item Detail</title>
-    <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/docs.css">
-    <link rel="icon" href="/images/logo.png">
-</head>
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/docs.css" />
+    <link rel="icon" href="/images/logo.png" type="image/png" />
 
-<body>
+    <script src="js/loader.js"></script>
+  </head>
+
+  <body>
+    <div class="page-loader">
+      <div class="loader-spinner"></div>
+    </div>
 
     <div id="header"></div>
     <div id="nav"></div>
     <div id="settings"></div>
 
     <div class="container">
-        <div>
-            <h1 id="item-title">Lädt…</h1>
-            <div id="status"></div>
-        </div>
-        <p id="item-description"></p>
+      <div>
+        <h1 id="item-title">Lädt…</h1>
+        <div id="status"></div>
+      </div>
+      <p id="item-description"></p>
     </div>
 
     <div class="container">
-        <h2>Specs:</h2>
-        <ul id="specs-list">
-            <li>Lädt…</li>
-        </ul>
+      <h2>Specs:</h2>
+      <ul id="specs-list">
+        <li>Lädt…</li>
+      </ul>
     </div>
 
     <div class="container">
-        <p><strong>Bilder:</strong></p>
-        <div id="image-gallery" style="display: flex; overflow-x: auto; gap: 10px;"></div>
+      <p><strong>Bilder:</strong></p>
+      <div
+        id="image-gallery"
+        style="display: flex; overflow-x: auto; gap: 10px"
+      ></div>
     </div>
 
-    <div class="container" id="docs-container">
-        
-    </div>
+    <div class="container" id="docs-container"></div>
 
     <script src="/js/loader.js"></script>
     <script src="/js/item.js"></script>
-
-</body>
-
+  </body>
 </html>

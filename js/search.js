@@ -1,3 +1,11 @@
+//  ██████╗███████╗ █████╗ ██████╗  █████╗ ██╗  ██╗        ██╗ ██████╗
+// ██╔════╝██╔════╝██╔══██╗██╔══██╗██╔══██╗██║  ██║        ██║██╔════╝
+// ╚█████╗ █████╗  ███████║██████╔╝██║  ╚═╝███████║        ██║╚█████╗ 
+//  ╚═══██╗██╔══╝  ██╔══██║██╔══██╗██║  ██╗██╔══██║   ██╗  ██║ ╚═══██╗
+// ██████╔╝███████╗██║  ██║██║  ██║╚█████╔╝██║  ██║██╗╚█████╔╝██████╔╝
+// ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝ ╚════╝ ╚═════╝ 
+
+
 // =============================================================================
 // DEBUG-LOGGING SYSTEM
 // =============================================================================
@@ -215,7 +223,7 @@ async function searchItems(query) {
       order: state.sortOrder,
       limit: state.limit,
       searchFor: state.searchFor,
-      ...(state.categoryId > 0 && { category_id: state.categoryId }), // ← neu
+      ...(state.categoryId > 0 && { category_id: state.categoryId }),
     });
 
     // log.debug("Sende Such-Anfrage mit Parametern:", params.toString());
@@ -347,10 +355,10 @@ function renderTable(data, query) {
       query !== "" && String(item.id) === String(query).trim();
     if (isExactIdMatch) row.classList.add("exact-match");
 
-    // Zeile klickbar machen
-    row.addEventListener("click", () => {
-      window.location.href = `/docs/${item.id}/index.html`;
-    });
+    // Zeile klickbar machen (optional. hat mich manchmal genervt als ich infos kopieren wollte)
+    //    row.addEventListener("click", () => {
+    //      window.location.href = `/docs/${item.id}/index.html`;
+    //    });
 
     const SEARCH_FOR_FIELD_MAP = {
       ID: "id",
@@ -485,6 +493,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   initFromUrl();
+  updateSortIndicators();
+  initTableSorting();
+  updateSortIndicators();
 });
 // =============================================================================
 // SORT & FILTER CONTROLS
@@ -522,6 +533,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+
+// =============================================================================
+// TABLE SORT INDICATORS
+// =============================================================================
+function updateSortIndicators() {
+  document.querySelectorAll("#resultsTable th[data-sort]").forEach((th) => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (th.dataset.sort === state.sortField) {
+      th.classList.add(state.sortOrder === "ASC" ? "sort-asc" : "sort-desc");
+    }
+  });
+}
+
+
+
+function initTableSorting() {
+  document.querySelectorAll("#resultsTable th[data-sort]").forEach((th) => {
+    th.addEventListener("click", () => {
+      const field = th.dataset.sort;
+
+      if (state.sortField === field) {
+        state.sortOrder = state.sortOrder === "ASC" ? "DESC" : "ASC";
+      } else {
+        state.sortField = field;
+        state.sortOrder = "ASC";
+      }
+
+      // Dropdowns synchron halten
+      const sortFieldEl = document.getElementById("sortField");
+      const sortOrderEl = document.getElementById("sortOrder");
+      if (sortFieldEl) sortFieldEl.value = state.sortField;
+      if (sortOrderEl) sortOrderEl.value = state.sortOrder;
+
+      updateSortIndicators();
+      searchItems(state.currentQuery);
+    });
+  });
+}
 
 // =============================================================================
 // PAGE VISIBILITY

@@ -54,7 +54,6 @@
 .btn-clear {
   position: absolute;
   right: 15px;
-  top: 20%;
   background: transparent;
   border: none;
   color: var(--cat-text);
@@ -245,7 +244,7 @@ td {
 
 tbody tr {
   transition: background 0.15s ease;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 tbody tr:hover {
@@ -403,25 +402,43 @@ td.item-id {
 
 .skeleton-cell {
   height: 14px;
-  background: linear-gradient(
-    90deg,
-    var(--cat-extra) 25%,
-    color-mix(in srgb, var(--cat-extra) 60%, var(--cat-secondary)) 50%,
-    var(--cat-extra) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--cat-extra) 25%,
+      color-mix(in srgb, var(--cat-extra) 60%, var(--cat-secondary)) 50%,
+      var(--cat-extra) 75%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease infinite;
 }
 
-.skeleton-cell.w-sm  { width: 40px; }
-.skeleton-cell.w-md  { width: 80px; }
-.skeleton-cell.w-lg  { width: 140px; }
-.skeleton-cell.w-xl  { width: 200px; }
-.skeleton-cell.w-sq  { width: 40px; height: 40px; }
+.skeleton-cell.w-sm {
+  width: 40px;
+}
+
+.skeleton-cell.w-md {
+  width: 80px;
+}
+
+.skeleton-cell.w-lg {
+  width: 140px;
+}
+
+.skeleton-cell.w-xl {
+  width: 200px;
+}
+
+.skeleton-cell.w-sq {
+  width: 40px;
+  height: 40px;
+}
 
 @keyframes skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ==============================================
@@ -469,10 +486,21 @@ td.item-id {
   transform: translateX(0);
 }
 
-.toast-success { border-left-color: #7ecf90; }
-.toast-warning { border-left-color: #f5c26b; }
-.toast-error   { border-left-color: #f08080; }
-.toast-info    { border-left-color: var(--cat-accent); }
+.toast-success {
+  border-left-color: #7ecf90;
+}
+
+.toast-warning {
+  border-left-color: #f5c26b;
+}
+
+.toast-error {
+  border-left-color: #f08080;
+}
+
+.toast-info {
+  border-left-color: var(--cat-accent);
+}
 
 /* ==============================================
    RESPONSIVE
@@ -501,7 +529,8 @@ td.item-id {
     flex: 1;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.5rem 0.65rem;
   }
 
@@ -521,7 +550,8 @@ td.item-id {
     font-size: 0.78rem;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.4rem 0.5rem;
   }
 }

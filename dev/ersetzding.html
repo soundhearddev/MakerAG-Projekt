@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <style>
+    body {
+      background: rgb(28, 28, 28);
+      color: white;
+    }
+  </style>
+  <body>
+    <!-- 
+    Ganz ganz mini datei einfach nur zum ersezten von zeichen in einem text. SEHR SEHR SIMPEL GEHALTEN.
+    Der grund dafür ist weil ich diese coolen riesen text überschriften gemacht habe so hier mit: https://fsymbols.com/generators/tarty/ 
+    Problem war nur, dass es halt diese hässlichen ░ zeichen hatte... deshalb diese datei.
+    
+    -->
+
+    <h3>Zeichen ersetzen</h3>
+
+    <textarea
+      id="input"
+      rows="10"
+      cols="60"
+      placeholder="Text hier einfügen..."
+    ></textarea>
+    <br /><br />
+
+    <input id="search" placeholder="Was ersetzen?" />
+    <input id="replace" placeholder="Womit ersetzen?" />
+    <br /><br />
+
+    <button onclick="doReplace()">Ersetzen</button>
+
+    <br />
+    <pre id="output"></pre>
+
+    <script>
+      function doReplace() {
+        let text = document.getElementById("input").value;
+        let search = document.getElementById("search").value;
+        let replace = document.getElementById("replace").value;
+
+        let result = text.split(search).join(replace);
+
+        document.getElementById("output").textContent = result;
+      }
+    </script>
+  </body>
+</html>

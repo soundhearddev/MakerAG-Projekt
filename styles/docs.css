@@ -1,6 +1,10 @@
+/* Ich weiß gar nicht warum das hier docs heißt und nicht irgentwie items. so es macht wenig Sinn. es ist ja der style von den Gegenständen also den infos dazu */
+
+
+
 #item-title {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 2rem;
   line-height: 1.1;
   font-weight: 700;
 }

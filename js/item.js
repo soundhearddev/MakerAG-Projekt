@@ -1,9 +1,10 @@
-// ██╗████████╗███████╗███╗░░░███╗░░░░░░░░██╗░██████╗
-// ██║╚══██╔══╝██╔════╝████╗░████║░░░░░░░░██║██╔════╝
-// ██║░░░██║░░░█████╗░░██╔████╔██║░░░░░░░░██║╚█████╗░
-// ██║░░░██║░░░██╔══╝░░██║╚██╔╝██║░░░██╗░░██║░╚═══██╗
-// ██║░░░██║░░░███████╗██║░╚═╝░██║██╗╚█████╔╝██████╔╝
-// ╚═╝░░░╚═╝░░░╚══════╝╚═╝░░░░░╚═╝╚═╝░╚════╝░╚═════╝░
+// ██╗████████╗███████╗███╗   ███╗        ██╗ ██████╗
+// ██║╚══██╔══╝██╔════╝████╗ ████║        ██║██╔════╝
+// ██║   ██║   █████╗  ██╔████╔██║        ██║╚█████╗ 
+// ██║   ██║   ██╔══╝  ██║╚██╔╝██║   ██╗  ██║ ╚═══██╗
+// ██║   ██║   ███████╗██║ ╚═╝ ██║██╗╚█████╔╝██████╔╝
+// ╚═╝   ╚═╝   ╚══════╝╚═╝     ╚═╝╚═╝ ╚════╝ ╚═════╝ 
+
 (function () {
   "use strict";
 
@@ -79,10 +80,9 @@
 
       const item = data.data[0];
 
-      // Titel
-      const title = item.category_id == 4
-        ? (item.name || item.model)
-        : `${item.brand} ${item.model}`;
+
+      // TITEL 
+      const title = item.name || `${item.brand} ${item.model}`;
 
       document.title = title;
       document.getElementById("item-title").textContent = title;
@@ -90,14 +90,8 @@
       // Beschreibung
       if (item.name) {
         const descEl = document.getElementById("item-description");
-        if (item.category_id == 4 && item.brand) {
-          const a = document.createElement("a");
-          a.href = item.brand;
-          a.target = "_blank";
-          a.textContent = item.name;
-          descEl.appendChild(a);
-        } else {
-          descEl.textContent = item.name;
+        if (item.brand || item.model) {
+          descEl.textContent = `${item.brand ?? ""} ${item.model ?? ""}`.trim();
         }
       }
 
@@ -183,22 +177,33 @@
         });
 
       // PDFs
-      fetch(`/api/get_data.php?id=${id}&type=pdf`)
-        .then((res) => res.json())
-        .then((pdfData) => {
-          const files = pdfData.data || [];
-          if (!files.length) return;
-          const docsContainer = document.getElementById("docs-container");
-          const heading = document.createElement("p");
-          heading.innerHTML = "<strong>Dokumente:</strong>";
-          docsContainer.appendChild(heading);
-          files.forEach((file) => {
-            const p = document.createElement("p");
-            p.innerHTML = `📄 <a href="${file.path}" target="_blank">${file.filename.replace(/\.pdf$/i, "")}</a>`;
-            docsContainer.appendChild(p);
-          });
-        })
-        .catch((err) => console.warn("PDF-Liste:", err));
+      Promise.all([
+        fetch(`/api/get_data.php?id=${id}&type=pdf`).then(r => r.json()),
+        fetch(`/api/get_data.php?id=${id}&type=html`).then(r => r.json()),
+      ]).then(([pdfData, htmlData]) => {
+        console.log("PDF files:", pdfData.data);
+        console.log("HTML files:", htmlData.data);
+
+        const files = [
+          ...(pdfData.data || []).map(f => ({ ...f, icon: "📄" })),
+          ...(htmlData.data || []).map(f => ({ ...f, icon: "🌐" })),
+        ];
+        if (!files.length) return;
+        const docsContainer = document.getElementById("docs-container");
+        const heading = document.createElement("p");
+        heading.innerHTML = "<strong>Dokumente:</strong>";
+        docsContainer.appendChild(heading);
+        files.forEach((file) => {
+          const p = document.createElement("p");
+          const isPdf = file.filename.match(/\.pdf$/i);
+          const name = file.filename
+            .replace(/\.(pdf|html?)$/i, "")
+            .replace(/--\s*pdf\s*version/i, isPdf ? "-- PDF version" : "-- HTML version");
+          p.innerHTML = `${file.icon} <a href="${file.path}" target="_blank">${name}</a>`;
+          docsContainer.appendChild(p);
+        });
+
+      }).catch((err) => console.warn("Dokumente:", err));
     });
 
   // ── Status Editor ────────────────────────────────────────────────────────
@@ -281,6 +286,10 @@
   // ── Location Editor ──────────────────────────────────────────────────────
 
   function buildLocationEditor(container, item) {
+
+    // falls website einfach nicht laden
+    if (item.category_id == 4) return;
+
     const wrapper = document.createElement("div");
     wrapper.className = "info-line info-standort";
     wrapper.setAttribute("data-label", "standort");

@@ -1,3 +1,10 @@
+// ██╗   ██╗██╗███╗   ███╗      ██████╗  █████╗ ██████╗         ██╗ ██████╗
+// ██║   ██║██║████╗ ████║      ██╔══██╗██╔══██╗██╔══██╗        ██║██╔════╝
+// ╚██╗ ██╔╝██║██╔████╔██║█████╗██████╦╝███████║██████╔╝        ██║╚█████╗ 
+//  ╚████╔╝ ██║██║╚██╔╝██║╚════╝██╔══██╗██╔══██║██╔══██╗   ██╗  ██║ ╚═══██╗
+//   ╚██╔╝  ██║██║ ╚═╝ ██║      ██████╦╝██║  ██║██║  ██║██╗╚█████╔╝██████╔╝
+//    ╚═╝   ╚═╝╚═╝     ╚═╝      ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚════╝ ╚═════╝ 
+
 // WICHTIG: vim_commands.js muss vor diesem Script eingebunden werden!!!
 
 // Diese ganze Vim Sache ist alles SEHR simpel gehalten. Nichts wirklich besonderes hier. Es ist wirklich eigentlich traditioneller Javscript code wie bei jeder anderen datei auch. Aber es ist halt trotzdem ziemlich gut rausgekommen. Es hat auch lowkey Spaß gemacht die bar und die befehle zu erstellen. 

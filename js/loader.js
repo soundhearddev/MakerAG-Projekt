@@ -1,8 +1,17 @@
-// Der Zweg dieser datei ist es die partials, also die einzelenen html dateien wie den header, den nav oder die Settings in eine html seite zu laden.
-// Ich hatte wenig Lust in jede datei die settings datei immer anzupassen, vorallem bei den settings weil das schon so 300 zeilen an Code sind.
-// Diese Methode, die hier gewählt wurde ist wahrscheinlich nicht die Optimierteste version, funktioniert aber (die hälfte der Zeit)...
+// ██╗      █████╗  █████╗ ██████╗ ███████╗██████╗         ██╗ ██████╗
+// ██║     ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗        ██║██╔════╝
+// ██║     ██║  ██║███████║██║  ██║█████╗  ██████╔╝        ██║╚█████╗ 
+// ██║     ██║  ██║██╔══██║██║  ██║██╔══╝  ██╔══██╗   ██╗  ██║ ╚═══██╗
+// ███████╗╚█████╔╝██║  ██║██████╔╝███████╗██║  ██║██╗╚█████╔╝██████╔╝
+// ╚══════╝ ╚════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝ ╚════╝ ╚═════╝
 
-// viele Probleme kamen auch durch dieses laden. So wenn man html/css daten in eine andere datei lädt sind SEHR oft die timing fehler, wo es dann einfach nichts mehr richtig anpassen kann.
+
+
+// Der Zweg dieser datei ist es die partials, also die einzelenen html dateien wie den header, den nav oder die Settings in eine html seite zu laden.
+// Ich hatte wenig Lust in jede datei die gleichen sachen immer anzupassen, vorallem bei den settings weil das schon so 300 (mehr) zeilen an Code sind.
+// Diese Methode, die hier gewählt wurde ist wahrscheinlich nicht die Optimierteste version, funktioniert aber (zur hälfte der Zeit)...
+
+// viele Probleme kamen auch durch dieses laden. So wenn man html/css dateien in eine andere datei lädt sind SEHR oft die timing fehler, wo es dann einfach nichts mehr richtig anpassen kann. 
 
 // Cache für geladene HTML-Dateien
 const htmlCache = new Map();
@@ -86,7 +95,7 @@ async function loadHTML(id, file, useCache = true) {
     // Event Listener für Settings initialisieren
     initializeSettingsEvents();
 
-    
+
 
     // Komponente als geladen markieren
     // variabel ++ = +1
