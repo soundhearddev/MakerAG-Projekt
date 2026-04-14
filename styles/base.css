@@ -199,6 +199,19 @@ button:hover,
   transform: translateY(-2px);
 }
 
+.edit-btn--primary:hover {
+  opacity: 0.85;
+  color: var(--cat-primary); /* base.css button:hover überschreiben */
+}
+
+.edit-btn--secondary:hover {
+  opacity: 0.7;
+  color: var(--cat-extra);
+}
+
+
+
+
 .btn:active,
 button:active,
 #load-latest:active {
