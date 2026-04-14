@@ -1,19 +1,6 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-
-/*
-DATENBANK:
-
-CREATE TABLE feedback (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
-    name       VARCHAR(255) NOT NULL,
-    problem    TEXT NOT NULL,
-    created_at DATETIME NOT NULL
-);
-
-
-*/
 // Nur POST erlauben
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendError('Methode nicht erlaubt', 405);

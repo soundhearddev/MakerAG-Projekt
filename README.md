@@ -40,12 +40,4 @@ Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. 
 
 - **Hardware:** Raspberry Pi 4 B 2GB
 
-- **Verbindung:** haubtsächtlich SSH
-
-- **IDE:** VS Code
-
-
-
-
-
 
