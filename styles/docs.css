@@ -164,7 +164,7 @@
 
 .edit-btn--primary {
   background: var(--cat-accent);
-  color: var(--cat-primary);
+  color: var(--cat-text);
   border-color: var(--cat-accent);
 }
 
