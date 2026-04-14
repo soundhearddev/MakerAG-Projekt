@@ -198,12 +198,12 @@ const OBJECTS = [
     link: '/search.html?searchFor=Raum&query=Lager',
   },
   {
-    id: '12', name: 'Schrank 12', type: 'cabinet-green',
+    id: '0', name: 'Schrank 0', type: 'cabinet-green',
     gridCol: 10, gridRow: 13,
     zIndex: 1,
     cat: 'Allgemein', loc: 'U24',
     items: null, cap: null,
-    link: null,
+    link: '/search.html?searchFor=Locker&query=0',
   },
   {
     id: '8', name: 'Schrank 8', type: 'cabinet-green',
