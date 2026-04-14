@@ -62,7 +62,6 @@
       if (loc.room) parts.push(`Raum ${loc.room}`);
       if (loc.schrank) parts.push(`Schrank ${loc.schrank}`);
       if (loc.fach) parts.push(`Fach ${loc.fach}`);
-      if (loc.position) parts.push(loc.position);
     }
     if (note) parts.push(`(${note})`);
     return parts.length ? parts.join(", ") : "—";
