@@ -77,6 +77,11 @@ function buildWalls(floor, wallH = 100) {
 }
 
 
+
+
+
+// NOTE: OBERSCHNRÄCKENOCH IHNZUÜFENG LASO FUNKTION UND SO ALLES HALT DAS!!!!
+
 // ============================================================
 //  DATEN: RÄUME
 // ============================================================
@@ -89,13 +94,52 @@ function buildWalls(floor, wallH = 100) {
 //   spanCols/spanRows = Größe des Raumes in Rasterzellen
 //   wallH    = Wandhöhe in Pixeln
 const ROOMS = [
-  { id: "raum-1", label: "U30", col: 1, row: 2, spanCols: 5, spanRows: 3, wallH: 50 },
-  { id: "raum-2", label: "Flur", col: 6, row: 0, spanCols: 3, spanRows: 24, wallH: 50 },
-  { id: "raum-3", label: "U26", col: 9, row: 0, spanCols: 6, spanRows: 4, wallH: 50 },
-  { id: "raum-4", label: "U25 (MakerAG)", col: 9, row: 4, spanCols: 6, spanRows: 6, wallH: 50 },
-  { id: "raum-5", label: "U24", col: 9, row: 10, spanCols: 6, spanRows: 8, wallH: 50 },
+  {
+    id: 'raum-1',
+    label: 'U30',
+    col: 1,
+    row: 0,
+    spanCols: 5,
+    spanRows: 3,
+    wallH: 50,
+  },
+  {
+    id: 'raum-2',
+    label: 'Flur',
+    col: 6,
+    row: 0,
+    spanCols: 3,
+    spanRows: 24,
+    wallH: 50,
+  },
+  {
+    id: 'raum-3',
+    label: 'U26',
+    col: 9,
+    row: 1,
+    spanCols: 6,
+    spanRows: 4,
+    wallH: 50,
+  },
+  {
+    id: 'raum-4',
+    label: 'U25 (MakerAG)',
+    col: 9,
+    row: 5,
+    spanCols: 6,
+    spanRows: 6,
+    wallH: 50,
+  },
+  {
+    id: 'raum-5',
+    label: 'U24',
+    col: 9,
+    row: 11,
+    spanCols: 6,
+    spanRows: 8,
+    wallH: 50,
+  },
 ];
-
 
 // ============================================================
 //  DATEN: OBJEKTE (Schränke, Räume, Regale usw.)
@@ -113,25 +157,119 @@ const ROOMS = [
 //   items/cap = Belegung (wie voll ist der Schrank?)
 //   link     = URL, die beim Klicken geöffnet wird
 const OBJECTS = [
-  { id: "4", name: "Schrank 4", type: "cabinet-green", gridCol: 10, gridRow: 5, zIndex: 5, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=4" },
-  { id: "2", name: "Schrank 2", type: "cabinet-green", gridCol: 10, gridRow: 8, zIndex: 2, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=2" },
-  { id: "1", name: "Schrank 1", type: "cabinet-green", gridCol: 10, gridRow: 9, zIndex: 1, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=1" },
-  { id: "3", name: "Schrank 3", type: "cabinet-green", gridCol: 10, gridRow: 6, zIndex: 4, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=3" },
-  { id: "S", name: "MakerAG Schrank", type: "cabinet-brown", gridCol: 10, gridRow: 7, zIndex: 3, cat: "Allgemein", loc: "U25", items: null, cap: null, link: "/search.html?searchFor=Locker&query=S" },
-  { id: "A", name: "Abstellraum", type: "room", gridCol: 2, gridRow: 5, zIndex: 0, cat: "Allgemein", loc: "U30", items: null, cap: null, link: "/search.html?searchFor=Locker&query=A" },
-  { id: "5", name: "Neues Objekt", type: "cabinet-green", gridCol: 10, gridRow: 12, zIndex: 2, cat: "Allgemein", loc: "U24", items: null, cap: null, link: null },
-  { id: "6", name: "Neues Objekt", type: "cabinet-green", gridCol: 10, gridRow: 13, zIndex: 1, cat: "Allgemein", loc: "U24", items: null, cap: null, link: null },
-  { id: "7", name: "Neues Objekt", type: "cabinet-green", gridCol: 14, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "8", name: "Neues Objekt", type: "cabinet-green", gridCol: 13, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "9", name: "Neues Objekt", type: "cabinet-green", gridCol: 12, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "10", name: "Neues Objekt", type: "cabinet-green", gridCol: 11, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "11", name: "Neues Objekt", type: "cabinet-green", gridCol: 10, gridRow: 1, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "12", name: "Neues Objekt", type: "cabinet-green", gridCol: 14, gridRow: 4, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "13", name: "Neues Objekt", type: "cabinet-green", gridCol: 13, gridRow: 4, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
-  { id: "14", name: "Neues Objekt", type: "cabinet-green", gridCol: 12, gridRow: 4, zIndex: 0, cat: "Allgemein", loc: "U26", items: null, cap: null, link: null },
+  {
+    id: '2', name: 'Schrank 2', type: 'cabinet-green',
+    gridCol: 10, gridRow: 9,
+    zIndex: 2,
+    cat: 'Allgemein', loc: 'U25',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=2',
+  },
+  {
+    id: '1', name: 'Schrank 1', type: 'cabinet-green',
+    gridCol: 10, gridRow: 10,
+    zIndex: 1,
+    cat: 'Allgemein', loc: 'U25',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=1',
+  },
+  {
+    id: '3', name: 'Schrank 3', type: 'cabinet-green',
+    gridCol: 10, gridRow: 7,
+    zIndex: 4,
+    cat: 'Allgemein', loc: 'U25',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=3',
+  },
+  {
+    id: 'S', name: 'MakerAG Schrank', type: 'cabinet-brown',
+    gridCol: 10, gridRow: 8,
+    zIndex: 3,
+    cat: 'Allgemein', loc: 'U25',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=S',
+  },
+  {
+    id: 'A', name: 'Abstellraum', type: 'room',
+    gridCol: 3, gridRow: 2,
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U30',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=A',
+  },
+  {
+    id: '12', name: 'Schrank 12', type: 'cabinet-green',
+    gridCol: 10, gridRow: 13,
+    zIndex: 1,
+    cat: 'Allgemein', loc: 'U24',
+    items: null, cap: null,
+    link: null,
+  },
+  {
+    id: '8', name: 'Schrank 8', type: 'cabinet-green',
+    gridCol: 13, gridRow: 2,
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=8',
+  },
+  {
+    id: '7', name: 'Schrank 7', type: 'cabinet-green',
+    gridCol: 12, gridRow: 2,
+    zIndex: 0,
+    cat: 'Netzwerk', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=7',
+  },
+  {
+    id: '6', name: 'Schrank 6', type: 'cabinet-green',
+    gridCol: 11, gridRow: 2,
+    zIndex: 0,
+    cat: 'Elektrotechnik', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=6',
+  },
+  {
+    id: '5', name: 'Schrank 5', type: 'cabinet-green',
+    gridCol: 10, gridRow: 2,
+    zIndex: 0,
+    cat: 'Hardware', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=5',
+  },
+  {
+    id: '9', name: 'Schrank 9', type: 'cabinet-green',
+    gridCol: 14, gridRow: 2,
+    zIndex: 0,
+    cat: 'Lehrerschrank', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=9',
+  },
+  {
+    id: '10', name: 'Schrank 10', type: 'cabinet-green',
+    gridCol: 14, gridRow: 5,
+    zIndex: 0,
+    cat: 'Hardware', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=10',
+  },
+  {
+    id: '11', name: 'Schrank 11', type: 'cabinet-green',
+    gridCol: 13, gridRow: 5,
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U26',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=11',
+  },
+  {
+    id: '4', name: 'Schrank 4', type: 'cabinet-green',
+    gridCol: 10, gridRow: 6,
+    zIndex: 0,
+    cat: 'Allgemein', loc: 'U25',
+    items: null, cap: null,
+    link: '/search.html?searchFor=Locker&query=4',
+  },
 ];
-
-
 // ============================================================
 //  DATEN: OBJEKT-TYPEN (Aussehen & Farbe)
 // ============================================================
