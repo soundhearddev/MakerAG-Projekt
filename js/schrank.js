@@ -95,8 +95,8 @@ function buildWalls(floor, wallH = 100) {
 //   wallH    = Wandhöhe in Pixeln
 const ROOMS = [
   {
-    id: 'raum-1',
-    label: 'U30',
+    id: '06-UG-06/07',
+    label: 'Lager',
     col: 1,
     row: 0,
     spanCols: 5,
@@ -104,7 +104,7 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-2',
+    id: 'flur',
     label: 'Flur',
     col: 6,
     row: 0,
@@ -113,7 +113,7 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-3',
+    id: 'U26',
     label: 'U26',
     col: 9,
     row: 1,
@@ -122,8 +122,8 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-4',
-    label: 'U25 (MakerAG)',
+    id: '06-UG-13',
+    label: 'U25 (Computerwerkstatt)',
     col: 9,
     row: 5,
     spanCols: 6,
@@ -131,7 +131,7 @@ const ROOMS = [
     wallH: 50,
   },
   {
-    id: 'raum-5',
+    id: 'U24',
     label: 'U24',
     col: 9,
     row: 11,

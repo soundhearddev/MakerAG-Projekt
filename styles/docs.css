@@ -145,8 +145,8 @@
 .edit-popup {
   margin-top: 8px;
   padding: 12px;
-  background: var(--cat-secondary, #1e1e1e);
-  border: 1px solid var(--border-color, #333);
+  background: var(--cat-secondary);
+  border: 1px solid var(--cat-extra);
   border-radius: 8px;
 }
 
@@ -163,9 +163,9 @@
 }
 
 .edit-btn--primary {
-  background: var(--accent-color, #2563eb);
-  color: #fff;
-  border-color: var(--accent-color, #2563eb);
+  background: var(--cat-accent);
+  color: var(--cat-primary);
+  border-color: var(--cat-accent);
 }
 
 .edit-btn--primary:hover {
@@ -179,8 +179,8 @@
 
 .edit-btn--secondary {
   background: transparent;
-  color: var(--text-muted, #888);
-  border-color: var(--text-muted, #888);
+  color: var(--cat-extra);
+  border-color: var(--cat-extra);
 }
 
 .edit-btn--secondary:hover {
@@ -194,8 +194,8 @@
   width: 100%;
   padding: 5px 8px;
   border-radius: 5px;
-  border: 1px solid var(--border-color, #555);
-  background: var(--cat-primary, #2a2a2a);
+  border: 1px solid var(--cat-text);
+  background: var(--cat-primary);
   color: inherit;
   font-size: 0.9rem;
   box-sizing: border-box;
@@ -204,7 +204,7 @@
 .edit-input:focus,
 .edit-select:focus {
   outline: none;
-  border-color: var(--accent-color, #2563eb);
+  border-color: var(--cat-accent);
 }
 
 /* ── Feldlabel im Editor ───────────────────────────────────────────────── */
@@ -217,7 +217,7 @@
 
 .edit-field__label {
   font-size: 0.82rem;
-  color: var(--text-muted, #888);
+  color: var(--cat-extra);
   font-weight: 600;
 }
 
@@ -244,8 +244,8 @@
   gap: 8px;
   margin-top: 10px;
   padding: 12px;
-  background: var(--cat-secondary, #1a1a1a);
-  border: 1px solid var(--border-color, #333);
+  background: var(--cat-secondary);
+  border: 1px solid var(--cat-extra);
   border-radius: 8px;
   max-width: 400px;
 }
@@ -262,7 +262,7 @@
   padding: 0;
   max-height: 180px;
   overflow-y: auto;
-  border: 1px solid var(--border-color, #333);
+  border: 1px solid var(--cat-extra);
   border-radius: 6px;
 }
 
@@ -271,7 +271,7 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.1s;
-  border-bottom: 1px solid var(--border-color, #2a2a2a);
+  border-bottom: 1px solid var(--cat-extra);
 }
 
 .loc-list__item:last-child {
@@ -279,19 +279,19 @@
 }
 
 .loc-list__item:hover {
-  background: var(--cat-primary, #252525);
+  background: var(--cat-primary);
 }
 
 .loc-list__item.is-selected {
-  background: var(--accent-color, #2563eb);
-  color: #fff;
+  background: var(--cat-accent);
+  color: var(--cat-primary);
   font-weight: 600;
 }
 
 .loc-list__empty {
   padding: 10px;
   font-size: 0.85rem;
-  color: var(--text-muted, #777);
+  color: var(--cat-extra);
   text-align: center;
   font-style: italic;
 }
