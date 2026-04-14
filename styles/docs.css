@@ -168,9 +168,7 @@
   border-color: var(--cat-accent);
 }
 
-.edit-btn--primary:hover {
-  opacity: 0.85;
-}
+
 
 .edit-btn--primary:disabled {
   opacity: 0.4;
@@ -183,9 +181,7 @@
   border-color: var(--cat-extra);
 }
 
-.edit-btn--secondary:hover {
-  opacity: 0.7;
-}
+
 
 /* ── Inputs & Selects ──────────────────────────────────────────────────── */
 
