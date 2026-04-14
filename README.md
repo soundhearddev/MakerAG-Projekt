@@ -40,6 +40,7 @@ Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. 
 
 - **Hardware:** Raspberry Pi 4 B 2GB
 
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 =======
@@ -49,5 +50,7 @@ Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. 
 
 
 
+=======
+>>>>>>> 0cef7aa (PHP api cleanup ungenutze gelöscht)
 
 >>>>>>> 594f774 (README UPDATE)
