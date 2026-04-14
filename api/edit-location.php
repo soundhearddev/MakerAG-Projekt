@@ -1,4 +1,5 @@
 <?php
+
 /**
  * edit-location.php
  *
@@ -56,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $itemId     = isset($body['id'])          ? (int)    $body['id']          : 0;
     $locationId = isset($body['location_id']) ? (int)    $body['location_id'] : 0;
     $note       = isset($body['location_note'])
-                    ? mb_substr(trim($body['location_note']), 0, 255, 'UTF-8')
-                    : null;
+        ? mb_substr(trim($body['location_note']), 0, 255, 'UTF-8')
+        : null;
     $note = ($note !== '') ? $note : null;
 
     if ($itemId     <= 0) sendError('Ungültige Item-ID',      400);
@@ -92,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'location'      => $locRow,
             'location_note' => $note,
         ]);
-
     } catch (Throwable $e) {
         sendError($e->getMessage(), 500);
     }
