@@ -160,7 +160,7 @@
   cursor: pointer;
   transition: opacity 0.15s, background 0.15s;
   border: 1px solid transparent;
-  color: var(--cate-text);
+  color: var
 }
 
 .edit-btn--primary {
@@ -180,7 +180,7 @@
 
 .edit-btn--secondary {
   background: transparent;
-  color: var(--cat-extra);
+  color: var(--cat-text);
   border-color: var(--cat-extra);
 }
 
