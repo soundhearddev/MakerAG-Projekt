@@ -1,5 +1,7 @@
 /* Ich weiß gar nicht warum das hier docs heißt und nicht irgentwie items. so es macht wenig Sinn. es ist ja der style von den Gegenständen also den infos dazu */
 
+
+
 #item-title {
   margin: 0;
   font-size: 2rem;
@@ -121,6 +123,7 @@
   padding-left: 20px;
 }
 
+
 /* ── Editor-Layout-Helfer ──────────────────────────────────────────────── */
 
 .editor-row {
@@ -155,20 +158,18 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition:
-    opacity 0.15s,
-    background 0.15s;
-  border: none;
+  transition: opacity 0.15s, background 0.15s;
+  border: 1px solid transparent;
 }
 
 .edit-btn--primary {
   background: var(--cat-accent);
   color: var(--cat-primary);
+  border-color: var(--cat-accent);
 }
 
 .edit-btn--primary:hover {
   opacity: 0.85;
-  color: var(--cat-primary); /* base.css button:hover überschreiben */
 }
 
 .edit-btn--primary:disabled {
@@ -179,11 +180,13 @@
 .edit-btn--secondary {
   background: transparent;
   color: var(--cat-extra);
+  border-color: var(--cat-extra);
 }
+
 .edit-btn--secondary:hover {
   opacity: 0.7;
-  color: var(--cat-extra);
 }
+
 /* ── Inputs & Selects ──────────────────────────────────────────────────── */
 
 .edit-input,
@@ -230,6 +233,8 @@
 .gallery-img:hover {
   opacity: 0.85;
 }
+
+
 
 /* ── Location Drawer ───────────────────────────────────────────────────── */
 
