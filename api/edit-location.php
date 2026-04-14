@@ -70,8 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $chkItem->execute();
         if ($chkItem->get_result()->num_rows === 0) sendError('Item nicht gefunden', 404);
 
-        // Location existiert?
-        $chkLoc = $db->prepare("SELECT id, room, schrank, fach, position FROM locations WHERE id = ? LIMIT 1");
+        // Location existiert? (mit room-JOIN für konsistente Response)
+        $chkLoc = $db->prepare(
+            "SELECT l.id, r.name AS room, l.schrank, l.fach, l.position
+             FROM locations l
+             LEFT JOIN rooms r ON r.id = l.room_id
+             WHERE l.id = ? LIMIT 1"
+        );
         $chkLoc->bind_param('i', $locationId);
         $chkLoc->execute();
         $locRow = $chkLoc->get_result()->fetch_assoc();
