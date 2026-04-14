@@ -190,12 +190,12 @@ const OBJECTS = [
     link: '/search.html?searchFor=Locker&query=S',
   },
   {
-    id: 'A', name: 'Abstellraum', type: 'room',
-    gridCol: 3, gridRow: 2,
+    id: 'L', name: 'Lager', type: 'room',
+    gridCol: 2, gridRow: 3,
     zIndex: 0,
-    cat: 'Allgemein', loc: 'U30',
+    cat: 'Allgemein', loc: '06-UG-06/07',
     items: null, cap: null,
-    link: '/search.html?searchFor=Locker&query=A',
+    link: '/search.html?searchFor=Raum&query=Lager',
   },
   {
     id: '12', name: 'Schrank 12', type: 'cabinet-green',
