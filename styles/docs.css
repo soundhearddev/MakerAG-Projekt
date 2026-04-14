@@ -160,11 +160,12 @@
   cursor: pointer;
   transition: opacity 0.15s, background 0.15s;
   border: 1px solid transparent;
+  color: var(--cate-text);
 }
 
 .edit-btn--primary {
   background: var(--cat-accent);
-  color: var(--cat-text);
+  color: var(--cat-primary);
   border-color: var(--cat-accent);
 }
 
