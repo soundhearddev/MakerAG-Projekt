@@ -785,7 +785,7 @@ function showResult(item) {
   const parts = [];
   if (item.category_name)    parts.push(item.category_name);
   if (item.locker)           parts.push('Schrank ' + item.locker);
-  if (item.shelf)            parts.push('Regal ' + item.shelf);
+  if (item.shelf)            parts.push('fach ' + item.shelf);
   if (item.brand)            parts.push(item.brand);
   resultMeta.textContent = parts.join('  ·  ');
 

@@ -266,7 +266,7 @@ function enrichItem(array $item): array
     }
 
     // ── Location ──────────────────────────────────────────────────────────────
-    // Lagerort-Infos aus der locations-Tabelle laden (Raum, Schrank, Regal, Position)
+    // Lagerort-Infos aus der locations-Tabelle laden (Raum, Schrank, fach, Position)
     $item['location'] = null;
     $item['locker']   = null;
     $item['shelf']    = null;
@@ -274,7 +274,7 @@ function enrichItem(array $item): array
 
     if (!empty($item['location_id'])) {
         $stmt = $db->prepare(
-        "SELECT r.name AS room, l.schrank, l.regal, l.position
+        "SELECT r.name AS room, l.schrank, l.fach, l.position
         FROM locations l
         LEFT JOIN rooms r ON r.id = l.room_id
         WHERE l.id = ?"
@@ -286,7 +286,7 @@ function enrichItem(array $item): array
             // Das ganze Objekt UND einzelne Felder direkt speichern (für einfacheren Zugriff im Frontend)
             $item['location'] = $loc;
             $item['locker']   = $loc['schrank'];
-            $item['shelf']    = $loc['regal'];
+            $item['shelf']    = $loc['fach'];
             $item['room']     = $loc['room'];
         }
     }

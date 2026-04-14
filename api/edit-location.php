@@ -34,10 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     try {
         $res = $db->query(
-            "SELECT l.id, r.name AS room, l.schrank, l.regal, l.position
+            "SELECT l.id, r.name AS room, l.schrank, l.fach, l.position
              FROM locations l
              LEFT JOIN rooms r ON r.id = l.room_id
-             ORDER BY r.name, l.schrank, l.regal"
+             ORDER BY r.name, l.schrank, l.fach"
         );
 
         $locations = $res->fetch_all(MYSQLI_ASSOC);
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($chkItem->get_result()->num_rows === 0) sendError('Item nicht gefunden', 404);
 
         // Location existiert?
-        $chkLoc = $db->prepare("SELECT id, room, schrank, regal, position FROM locations WHERE id = ? LIMIT 1");
+        $chkLoc = $db->prepare("SELECT id, room, schrank, fach, position FROM locations WHERE id = ? LIMIT 1");
         $chkLoc->bind_param('i', $locationId);
         $chkLoc->execute();
         $locRow = $chkLoc->get_result()->fetch_assoc();

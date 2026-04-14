@@ -60,7 +60,7 @@ try {
     if ($query === '') {
         // ── Kein Suchbegriff ──────────────────────────────────────────────────
         $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.regal AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.fach AS shelf, l.position
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
@@ -79,7 +79,7 @@ try {
     } elseif ($searchForCol !== null) {
         // ── Nur ein bestimmtes Feld durchsuchen ───────────────────────────────
         $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.regal AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.fach AS shelf, l.position
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
@@ -98,7 +98,7 @@ try {
     } else {
         // ── Vollsuche über ALLE Felder ────────────────────────────────────────
         $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.regal AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.fach AS shelf, l.position
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
@@ -116,7 +116,7 @@ try {
                     i.status            LIKE CONCAT('%', ?, '%') OR
                     c.name              LIKE CONCAT('%', ?, '%') OR
                     l.schrank           LIKE CONCAT('%', ?, '%') OR
-                    l.regal             LIKE CONCAT('%', ?, '%') OR
+                    l.fach             LIKE CONCAT('%', ?, '%') OR
                     r.name              LIKE CONCAT('%', ?, '%') OR
                     s.value             LIKE CONCAT('%', ?, '%') OR
                     t.name              LIKE CONCAT('%', ?, '%')

@@ -19,7 +19,7 @@ try {
             "SELECT 
                 l.schrank AS locker,
                 COUNT(i.id) AS item_count,
-                GROUP_CONCAT(DISTINCT l.regal ORDER BY l.regal ASC SEPARATOR ',') AS shelves,
+                GROUP_CONCAT(DISTINCT l.fach ORDER BY l.fach ASC SEPARATOR ',') AS shelves,
                 l.room_id
              FROM locations l
              LEFT JOIN items i ON i.location_id = l.id
@@ -42,21 +42,21 @@ try {
                     p.name AS parent_category,
                     l.room_id, 
                     l.schrank AS locker, 
-                    l.regal AS shelf, 
+                    l.fach AS shelf, 
                     l.position
              FROM items i
              LEFT JOIN categories c ON c.id = i.category_id
              LEFT JOIN categories p ON p.id = c.parent_id
              LEFT JOIN locations l ON l.id = i.location_id
              WHERE l.schrank = ?
-             ORDER BY l.regal ASC, i.name ASC"
+             ORDER BY l.fach ASC, i.name ASC"
         );
         $stmt->bind_param('s', $locker);
         $stmt->execute();
         $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $items = enrichItems($items);
         
-        // Items nach Regal gruppieren
+        // Items nach fach gruppieren
         $byShelf = [];
         foreach ($items as $item) {
             $shelf = $item['shelf'] ?? 'Unbekannt';
