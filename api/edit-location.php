@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     try {
         $res = $db->query(
-            "SELECT l.id, r.name AS room, l.schrank, l.fach, l.position
+            "SELECT l.id, r.name AS room, l.schrank, l.fach
              FROM locations l
              LEFT JOIN rooms r ON r.id = l.room_id
              ORDER BY r.name, l.schrank, l.fach"
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Location existiert? (mit room-JOIN für konsistente Response)
         $chkLoc = $db->prepare(
-            "SELECT l.id, r.name AS room, l.schrank, l.fach, l.position
+            "SELECT l.id, r.name AS room, l.schrank, l.fach
              FROM locations l
              LEFT JOIN rooms r ON r.id = l.room_id
              WHERE l.id = ? LIMIT 1"

@@ -274,7 +274,7 @@ function enrichItem(array $item): array
 
     if (!empty($item['location_id'])) {
         $stmt = $db->prepare(
-        "SELECT r.name AS room, l.schrank, l.fach, l.position
+        "SELECT r.name AS room, l.schrank, l.fach
         FROM locations l
         LEFT JOIN rooms r ON r.id = l.room_id
         WHERE l.id = ?"

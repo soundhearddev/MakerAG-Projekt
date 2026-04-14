@@ -60,7 +60,7 @@ try {
     if ($query === '') {
         // ── Kein Suchbegriff ──────────────────────────────────────────────────
         $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.fach AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.fach AS shelf
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
@@ -79,7 +79,7 @@ try {
     } elseif ($searchForCol !== null) {
         // ── Nur ein bestimmtes Feld durchsuchen ───────────────────────────────
         $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.fach AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.fach AS shelf
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id
@@ -98,7 +98,7 @@ try {
     } else {
         // ── Vollsuche über ALLE Felder ────────────────────────────────────────
         $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.fach AS shelf, l.position
+                    r.name AS room, l.schrank AS locker, l.fach AS shelf
                 FROM items i
                 LEFT JOIN categories c ON c.id = i.category_id
                 LEFT JOIN categories p ON p.id = c.parent_id

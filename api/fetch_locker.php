@@ -43,7 +43,7 @@ try {
                     l.room_id, 
                     l.schrank AS locker, 
                     l.fach AS shelf, 
-                    l.position
+                    
              FROM items i
              LEFT JOIN categories c ON c.id = i.category_id
              LEFT JOIN categories p ON p.id = c.parent_id
