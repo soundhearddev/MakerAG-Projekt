@@ -142,7 +142,7 @@ const ROOMS = [
 ];
 
 // ============================================================
-//  DATEN: OBJEKTE (Schränke, Räume, fache usw.)
+//  DATEN: OBJEKTE (Schränke, Räume, Fach usw.)
 // ============================================================
 
 // OBJECTS = Liste aller platzierten Objekte auf der Karte.
@@ -305,7 +305,7 @@ const LEGEND_LABELS = {
   "cabinet-green": "Grüne Schränke",
   "cabinet-brown": "Braune Schränke",
   "room": "Raum",
-  "shelf": "fach",
+  "shelf": "Fach",
 };
 
 

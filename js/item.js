@@ -61,7 +61,7 @@
     if (loc) {
       if (loc.room) parts.push(`Raum ${loc.room}`);
       if (loc.schrank) parts.push(`Schrank ${loc.schrank}`);
-      if (loc.fach) parts.push(`fach ${loc.fach}`);
+      if (loc.fach) parts.push(`Fach ${loc.fach}`);
       if (loc.position) parts.push(loc.position);
     }
     if (note) parts.push(`(${note})`);
@@ -318,7 +318,7 @@
     wrapper.appendChild(drawer);
 
     // Suchfeld
-    const searchInp = makeInput("Raum, Schrank, fach…");
+    const searchInp = makeInput("Raum, Schrank, Fach…");
     searchInp.className += " loc-search";
 
     // Location-Liste
