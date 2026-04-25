@@ -25,7 +25,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0);
 // log_errors = 1: Fehler stattdessen in die Logdatei schreiben
 ini_set('log_errors', 1);
-ini_set('error_log', '/var/www/logs/php_errors.log');
 
 // ─── 3. HEADERS ───────────────────────────────────────────────────────────────
 // Dem Browser sagen dass die Antwort JSON ist, auf UTF-8 kodiert
@@ -342,7 +341,6 @@ foreach ($_configPaths as $_path) {
 }
 
 if (!$_configLoaded) {
-    error_log('init.php: config.php nicht gefunden. Gesuchte Pfade: ' . implode(', ', $_configPaths));
     sendError('Konfigurationsfehler: config.php nicht gefunden', 500);
 }
 
@@ -351,7 +349,6 @@ try {
     $db = Database::connect();
     $db->set_charset('utf8mb4'); // utf8mb4 = echtes UTF-8 inkl. Emojis (utf8 in MySQL ist kaputt)
 } catch (Exception $e) {
-    error_log('init.php: DB-Verbindung fehlgeschlagen – ' . $e->getMessage());
     sendError(
         'Datenbankverbindung fehlgeschlagen',
         500,
@@ -366,7 +363,6 @@ try {
 // Throwable = Basisklasse von Exception UND Error (z.B. TypeError, ParseError)
 set_exception_handler(function (Throwable $e) {
     $msg = $e->getMessage();
-    error_log('init.php: Unbehandelte Exception – ' . $msg . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) { // Nur setzen wenn noch keine Headers rausgegangen sind
         header('Content-Type: application/json; charset=UTF-8');
     }
