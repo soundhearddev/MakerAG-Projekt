@@ -90,7 +90,7 @@
       if (item.name) {
         const descEl = document.getElementById("item-description");
         if (item.brand || item.model) {
-          descEl.textContent = `${item.brand ?? ""} ${item.model ?? ""}`.trim();
+          descEl.textContent = `Modell: ${item.brand ?? ""} ${item.model ?? ""}`.trim();
         }
       }
 
