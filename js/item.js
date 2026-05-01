@@ -207,6 +207,80 @@
 
   // ── Status Editor ────────────────────────────────────────────────────────
 
+  function buildStatusEditor(container, item) {
+    const ALLOWED_STATUS = ["verfügbar", "ausgeliehen", "defekt", "verschollen", "entsorgt"];
+
+    const wrapper = document.createElement("div");
+
+    const row = document.createElement("div");
+    row.className = "editor-row";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = item.status;
+    h2.className = `status-${slug(item.status)}`;
+
+    const editBtn = makeBtn("Status ändern", "secondary");
+    row.append(h2, editBtn);
+    wrapper.appendChild(row);
+
+    let popup = null;
+
+    editBtn.addEventListener("click", () => {
+      if (popup) { popup.remove(); popup = null; return; }
+
+      const inner = document.createElement("div");
+      inner.className = "editor-row";
+
+      const select = document.createElement("select");
+      select.className = "edit-select";
+      ALLOWED_STATUS
+        .filter((s) => s !== item.status)
+        .forEach((s) => {
+          const opt = document.createElement("option");
+          opt.value = s;
+          opt.textContent = s;
+          select.appendChild(opt);
+        });
+
+      const saveBtn = makeBtn("Speichern");
+      const cancelBtn = makeBtn("✕", "secondary");
+      inner.append(select, saveBtn, cancelBtn);
+
+      popup = makePopup(inner);
+      wrapper.appendChild(popup);
+
+      cancelBtn.addEventListener("click", () => { popup.remove(); popup = null; });
+
+      saveBtn.addEventListener("click", async () => {
+        const newStatus = select.value;
+        saveBtn.disabled = true;
+        saveBtn.textContent = "…";
+        try {
+          const res = await fetch("/api/edit-state.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: item.id, status: newStatus }),
+          });
+          const json = await res.json();
+          if (!json.success) throw new Error(json.error || "Fehler");
+
+          h2.textContent = newStatus;
+          h2.className = `status-${slug(newStatus)}`;
+          item.status = newStatus;
+          popup.remove();
+          popup = null;
+        } catch (err) {
+          console.error("Status-Update fehlgeschlagen:", err);
+          alert("Fehler: " + err.message);
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Speichern";
+        }
+      });
+    });
+
+    container.appendChild(wrapper);
+  }
   function buildLocationEditor(container, item) {
 
     if (item.category_id == 4) return;
