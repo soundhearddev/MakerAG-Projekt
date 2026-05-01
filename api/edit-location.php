@@ -35,10 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     try {
         $res = $db->query(
-            "SELECT l.id, r.name AS room, l.schrank, l.fach
-             FROM locations l
-             LEFT JOIN rooms r ON r.id = l.room_id
-             ORDER BY r.name, l.schrank, l.fach"
+            "SELECT l.id, l.room_id, r.name AS room, l.schrank, l.fach
+            FROM locations l
+            LEFT JOIN rooms r ON r.id = l.room_id
+            ORDER BY r.name, l.schrank, l.fach"
         );
 
         $locations = $res->fetch_all(MYSQLI_ASSOC);

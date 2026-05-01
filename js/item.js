@@ -207,94 +207,15 @@
 
   // ── Status Editor ────────────────────────────────────────────────────────
 
-  function buildStatusEditor(container, item) {
-    const ALLOWED_STATUS = ["verfügbar", "ausgeliehen", "defekt", "verschollen", "entsorgt"];
-
-    const wrapper = document.createElement("div");
-
-    const row = document.createElement("div");
-    row.className = "editor-row";
-
-    const h2 = document.createElement("h2");
-    h2.textContent = item.status;
-    h2.className = `status-${slug(item.status)}`;
-
-    const editBtn = makeBtn("Status ändern", "secondary");
-    row.append(h2, editBtn);
-    wrapper.appendChild(row);
-
-    let popup = null;
-
-    editBtn.addEventListener("click", () => {
-      if (popup) { popup.remove(); popup = null; return; }
-
-      const inner = document.createElement("div");
-      inner.className = "editor-row";
-
-      const select = document.createElement("select");
-      select.className = "edit-select";
-      ALLOWED_STATUS
-        .filter((s) => s !== item.status)
-        .forEach((s) => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          select.appendChild(opt);
-        });
-
-      const saveBtn = makeBtn("Speichern");
-      const cancelBtn = makeBtn("✕", "secondary");
-      inner.append(select, saveBtn, cancelBtn);
-
-      popup = makePopup(inner);
-      wrapper.appendChild(popup);
-
-      cancelBtn.addEventListener("click", () => { popup.remove(); popup = null; });
-
-      saveBtn.addEventListener("click", async () => {
-        const newStatus = select.value;
-        saveBtn.disabled = true;
-        saveBtn.textContent = "…";
-        try {
-          const res = await fetch("/api/edit-state.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: item.id, status: newStatus }),
-          });
-          const json = await res.json();
-          if (!json.success) throw new Error(json.error || "Fehler");
-
-          h2.textContent = newStatus;
-          h2.className = `status-${slug(newStatus)}`;
-          item.status = newStatus;
-          popup.remove();
-          popup = null;
-        } catch (err) {
-          console.error("Status-Update fehlgeschlagen:", err);
-          alert("Fehler: " + err.message);
-        } finally {
-          saveBtn.disabled = false;
-          saveBtn.textContent = "Speichern";
-        }
-      });
-    });
-
-    container.appendChild(wrapper);
-  }
-
-  // ── Location Editor ──────────────────────────────────────────────────────
-
   function buildLocationEditor(container, item) {
 
-    // falls website einfach nicht laden
     if (item.category_id == 4) return;
 
     const wrapper = document.createElement("div");
     wrapper.className = "info-line info-standort";
     wrapper.setAttribute("data-label", "standort");
 
-    // ── Anzeigezeile ──────────────────────────────────────────────────────
-
+    // ── Anzeigezeile ────────────────────────────────────────────────────────
     const row = document.createElement("div");
     row.className = "editor-row";
 
@@ -309,24 +230,48 @@
     row.append(labelEl, locSpan, editBtn);
     wrapper.appendChild(row);
 
-    // ── Drawer ────────────────────────────────────────────────────────────
-
+    // ── Drawer ──────────────────────────────────────────────────────────────
     const drawer = document.createElement("div");
     drawer.className = "loc-drawer";
     drawer.hidden = true;
     wrapper.appendChild(drawer);
 
-    // Suchfeld
-    const searchInp = makeInput("Raum, Schrank, Fach…");
-    searchInp.className += " loc-search";
+    // Schritt 1: Raum
+    const roomWrap = document.createElement("div");
+    roomWrap.className = "loc-step";
+    const roomLbl = document.createElement("label");
+    roomLbl.textContent = "Raum";
+    roomLbl.className = "edit-field__label";
+    const roomSel = document.createElement("select");
+    roomSel.className = "edit-select";
+    roomWrap.append(roomLbl, roomSel);
 
-    // Location-Liste
-    const listEl = document.createElement("ul");
-    listEl.className = "loc-list";
+    // Schritt 2: Schrank
+    const schrankWrap = document.createElement("div");
+    schrankWrap.className = "loc-step";
+    schrankWrap.hidden = true;
+    const schrankLbl = document.createElement("label");
+    schrankLbl.textContent = "Schrank";
+    schrankLbl.className = "edit-field__label";
+    const schrankSel = document.createElement("select");
+    schrankSel.className = "edit-select";
+    schrankWrap.append(schrankLbl, schrankSel);
+
+    // Schritt 3: Fach
+    const fachWrap = document.createElement("div");
+    fachWrap.className = "loc-step";
+    fachWrap.hidden = true;
+    const fachLbl = document.createElement("label");
+    fachLbl.textContent = "Fach";
+    fachLbl.className = "edit-field__label";
+    const fachSel = document.createElement("select");
+    fachSel.className = "edit-select";
+    fachWrap.append(fachLbl, fachSel);
 
     // Notiz
     const noteWrap = document.createElement("div");
     noteWrap.className = "loc-note-wrap";
+    noteWrap.hidden = true;
     const noteLbl = document.createElement("label");
     noteLbl.textContent = "Notiz (optional)";
     noteLbl.className = "edit-field__label";
@@ -336,88 +281,191 @@
     // Aktionszeile
     const actions = document.createElement("div");
     actions.className = "editor-row loc-actions";
+    actions.hidden = true;
     const saveBtn = makeBtn("Speichern");
     const cancelBtn = makeBtn("Abbrechen", "secondary");
     actions.append(saveBtn, cancelBtn);
 
-    drawer.append(searchInp, listEl, noteWrap, actions);
+    drawer.append(roomWrap, schrankWrap, fachWrap, noteWrap, actions);
 
-    // ── State ─────────────────────────────────────────────────────────────
-
+    // ── State ───────────────────────────────────────────────────────────────
     let locations = [];
-    let selectedId = item.location?.id ? String(item.location.id) : null;
+    let selectedId = null;
     let loaded = false;
 
-    function setListError(msg) {
-      listEl.innerHTML = "";
-      const li = document.createElement("li");
-      li.className = "loc-list__empty loc-list__error";
-      li.textContent = msg;
-      listEl.appendChild(li);
+    // ── Hilfsfunktionen ─────────────────────────────────────────────────────
+
+    function uniqueSorted(arr) {
+      return [...new Set(arr)].sort((a, b) => {
+        // numerisch wenn möglich, sonst alphabetisch
+        const na = parseFloat(a), nb = parseFloat(b);
+        return (!isNaN(na) && !isNaN(nb)) ? na - nb : String(a).localeCompare(String(b));
+      });
     }
 
-    function renderList(filter = "") {
-      listEl.innerHTML = "";
-      const q = filter.toLowerCase();
-      const visible = q
-        ? locations.filter((l) => formatLocation(l).toLowerCase().includes(q))
-        : locations;
+    function fillSelect(sel, options, placeholder) {
+      sel.innerHTML = "";
+      const def = document.createElement("option");
+      def.value = "";
+      def.textContent = placeholder;
+      def.disabled = true;
+      def.selected = true;
+      sel.appendChild(def);
+      options.forEach((val) => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        sel.appendChild(opt);
+      });
+    }
 
-      if (!visible.length) {
-        const empty = document.createElement("li");
-        empty.className = "loc-list__empty";
-        empty.textContent = filter ? "Keine Treffer" : "Keine Locations vorhanden";
-        listEl.appendChild(empty);
+    function buildRoomSelect() {
+      // Räume aus den geladenen locations ableiten (id + name)
+      const roomMap = new Map();
+      locations.forEach((l) => {
+        if (l.room_id != null) roomMap.set(String(l.room_id), l.room);
+      });
+
+      roomSel.innerHTML = "";
+      const def = document.createElement("option");
+      def.value = "";
+      def.textContent = "— Raum wählen —";
+      def.disabled = true;
+      def.selected = true;
+      roomSel.appendChild(def);
+
+      roomMap.forEach((name, id) => {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = name;
+        roomSel.appendChild(opt);
+      });
+
+      // Aktuellen Raum vorauswählen
+      if (item.location?.room) {
+        const currentRoomOpt = [...roomSel.options].find(
+          (o) => o.textContent === item.location.room
+        );
+        if (currentRoomOpt) {
+          roomSel.value = currentRoomOpt.value;
+          onRoomChange(false); // Schrank befüllen ohne Reset
+        }
+      }
+    }
+
+    function onRoomChange(reset = true) {
+      const roomId = roomSel.value;
+      if (!roomId) return;
+
+      const inRoom = locations.filter((l) => String(l.room_id) === roomId);
+      const schraenke = uniqueSorted(
+        inRoom.map((l) => l.schrank).filter((s) => s != null)
+      );
+
+      fillSelect(schrankSel, schraenke, "— Schrank wählen —");
+      schrankWrap.hidden = false;
+      fachWrap.hidden = true;
+      noteWrap.hidden = true;
+      actions.hidden = true;
+      selectedId = null;
+
+      if (!reset && item.location?.schrank) {
+        const match = [...schrankSel.options].find(
+          (o) => o.value === item.location.schrank
+        );
+        if (match) {
+          schrankSel.value = match.value;
+          onSchrankChange(false);
+        }
+      }
+    }
+
+    function onSchrankChange(reset = true) {
+      const roomId = roomSel.value;
+      const schrank = schrankSel.value;
+      if (!schrank) return;
+
+      const inSchrank = locations.filter(
+        (l) => String(l.room_id) === roomId && l.schrank === schrank
+      );
+      const faecher = uniqueSorted(
+        inSchrank.map((l) => l.fach).filter((f) => f != null)
+      );
+
+      if (faecher.length === 0) {
+        // Kein Fach vorhanden → Location direkt über Schrank wählen
+        fachWrap.hidden = true;
+        const loc = inSchrank[0];
+        selectedId = loc ? String(loc.id) : null;
+        noteWrap.hidden = false;
+        actions.hidden = false;
         return;
       }
 
-      visible.forEach((loc) => {
-        const li = document.createElement("li");
-        li.className = "loc-list__item";
-        li.dataset.id = loc.id;
-        li.textContent = formatLocation(loc);
-        if (String(loc.id) === selectedId) li.classList.add("is-selected");
-        li.addEventListener("click", () => {
-          listEl.querySelectorAll(".loc-list__item").forEach((el) => el.classList.remove("is-selected"));
-          li.classList.add("is-selected");
-          selectedId = String(loc.id);
-        });
-        listEl.appendChild(li);
-      });
+      fillSelect(fachSel, faecher, "— Fach wählen —");
+      fachWrap.hidden = false;
+      noteWrap.hidden = true;
+      actions.hidden = true;
+      selectedId = null;
+
+      if (!reset && item.location?.fach) {
+        const match = [...fachSel.options].find(
+          (o) => o.value === item.location.fach
+        );
+        if (match) {
+          fachSel.value = match.value;
+          onFachChange();
+        }
+      }
     }
+
+    function onFachChange() {
+      const roomId = roomSel.value;
+      const schrank = schrankSel.value;
+      const fach = fachSel.value;
+      if (!fach) return;
+
+      const loc = locations.find(
+        (l) =>
+          String(l.room_id) === roomId &&
+          l.schrank === schrank &&
+          l.fach === fach
+      );
+      selectedId = loc ? String(loc.id) : null;
+      noteWrap.hidden = false;
+      actions.hidden = false;
+    }
+
+    // ── Events ───────────────────────────────────────────────────────────────
+    roomSel.addEventListener("change", () => onRoomChange(true));
+    schrankSel.addEventListener("change", () => onSchrankChange(true));
+    fachSel.addEventListener("change", () => onFachChange());
 
     async function openDrawer() {
       drawer.hidden = false;
       editBtn.textContent = "schließen";
 
       if (!loaded) {
-        listEl.innerHTML = "<li class='loc-list__empty'>Lädt…</li>";
+        roomSel.innerHTML = "<option disabled selected>Lädt…</option>";
         try {
           const res = await fetch("/api/edit-location.php?action=list");
-
-          // Nicht-2xx abfangen bevor .json() aufgerufen wird
           if (!res.ok) {
-            let errMsg = `Serverfehler ${res.status}`;
-            try {
-              const errJson = await res.json();
-              // API_DEBUG liefert debug-Feld mit Datenbankfehler
-              errMsg = errJson.debug || errJson.error || errMsg;
-            } catch (_) { /* Response war kein JSON */ }
-            setListError(`Fehler: ${errMsg}`);
-            loaded = true; // nicht nochmal versuchen bis Seite neu geladen wird
-            return;
-          }
-
-          const json = await res.json();
-          if (!json.success) {
-            setListError(`Fehler: ${json.error || "Unbekannter Fehler"}`);
+            let msg = `Serverfehler ${res.status}`;
+            try { const j = await res.json(); msg = j.debug || j.error || msg; } catch (_) { }
+            roomSel.innerHTML = `<option disabled selected>Fehler: ${msg}</option>`;
             loaded = true;
             return;
           }
+          const json = await res.json();
+          if (!json.success) {
+            roomSel.innerHTML = `<option disabled selected>Fehler: ${json.error}</option>`;
+            loaded = true;
+            return;
+          }
+          // room_id aus den location-Objekten fehlt im aktuellen GET — siehe Hinweis unten
           locations = json.data.locations ?? [];
         } catch (e) {
-          console.warn("Locations konnten nicht geladen werden", e);
-          setListError("Verbindungsfehler beim Laden der Standorte.");
+          roomSel.innerHTML = `<option disabled selected>Verbindungsfehler</option>`;
           loaded = true;
           return;
         }
@@ -425,70 +473,36 @@
       }
 
       noteInp.value = item.location_note || "";
-      renderList(searchInp.value);
+      schrankWrap.hidden = true;
+      fachWrap.hidden = true;
+      noteWrap.hidden = true;
+      actions.hidden = true;
+      buildRoomSelect();
     }
 
     function closeDrawer() {
       drawer.hidden = true;
       editBtn.textContent = "ändern";
-      searchInp.value = "";
     }
-
-    // ── Events ────────────────────────────────────────────────────────────
 
     editBtn.addEventListener("click", () =>
       drawer.hidden ? openDrawer() : closeDrawer()
     );
 
-    searchInp.addEventListener("input", () => renderList(searchInp.value));
-
     cancelBtn.addEventListener("click", closeDrawer);
 
     saveBtn.addEventListener("click", async () => {
       if (!selectedId) {
-        alert("Bitte einen Standort auswählen.");
+        alert("Bitte einen Standort vollständig auswählen.");
         return;
       }
       await submitLocation(
-        {
-          id: item.id,
-          location_id: parseInt(selectedId),
-          location_note: noteInp.value.trim(),
-        },
-        locSpan, item, saveBtn,
-        closeDrawer,
+        { id: item.id, location_id: parseInt(selectedId), location_note: noteInp.value.trim() },
+        locSpan, item, saveBtn, closeDrawer,
       );
     });
 
     container.appendChild(wrapper);
-  }
-
-  // ── Location speichern ───────────────────────────────────────────────────
-
-  async function submitLocation(payload, locSpan, item, btn, onDone) {
-    const originalText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "…";
-    try {
-      const res = await fetch("/api/edit-location.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Fehler");
-
-      item.location = json.data.location;
-      item.location_note = json.data.location_note ?? null;
-      locSpan.textContent = formatLocation(item.location, item.location_note);
-      onDone();
-    } catch (err) {
-      console.error("Location-Update fehlgeschlagen:", err);
-      alert("Fehler: " + err.message);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
   }
 
 })();
