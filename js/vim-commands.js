@@ -176,7 +176,6 @@ window.VimCommands = [
         return;
       }
 
-      // Modal bauen
       const id = "vim-themes-picker";
 
       function renderRows() {
@@ -212,7 +211,6 @@ window.VimCommands = [
       `,
       );
 
-      // Nach dem Rendern: Fokus setzen und Keys abfangen
       requestAnimationFrame(() => {
         const container = document.getElementById(id);
         if (!container) return;
@@ -220,7 +218,6 @@ window.VimCommands = [
 
         function refresh() {
           container.innerHTML = renderRows();
-          // Klick-Events neu binden
           container.querySelectorAll(".vim-theme-row").forEach((row) => {
             row.addEventListener("click", () => {
               selected = parseInt(row.dataset.index);
@@ -228,14 +225,12 @@ window.VimCommands = [
               refresh();
             });
           });
-          // ausgewählte Zeile in Sicht scrollen
           const activeRow = container.querySelector(
             `[data-index="${selected}"]`,
           );
           if (activeRow) activeRow.scrollIntoView({ block: "nearest" });
         }
 
-        // initiale Klick-Events binden
         refresh();
 
         container.addEventListener("keydown", (e) => {
@@ -250,11 +245,9 @@ window.VimCommands = [
           } else if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             _applyTheme(available[selected]);
-            // Modal schließen
             const overlay = container.closest('[style*="position: fixed"]');
             if (overlay) overlay.remove();
           } else if (e.key.length === 1) {
-            // Buchstabe: erstes Theme das damit anfängt
             const idx = available.findIndex((t) =>
               t.startsWith(e.key.toLowerCase()),
             );
@@ -372,7 +365,7 @@ window.VimCommands = [
           `
           <table style="width:100%; border-collapse:collapse; font-family:monospace; font-size:13px;">
             ${[
-            ["Version", "0.4.0"],
+            ["Version", "0.5.0"],
             ["Befehle", cmds],
             ["Theme", theme],
             ["Schriftgröße", fs],
@@ -620,7 +613,7 @@ window.VimCommands = [
     },
   },
 
-  // ── QoL Extras ────────────────────────────────────────────────────────────
+  // ── Extras ────────────────────────────────────────────────────────────────
   {
     match: /^time$/,
     desc: ":time – Aktuelle Uhrzeit & Datum anzeigen",
@@ -671,29 +664,19 @@ window.VimCommands = [
       if (typeof window.showModal !== "function") return;
       window.showModal(
         "Permission denied",
-        `
-        <pre style="font-family:monospace; font-size:13px; line-height:1.8; margin:0; opacity:0.85;">rm: cannot remove '/': Permission denied
-Operation not permitted.
-</pre>
-      `,
+        `<pre style="font-family:monospace; font-size:13px; line-height:1.8; margin:0; opacity:0.85;">rm: cannot remove '/': Permission denied\nOperation not permitted.\n</pre>`,
       );
     },
   },
-
-
-
-
-
   {
     match: /^!fastfetch$/,
-    desc: ":fastfetch – System-Info im neofetch-Stil anzeigen",
+    desc: ":!fastfetch – System-Info im neofetch-Stil anzeigen",
     group: "System",
     run() {
       if (typeof window.showModal !== "function") return;
 
       const ua = navigator.userAgent;
 
-      // OS erkennen
       let os = "Unknown";
       let asciiKey = "unknown";
       if (ua.includes("Windows NT 10.0")) { os = "Windows 10/11"; asciiKey = "windows"; }
@@ -703,7 +686,6 @@ Operation not permitted.
       else if (ua.includes("iPhone") || ua.includes("iPad")) { os = "iOS"; asciiKey = "ios"; }
       else if (ua.includes("Linux")) { os = "Linux"; asciiKey = "linux"; }
 
-      // Browser erkennen
       let browser = "Unknown";
       if (ua.includes("Firefox")) browser = "Firefox";
       else if (ua.includes("Edg")) browser = "Edge";
@@ -758,8 +740,6 @@ Operation not permitted.
     `);
     },
   },
-
-
   {
     match: /^!cowsay (.+)$/,
     desc: "???",
@@ -767,14 +747,7 @@ Operation not permitted.
     run(m) {
       const text = m[1];
       const len = text.length;
-      const cow = `  ${"_".repeat(len + 2)}
-< ${text} >
-  ${"‾".repeat(len + 2)}
-        \\   ^__^
-         \\  (oo)\\_______
-            (__)\\       )\\/\\
-                ||----w |
-                ||     ||`;
+      const cow = `  ${"_".repeat(len + 2)}\n< ${text} >\n  ${"‾".repeat(len + 2)}\n        \\   ^__^\n         \\  (oo)\\_______\n            (__)\\       )\\/\\\n                ||----w |\n                ||     ||`;
       if (typeof window.showModal === "function") {
         window.showModal(
           "cowsay",
@@ -786,12 +759,9 @@ Operation not permitted.
 ];
 
 
-
-
 // ── Private Helfer ────────────────────────────────────────────────────────
 
 function _info(msg) {
-  // _showMsg wird von vim-bar.js nach dem Laden auf window.VimBar gesetzt
   if (window.VimBar?._showMsg) window.VimBar._showMsg(msg, "info");
   else console.info("[VimBar]", msg);
 }

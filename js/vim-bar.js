@@ -7,38 +7,136 @@
 
 // WICHTIG: vim_commands.js muss vor diesem Script eingebunden werden!!!
 
-// Diese ganze Vim Sache ist alles SEHR simpel gehalten. Nichts wirklich besonderes hier. Es ist wirklich eigentlich traditioneller Javscript code wie bei jeder anderen datei auch. Aber es ist halt trotzdem ziemlich gut rausgekommen. Es hat auch lowkey Spaß gemacht die bar und die befehle zu erstellen. 
-
-
 (function () {
   "use strict";
 
-  // ── CSS-Variablen aus dem aktiven Theme lesen ─────────────────────────────
-  // Liest die --cat-* Variablen die vom Settings-Theme-System gesetzt werden.
+  // ── Theme-Farben ──────────────────────────────────────────────────────────
   function themeVar(name) {
-    const val = getComputedStyle(document.documentElement)
-      .getPropertyValue(name)
-      .trim();
-    return val;
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
-
 
   function getColors() {
     return {
-      primary: themeVar("--cat-primary"),
+      primary:   themeVar("--cat-primary"),
       secondary: themeVar("--cat-secondary"),
-      accent: themeVar("--cat-accent"),
-      text: themeVar("--cat-text"),
-      extra: themeVar("--cat-extra"),
+      accent:    themeVar("--cat-accent"),
+      text:      themeVar("--cat-text"),
+      extra:     themeVar("--cat-extra"),
     };
   }
 
-  // ── Styles setzen ─────────────────
+  // ── Scroll-Hilfsfunktion ──────────────────────────────────────────────────
+  // Einheit für hjkl-Scrollen: 10% der sichtbaren Höhe/Breite
+  function scrollBy(dx, dy) {
+    window.scrollBy({ left: dx, top: dy, behavior: "smooth" });
+  }
+
+  const SCROLL_STEP_V = () => window.innerHeight * 0.1;  // vertikal:  10vh
+  const SCROLL_STEP_H = () => window.innerWidth  * 0.1;  // horizontal: 10vw
+
+  // ── Normal-Mode Bewegungen ────────────────────────────────────────────────
+  // Puffer für Count-Präfix (z.B. "5" vor "j" → 5× scrollen)
+  let countBuf = "";
+  let lastCommand = "";
+
+  function getCount() {
+    const n = parseInt(countBuf) || 1;
+    countBuf = "";
+    return n;
+  }
+
+  // Alle Normal-Mode-Keys werden hier behandelt (nur wenn Bar geschlossen)
+  function handleNormalKey(e) {
+    // Ziffern sammeln für Count
+    if (/^\d$/.test(e.key) && e.key !== "0") {
+      // "0" ist kein Count-Start – der würde zu gg/top gehören, aber das machen wir mit gg
+      countBuf += e.key;
+      return;
+    }
+
+    // gg: Seitenanfang – wird als "g" + "g" erkannt über den ggBuffer
+    if (e.key === "g") {
+      if (ggPending) {
+        // zweites g → Seitenanfang
+        e.preventDefault();
+        countBuf = "";
+        ggPending = false;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        showMsg("gg", "info");
+        lastCommand = "gg";
+      } else {
+        ggPending = true;
+        // Nach 800ms reset falls kein zweites g kommt
+        setTimeout(() => { ggPending = false; }, 800);
+      }
+      return;
+    }
+    ggPending = false;
+
+    switch (e.key) {
+      // ── Scrollen ──────────────────────────────────────────────────────────
+      case "j": {
+        e.preventDefault();
+        const n = getCount();
+        scrollBy(0, SCROLL_STEP_V() * n);
+        lastCommand = `${n > 1 ? n : ""}j`;
+        break;
+      }
+      case "k": {
+        e.preventDefault();
+        const n = getCount();
+        scrollBy(0, -SCROLL_STEP_V() * n);
+        lastCommand = `${n > 1 ? n : ""}k`;
+        break;
+      }
+      case "h": {
+        e.preventDefault();
+        const n = getCount();
+        scrollBy(-SCROLL_STEP_H() * n, 0);
+        lastCommand = `${n > 1 ? n : ""}h`;
+        break;
+      }
+      case "l": {
+        e.preventDefault();
+        const n = getCount();
+        scrollBy(SCROLL_STEP_H() * n, 0);
+        lastCommand = `${n > 1 ? n : ""}l`;
+        break;
+      }
+
+      // ── G: Seitenende ─────────────────────────────────────────────────────
+      case "G": {
+        e.preventDefault();
+        countBuf = "";
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+        showMsg("G", "info");
+        lastCommand = "G";
+        break;
+      }
+
+      // ── @: letzten Command wiederholen ────────────────────────────────────
+      case "@": {
+        // nächstes Zeichen abwarten über einen einmaligen keydown
+        e.preventDefault();
+        waitingForRegister = true;
+        break;
+      }
+
+      default:
+        // unbekannte Taste → Count zurücksetzen
+        countBuf = "";
+        break;
+    }
+  }
+
+  // State für gg-Erkennung und @-Register
+  let ggPending = false;
+  let waitingForRegister = false;
+
+  // ── Styles ────────────────────────────────────────────────────────────────
   function applyStyles() {
     const c = getColors();
-    // jaja etwas schlecht CSS in JS
     bar.style.cssText = `
-      display: none;
       position: fixed;
       bottom: 0; left: 0; right: 0;
       background: ${c.primary};
@@ -52,7 +150,6 @@
       gap: 6px;
       box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
     `;
-
     prompt.style.cssText = `
       color: ${c.accent};
       font-weight: bold;
@@ -60,7 +157,6 @@
       user-select: none;
       flex-shrink: 0;
     `;
-
     input.style.cssText = `
       background: transparent;
       border: none;
@@ -72,7 +168,6 @@
       min-width: 0;
       caret-color: ${c.accent};
     `;
-
     hint.style.cssText = `
       color: ${c.extra};
       font-size: 12px;
@@ -84,7 +179,6 @@
       max-width: 40%;
       opacity: 0.8;
     `;
-
     msg.style.cssText = `
       font-size: 12px;
       flex-shrink: 0;
@@ -95,16 +189,15 @@
   }
 
   // ── DOM aufbauen ──────────────────────────────────────────────────────────
-  const bar = document.createElement("div");
+  const bar    = document.createElement("div");
   bar.id = "vim-bar";
   bar.setAttribute("role", "complementary");
   bar.setAttribute("aria-label", "Vim-Befehlsleiste");
 
-
   const prompt = document.createElement("span");
   prompt.textContent = ":";
 
-  const input = document.createElement("input");
+  const input  = document.createElement("input");
   input.type = "text";
   input.autocomplete = "off";
   input.spellcheck = false;
@@ -112,7 +205,7 @@
   input.placeholder = "Befehl...";
 
   const hint = document.createElement("span");
-  const msg = document.createElement("span");
+  const msg  = document.createElement("span");
 
   bar.appendChild(prompt);
   bar.appendChild(input);
@@ -120,43 +213,31 @@
   bar.appendChild(msg);
   document.body.appendChild(bar);
 
-  // Styles initial setzen
   applyStyles();
-  bar.style.display = "none"; 
-  
-  // Theme-Wechsel → Farben neu setzen
+  bar.style.display = "none";
+
   window.addEventListener("themeChanged", () => {
     const wasVisible = bar.style.display !== "none";
     applyStyles();
     if (!wasVisible) bar.style.display = "none";
-    if (isHelpOpen) renderHelp(); // Help-Overlay Farben auch aktualisieren
+    if (isHelpOpen) renderHelp();
   });
 
   // ── History ───────────────────────────────────────────────────────────────
   const cmdHistory = [];
   let historyIndex = -1;
 
-  // ── Tab-Completion State ──────────────────────────────────────────────────
+  // ── Tab-Completion ────────────────────────────────────────────────────────
   let tabMatches = [];
-  let tabIndex = -1;
+  let tabIndex   = -1;
 
   // ── Help Overlay ──────────────────────────────────────────────────────────
   let helpOverlay = null;
-  let isHelpOpen = false;
+  let isHelpOpen  = false;
 
-  // Ich habe die Help funktion als aller erstes erstellt und dann ist mir beim version befehl erst eingefallen, dass ich ja schon ein fertiges Framework für so fenster habe... Deswegen ist jetzt halt :help das einzige besondere Fenster welches halt so dieses Terminal artige layout hat. Das ganze ist sogar ziemlich simpel gehalten: Es erstellt ein Overlay-Div, welches am unteren Bildschirmrand erscheint und dann dort halt inhalt anzeigt. 
   function renderHelp() {
-    const c = getColors();
+    const c    = getColors();
     const cmds = window.VimCommands || [];
-
-    // Gruppieren nach Kategorie (erste Gruppe im desc nach "–" Trenner)
-    const groups = {};
-    cmds.forEach((cmd) => {
-      // desc Format: ":befehl – Beschreibung" → Gruppe aus Kontext erraten
-      const key = cmd.group || "Allgemein";
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(cmd);
-    });
 
     if (!helpOverlay) {
       helpOverlay = document.createElement("div");
@@ -175,31 +256,56 @@
       font-size: 13px;
       padding: 12px 16px;
       box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+      scrollbar-width: thin;
+      scrollbar-color: ${c.accent} ${c.secondary};
     `;
 
-    // Scrollbar stylen
-    helpOverlay.style.scrollbarWidth = "thin";
-    helpOverlay.style.scrollbarColor = `${c.accent} ${c.secondary}`;
-
     let html = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom: 1px solid ${c.extra}33; padding-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;
+                  margin-bottom:10px; border-bottom:1px solid ${c.extra}33; padding-bottom:8px;">
         <span style="color:${c.accent}; font-weight:bold; font-size:14px;">⌨ Vim-Befehle</span>
-        <span style="color:${c.extra}; font-size:11px;">ESC zum Schließen</span>
+        <span style="color:${c.extra}; font-size:11px;">ESC zum Schließen &nbsp;|&nbsp; Normal-Mode: hjkl · gg · G:</span>
       </div>
-      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 4px 24px;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(340px,1fr)); gap:4px 24px;">
+    `;
+
+    // Normal-Mode Einträge zuerst als extra Sektion
+    html += `
+      <div style="grid-column:1/-1; color:${c.accent}; font-weight:bold; font-size:11px;
+                  text-transform:uppercase; letter-spacing:.08em; margin:6px 0 2px; opacity:.7;">
+        Normal-Mode (ohne :)
+      </div>
+    `;
+    const normalModeEntries = [
+      ["j / k",    "Runter / Hoch scrollen  (Count: 5j)"],
+      ["h / l",    "Links / Rechts scrollen (Count: 5l)"],
+      ["gg",       "Zum Seitenanfang"],
+      ["G",        "Zum Seitenende"],
+    ];
+    normalModeEntries.forEach(([k, v]) => {
+      html += `
+        <div style="display:flex; gap:8px; padding:3px 0; border-bottom:1px solid ${c.extra}18;">
+          <span style="color:${c.accent}; min-width:140px; flex-shrink:0;">${escHtml(k)}</span>
+          <span style="color:${c.text}; opacity:0.75;">${escHtml(v)}</span>
+        </div>`;
+    });
+
+    html += `
+      <div style="grid-column:1/-1; color:${c.accent}; font-weight:bold; font-size:11px;
+                  text-transform:uppercase; letter-spacing:.08em; margin:10px 0 2px; opacity:.7;">
+        Command-Mode (:)
+      </div>
     `;
 
     cmds.forEach((cmd) => {
-      // desc aufteilen: ":befehl – Beschreibung"
-      const parts = cmd.desc.split(" – ");
+      const parts   = cmd.desc.split(" – ");
       const cmdPart = parts[0] || cmd.desc;
       const descPart = parts[1] || "";
       html += `
         <div style="display:flex; gap:8px; padding:3px 0; border-bottom:1px solid ${c.extra}18;">
           <span style="color:${c.accent}; min-width:140px; flex-shrink:0;">${escHtml(cmdPart)}</span>
           <span style="color:${c.text}; opacity:0.75;">${escHtml(descPart)}</span>
-        </div>
-      `;
+        </div>`;
     });
 
     html += `</div>`;
@@ -214,10 +320,7 @@
   }
 
   function escHtml(str) {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
   // ── Autocomplete ──────────────────────────────────────────────────────────
@@ -228,7 +331,6 @@
     for (const cmd of cmds) {
       if (cmd.match instanceof RegExp) {
         const src = cmd.match.source
-        // Regex ist so unglaublich grauenvoll.
           .replace(/^\^/, "")
           .replace(/\$$/, "")
           .replace(/\(\\S\+\)/g, "<arg>")
@@ -243,8 +345,7 @@
   }
 
   function getHint(val) {
-    const matches = getMatches(val);
-    return matches[0] || "";
+    return getMatches(val)[0] || "";
   }
 
   // ── Befehl ausführen ──────────────────────────────────────────────────────
@@ -252,19 +353,19 @@
     const val = raw.trim();
     if (!val) return;
 
-    // :help Sonderbehandlung
     if (val === "help" || val === "h") {
       renderHelp();
       showMsg("Hilfe geöffnet", "info");
+      lastCommand = val;
       return;
     }
 
     cmdHistory.unshift(val);
     historyIndex = -1;
+    lastCommand  = val;
 
     const cmds = window.VimCommands || [];
     for (const cmd of cmds) {
-      let m;
       if (typeof cmd.match === "string") {
         if (cmd.match === val) {
           cmd.run();
@@ -272,7 +373,7 @@
           return;
         }
       } else if (cmd.match instanceof RegExp) {
-        m = val.match(cmd.match);
+        const m = val.match(cmd.match);
         if (m) {
           cmd.run(m);
           showMsg("OK", "ok");
@@ -286,50 +387,51 @@
   function showMsg(text, type) {
     const c = getColors();
     const colors = {
-      ok: { bg: c.accent + "33", fg: c.accent },
-      error: { bg: "#f0808033", fg: "#f08080" },
-      info: { bg: c.extra + "33", fg: c.text },
+      ok:    { bg: c.accent + "33", fg: c.accent },
+      error: { bg: "#f0808033",     fg: "#f08080" },
+      info:  { bg: c.extra + "33",  fg: c.text    },
     };
     const col = colors[type] || colors.info;
-    msg.textContent = text;
+    msg.textContent    = text;
     msg.style.background = col.bg;
-    msg.style.color = col.fg;
-    msg.style.opacity = "1";
+    msg.style.color    = col.fg;
+    msg.style.opacity  = "1";
     clearTimeout(msg._timer);
     msg._timer = setTimeout(() => {
       msg.style.opacity = "0";
       setTimeout(() => {
-        msg.textContent = "";
+        msg.textContent      = "";
         msg.style.background = "transparent";
       }, 300);
     }, 2500);
   }
 
-  // ── Bar öffnen / schliessen ───────────────────────────────────────────────
+  // ── Bar öffnen / schließen ────────────────────────────────────────────────
   function open() {
-    applyStyles(); // Farben bei jedem Öffnen aktualisieren
+    applyStyles();
     bar.style.display = "flex";
-    input.value = "";
-    hint.textContent = "";
-    tabMatches = [];
-    tabIndex = -1;
+    input.value       = "";
+    hint.textContent  = "";
+    tabMatches        = [];
+    tabIndex          = -1;
+    countBuf          = "";   // Count-Puffer leeren beim Öffnen
     input.focus();
     closeHelp();
   }
 
   function close() {
     bar.style.display = "none";
-    input.value = "";
-    hint.textContent = "";
-    historyIndex = -1;
-    tabMatches = [];
-    tabIndex = -1;
+    input.value       = "";
+    hint.textContent  = "";
+    historyIndex      = -1;
+    tabMatches        = [];
+    tabIndex          = -1;
     closeHelp();
   }
 
   // ── Globale Tastatur-Events ───────────────────────────────────────────────
   document.addEventListener("keydown", (e) => {
-    // Vim-Mode Guard: nur reagieren wenn vim-mode aktiv
+    // Vim-Mode Guard
     if (document.body.dataset.vimMode !== "true") return;
 
     const tag = document.activeElement?.tagName?.toLowerCase();
@@ -337,23 +439,43 @@
       ["input", "textarea", "select"].includes(tag) ||
       document.activeElement?.isContentEditable;
 
-    // ":" öffnet die Bar
+    // ── @: Register – wartet auf nächste Taste ────────────────────────────
+    if (waitingForRegister) {
+      waitingForRegister = false;
+      e.preventDefault();
+      if (e.key === ":") {
+        // letzten Command-Mode-Befehl wiederholen
+        if (lastCommand) {
+          execute(lastCommand);
+          showMsg(`@: → :${lastCommand}`, "info");
+        } else {
+          showMsg("Kein letzter Befehl", "error");
+        }
+      }
+      return;
+    }
+
+    // ── ":" öffnet Command-Mode ───────────────────────────────────────────
     if (e.key === ":" && !isEditable && bar.style.display === "none") {
       e.preventDefault();
       open();
       return;
     }
 
-    // Esc: Help schließen → dann Bar schließen
+    // ── ESC-Handling ──────────────────────────────────────────────────────
     if (e.key === "Escape") {
-      if (isHelpOpen) {
-        closeHelp();
-        return;
-      }
-      if (bar.style.display !== "none") {
-        close();
-        return;
-      }
+      if (isHelpOpen) { closeHelp(); return; }
+      if (bar.style.display !== "none") { close(); return; }
+      // Im Normal-Mode: Count-Puffer leeren
+      countBuf   = "";
+      ggPending  = false;
+      return;
+    }
+
+    // ── Normal-Mode: hjkl, gg, G: ─────────────────────────────────────
+    // Nur wenn Bar geschlossen und kein editierbares Element fokussiert
+    if (bar.style.display === "none" && !isEditable) {
+      handleNormalKey(e);
     }
   });
 
@@ -363,9 +485,16 @@
       execute(input.value);
       if (!isHelpOpen) close();
       else {
-        input.value = "";
+        input.value      = "";
         hint.textContent = "";
       }
+      return;
+    }
+
+    // Backspace auf leerem Input → Bar schließen (wie echtes Vim)
+    if (e.key === "Backspace" && input.value === "") {
+      e.preventDefault();
+      close();
       return;
     }
 
@@ -374,10 +503,9 @@
       e.preventDefault();
       if (historyIndex < cmdHistory.length - 1) {
         historyIndex++;
-        input.value = cmdHistory[historyIndex];
+        input.value      = cmdHistory[historyIndex];
         hint.textContent = getHint(input.value);
-        tabMatches = [];
-        tabIndex = -1;
+        tabMatches = []; tabIndex = -1;
       }
       return;
     }
@@ -390,45 +518,54 @@
         input.value = cmdHistory[historyIndex];
       } else {
         historyIndex = -1;
-        input.value = "";
+        input.value  = "";
       }
       hint.textContent = getHint(input.value);
-      tabMatches = [];
-      tabIndex = -1;
+      tabMatches = []; tabIndex = -1;
       return;
     }
 
-    // Tab: durch alle Matches cyclen
+    // Ctrl+w: Wort rückwärts löschen (wie in Vim/bash)
+    if (e.key === "w" && e.ctrlKey) {
+      e.preventDefault();
+      const val    = input.value;
+      const pos    = input.selectionStart || val.length;
+      // rückwärts bis zum letzten Leerzeichen vor dem Cursor
+      const before = val.slice(0, pos);
+      const trimmed = before.trimEnd();
+      const lastSpace = trimmed.lastIndexOf(" ");
+      const newBefore = lastSpace >= 0 ? trimmed.slice(0, lastSpace + 1) : "";
+      input.value  = newBefore + val.slice(pos);
+      input.setSelectionRange(newBefore.length, newBefore.length);
+      hint.textContent = getHint(input.value);
+      tabMatches = []; tabIndex = -1;
+      return;
+    }
+
+    // Tab: durch Matches cyclen
     if (e.key === "Tab") {
       e.preventDefault();
       if (tabMatches.length === 0) {
         tabMatches = getMatches(input.value);
-        tabIndex = -1;
+        tabIndex   = -1;
       }
       if (tabMatches.length > 0) {
         tabIndex = (tabIndex + 1) % tabMatches.length;
         hint.textContent = tabMatches[tabIndex];
-        // Nur den Befehlsnamen ins Input – Argumente (<n>, <arg> usw.) weglassen
-        // Aus ":theme <n> – ..." wird nur "theme"
-        const cmdPart = tabMatches[tabIndex]
-          .split(" – ")[0]
-          .replace(/^:/, "")
-          .trim();
+        const cmdPart = tabMatches[tabIndex].split(" – ")[0].replace(/^:/, "").trim();
         const cmdOnly = cmdPart.replace(/\s+<[^>]+>.*$/, "").trim();
         input.value = cmdOnly;
       }
       return;
     }
 
-    // Tab-Cycle zurücksetzen wenn anders getippt
-    tabMatches = [];
-    tabIndex = -1;
+    tabMatches = []; tabIndex = -1;
   });
 
-  // Hint live beim Tippen
+  // Hint live
   input.addEventListener("input", () => {
-    tabMatches = [];
-    tabIndex = -1;
+    tabMatches       = [];
+    tabIndex         = -1;
     hint.textContent = getHint(input.value);
   });
 
