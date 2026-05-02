@@ -670,7 +670,7 @@ window.VimCommands = [
   },
   {
     match: /^!fastfetch$/,
-    desc: ":!fastfetch – System-Info im neofetch-Stil anzeigen",
+    desc: ":!fastfetch – System-Info anzeigen",
     group: "System",
     run() {
       if (typeof window.showModal !== "function") return;
