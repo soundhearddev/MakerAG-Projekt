@@ -579,32 +579,4 @@
     container.appendChild(wrapper);
   }
 
-  // ── Location speichern ───────────────────────────────────────────────────
-
-  async function submitLocation(payload, locSpan, item, btn, onDone) {
-    const originalText = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "…";
-    try {
-      const res = await fetch("/api/edit-location.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Fehler");
-
-      item.location = json.data.location;
-      item.location_note = json.data.location_note ?? null;
-      locSpan.textContent = formatLocation(item.location, item.location_note);
-      onDone();
-    } catch (err) {
-      console.error("Location-Update fehlgeschlagen:", err);
-      alert("Fehler: " + err.message);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
-  }
-
 })();
