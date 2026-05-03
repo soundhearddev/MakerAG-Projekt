@@ -28,7 +28,7 @@
 
     <div class="search">
         <div class="search-header">
-            <h1>Inventar-Suche</h1>
+            <h1 data-i18n="search_title">Inventar-Suche</h1>
 
         </div>
 
@@ -42,28 +42,28 @@
 
             <div class="search-options">
                 <div class="option-group">
-                    <label for="sortField">Sortieren nach:</label>
+                    <label for="sortField" data-i18n="search_sort_label">Sortieren nach:</label>
                     <select id="sortField" aria-label="Sortierfeld auswählen">
                         <option value="id">ID</option>
                         <option value="name">Name</option>
-                        <option value="category">Kategorie</option>
-                        <option value="brand">Marke</option>
-                        <option value="quantity">Menge</option>
+                        <option value="category" data-i18n="search_sort_category">Kategorie</option>
+                        <option value="brand" data-i18n="search_sort_brand">Marke</option>
+                        <option value="quantity" data-i18n="search_sort_quantity">Menge</option>
                         <option value="locker">Locker</option>
 
                     </select>
                 </div>
 
                 <div class="option-group">
-                    <label for="sortOrder">Reihenfolge:</label>
+                    <label for="sortOrder" data-i18n="search_order_label">Reihenfolge:</label>
                     <select id="sortOrder" aria-label="Sortierreihenfolge auswählen">
-                        <option value="DESC">Absteigend</option>
-                        <option value="ASC">Aufsteigend</option>
+                        <option value="DESC" data-i18n="search_order_desc">Absteigend</option>
+                        <option value="ASC" data-i18n="search_order_asc">Aufsteigend</option>
                     </select>
                 </div>
 
                 <div class="option-group">
-                    <label for="limitResults">Ergebnisse:</label>
+                    <label for="limitResults" data-i18n="search_limit_label">Ergebnisse:</label>
                     <select id="limitResults" aria-label="Anzahl Ergebnisse auswählen">
                         <option value="25">25</option>
                         <option value="50" selected>50</option>
@@ -73,17 +73,17 @@
                 </div>
 
                 <div class="option-group">
-                    <label for="searchFor">Suche nach:</label>
+                    <label for="searchFor" data-i18n="search_for_label">Suche nach:</label>
                     <select id="searchFor" aria-label="Nach Bestimmte Felder Suchen">
-                        <option value="" selected>- Nichts</option>
+                        <option value="" selected data-i18n="search_for_nothing">- Nichts</option>
                         <option value="ID">ID</option>
                         <option value="Name">Name</option>
                         <option value="Kategorie">Kategorie</option>
                         <option value="Marke">Marke</option>
                         <option value="Modell">Modell</option>
-                        <option value="Seriennummer">Seriennummer</option>
+                        <option value="Seriennummer" data-i18n="search_for_serial">Seriennummer</option>
                         <option value="Locker">Locker</option>
-                        <option value="Raum">Raum</option>
+                        <option value="Raum" data-i18n="search_for_room">Raum</option>
                     </select>
                 </div>
             </div>
@@ -101,14 +101,14 @@
                 <thead>
                     <tr>
                         <th data-sort="id">ID</th>
-                        <th>Bild</th>
+                        <th data-i18n="search_col_image">Bild</th>
                         <th data-sort="name">Name</th>
-                        <th data-sort="category">Kategorie</th>
-                        <th data-sort="brand">Marke</th>
-                        <th>Modell</th>
-                        <th data-sort="quantity">Menge</th>
+                        <th data-sort="category" data-i18n="search_sort_category">Kategorie</th>
+                        <th data-sort="brand" data-i18n="search_sort_brand">Marke</th>
+                        <th data-i18n="search_col_model">Modell</th>
+                        <th data-sort="quantity" data-i18n="search_sort_quantity">Menge</th>
                         <th data-sort="locker">Locker</th>
-                        <th>Dokumentation</th>                    
+                        <th data-i18n="search_col_docs">Dokumentation</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,7 +116,7 @@
                         <td colspan="12">
                             <div class="loading-message">
                                 <div class="spinner"></div>
-                                <span>Lade Daten...</span>
+                                <span data-i18n="search_loading">Lade Daten...</span>
                             </div>
                         </td>
                     </tr>

@@ -13,6 +13,9 @@
   // diese Key wird benutzt um die Einstellungen im localStorage zu speichern. Alle Daten werden als JSON-String unter diesem Key abgelegt.
   const SETTINGS_KEY = "Settings-Obj";
   const BG_PATTERN_KEY = "bg_pattern_settings";
+  const t = (key) => window.T?.[key] || key;
+
+
 
   const DEFAULT_SETTINGS = {
     language: "de",
@@ -125,8 +128,6 @@
       setTimeout(() => (container.style.opacity = "1"), 50);
     }
 
-    // Hier soll das mit ding config.json oder in utillity
-
     log("Settings System initialisiert");
   }
 
@@ -202,6 +203,8 @@
       inputs.languageSelect.addEventListener("change", (e) => {
         settings.language = e.target.value;
         log("Sprache geändert:", settings.language);
+        saveSettings(); // in localStorage schreiben
+        setLang(e.target.value); // aus lang.js → setzt localStorage("lang") + reload
       });
     }
 
@@ -449,11 +452,11 @@
   function saveSettings() {
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      showNotification("Einstellungen gespeichert", "success");
+      showNotification(t("notif_saved"), "success");
       log("Einstellungen gespeichert");
     } catch (e) {
       console.error("Fehler beim Speichern:", e);
-      showNotification("Fehler beim Speichern", "error");
+      showNotification(t("notif_save_error"), "error");
     }
   }
 
@@ -512,7 +515,7 @@
   }
 
   function handleReset() {
-    if (confirm("Alle Einstellungen auf Standard zurücksetzen?")) {
+    if (confirm(t("confirm_reset"))) {
       settings = { ...DEFAULT_SETTINGS };
       applyAllSettings();
       saveSettings();
@@ -532,7 +535,7 @@
         log("Game of Life gestartet");
       } else {
         console.error("Game of Life Funktion nicht gefunden");
-        showNotification("Game of Life nicht verfügbar", "error");
+        showNotification(t("notif_gol_unavailable"), "error");
       }
     } else {
       if (typeof window.removeGameOfLifeOverlay === "function") {
@@ -543,14 +546,14 @@
   }
 
   function clearCache() {
-    if (confirm("Cache wirklich löschen?")) {
+    if (confirm(t("confirm_cache"))) {
       try {
         sessionStorage.clear();
         log("Cache geleert");
-        showNotification("Cache gelöscht", "success");
+        showNotification(t("notif_cache_cleared"), "success");
       } catch (e) {
         console.error("Fehler beim Löschen:", e);
-        showNotification("Fehler beim Löschen", "error");
+        showNotification(t("notif_cache_error"), "error");
       }
     }
   }
@@ -569,10 +572,10 @@
       // URL wieder freigeben damit der browser den speicher aufräumen kann
       URL.revokeObjectURL(url);
       log("Einstellungen exportiert");
-      showNotification("Einstellungen exportiert", "success");
+      showNotification(t("notif_exported"), "success");
     } catch (e) {
       console.error("Fehler beim Export:", e);
-      showNotification("Fehler beim Export", "error");
+      showNotification(t("notif_export_error"), "error");
     }
   }
 
@@ -597,10 +600,10 @@
           applyAllSettings();
           saveSettings();
           log("Einstellungen importiert");
-          showNotification("Einstellungen importiert", "success");
+          showNotification(t("notif_imported"), "success");
         } catch (e) {
           console.error("Fehler beim Import:", e);
-          showNotification("Ungültige Datei", "error");
+          showNotification(t("notif_invalid_file"), "error");
         }
       };
       reader.readAsText(file);
@@ -762,7 +765,7 @@
       date.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
 
     try {
-      const res = await fetch("/config.json", { cache: "no-store" });
+      const res = await fetch("/config/config.json", { cache: "no-store" });
 
       if (!res.ok) throw new Error("config.json nicht gefunden");
 

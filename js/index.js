@@ -43,7 +43,7 @@ async function loadItemCount() {
     }
   } catch (err) {
     log.error("Fehler beim Laden des Item-Counts:", err);
-    document.getElementById("item-count").textContent = "Fehler";
+    document.getElementById("item-count").textContent = T.counter_error;
   }
 }
 
@@ -54,7 +54,7 @@ async function loadLatestEntries() {
   const container = document.getElementById("latest-entries");
   const button = document.getElementById("load-latest");
 
-  button.textContent = "Lade...";
+  button.textContent = T.loading;
   button.disabled = true;
 
   try {
@@ -73,7 +73,7 @@ async function loadLatestEntries() {
     const items = response.data || [];
 
     if (items.length === 0) {
-      container.innerHTML = '<p class="no-items">Keine Einträge gefunden</p>';
+      container.innerHTML = `<p class="no-items">${T.no_items}</p>`;
       return;
     }
 
@@ -86,12 +86,12 @@ async function loadLatestEntries() {
             <div class="latest-item-card">
                 ${item.thumbnail
             ? `<img src="${item.thumbnail}" alt="${item.name}" class="item-thumbnail">`
-            : `<img src="/images/uhhhh.jpg" alt="Kein Bild" class="item-thumbnail placeholder">`
+            : `<img src="/images/uhhhh.jpg" alt="${T.no_image_alt}" class="item-thumbnail placeholder">`
           }
                 <div class="item-info">
                     <h3>${item.name}</h3>
                     <p class="item-meta">
-                        <span class="category">${item.category_name || "Keine Kategorie"}</span>
+                      <span class="category">${item.category_name || T.no_category}</span>
                         ${item.brand
             ? `<span class="brand">${item.brand}</span>`
             : ""
@@ -99,12 +99,12 @@ async function loadLatestEntries() {
                     </p>
                     <div class="item-actions">
                         ${item.docs_link
-            ? `<a href="${item.docs_link}" class="btn-docs" target="_blank">Docs</a>`
+            ? `<a href="..." class="btn-docs" target="_blank">${T.docs_btn}</a>`
             : ""
           }
                         <a href="/search.html?query=${encodeURIComponent(
             item.name,
-          )}" class="btn-search">Details</a>
+          )}" class="btn-search">${T.details_btn}</a>
                     </div>
                 </div>
             </div>
@@ -112,11 +112,11 @@ async function loadLatestEntries() {
       )
       .join("");
 
-    button.textContent = "Neu laden";
+    button.textContent = T.btn_reload;
   } catch (err) {
     log.error("Fehler beim Laden der neuesten Einträge:", err);
     container.innerHTML = `<p class="error-message">Fehler beim Laden: ${err.message}</p>`;
-    button.textContent = "Erneut versuchen";
+    button.textContent = T.btn_retry;
   } finally {
     button.disabled = false;
   }
@@ -133,7 +133,7 @@ async function loadRandomItem() {
   const button = document.getElementById("random-item-btn");
   const statusDiv = document.getElementById("random-item-status");
 
-  button.textContent = "Lade...";
+  button.textContent = T.loading;
   button.disabled = true;
   statusDiv.innerHTML = "";
 
@@ -157,7 +157,7 @@ async function loadRandomItem() {
   <div class="random-item-result random-item-button">
     ${item.thumbnail
         ? `<img src="${item.thumbnail}" alt="${item.name}" class="random-thumbnail">`
-        : `<img src="/images/uhhhh.jpg" alt="Kein Bild" class="random-thumbnail placeholder">`
+        : `<img src="/images/uhhhh.jpg" alt="${T.no_image_alt}" class="random-thumbnail placeholder">`
       }
                 <div class="random-item-details">
                     <h3>${item.name}</h3>
@@ -184,22 +184,22 @@ async function loadRandomItem() {
       }
                     <div class="random-actions">
                         ${item.docs_link
-        ? `<a href="${item.docs_link}" class="btn-docs random-item-button" target="_blank">Dokumentation</a>`
+        ? <a href="..." class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>
         : ""
       }
                         <a href="/search.html?query=${encodeURIComponent(
         item.name,
-      )}" class="btn-details random-item-button">Alle Details</a>
+      )}" class="btn-details random-item-button">${T.all_details_btn}</a>
                     </div>
                 </div>
             </div>
         `;
 
-    button.textContent = "Neuen zufälligen Gegenstand";
+    button.textContent = T.btn_random_new;
   } catch (err) {
     log.error("Fehler beim Laden des zufälligen Items:", err);
     statusDiv.innerHTML = `<p class="error-message">Fehler: ${err.message}</p>`;
-    button.textContent = "Erneut versuchen";
+    button.textContent = T.btn_retry;
   } finally {
     button.disabled = false;
   }
@@ -277,7 +277,7 @@ async function loadCategories() {
                 <div class="category-card" onclick="window.location.href='/search.html?category_id=${cat.id}'">
                     <h3>${cat.name}</h3>
                     ${cat.parent_name ? `<p class="category-parent">${cat.parent_name}</p>` : ""}
-                    <p class="category-count">${cat.item_count} ${cat.item_count === 1 ? "Item" : "Items"}</p>
+                    ${cat.item_count} ${cat.item_count === 1 ? T.item_singular : T.item_plural}
                 </div>
             `,
       )
@@ -286,7 +286,7 @@ async function loadCategories() {
     log.error("Fehler beim Laden der Kategorien:", err);
     const container = document.querySelector("#Kategorien .row");
     if (container) {
-      container.innerHTML = `<p class="error-message">Fehler beim Laden der Kategorien</p>`;
+      container.innerHTML = `<p class="error-message">${T.error_load_categories}</p>`;
     }
   }
 }

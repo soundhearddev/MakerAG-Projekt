@@ -1,63 +1,52 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MakerAG</title>
-    <script src="/js/theme-loader.js"></script>
-    <link rel="stylesheet" href="/styles/animation.css" />
 
-    <link rel="stylesheet" href="/styles/base.css" />
-    <link rel="stylesheet" href="/styles/how_to.css" />
-    <link rel="icon" href="/images/logo.png" type="image/png" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MakerAG</title>
+  <script src="/js/theme-loader.js"></script>
+  <link rel="stylesheet" href="/styles/animation.css" />
 
-    <script src="js/loader.js"></script>
-  </head>
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/how_to.css" />
+  <link rel="icon" href="/images/logo.png" type="image/png" />
 
-  <body>
-    <!-- TODO: bisschen QoL und mehr info und halt so-->
-    <script src="js/loader.js"></script>
-    <div class="page-loader">
-      <div class="loader-spinner"></div>
-    </div>
-    <div id="header"></div>
-    <div id="nav"></div>
-    <div id="settings"></div>
+  <script src="js/loader.js"></script>
+</head>
 
-    <div class="container">
-      <h1>Wie Fügt man Weitere Gegenstände hinzu?</h1>
-    </div>
+<body>
+  <!-- TODO: bisschen QoL und mehr info und halt so-->
+  <script src="js/loader.js"></script>
+  <div class="page-loader">
+    <div class="loader-spinner"></div>
+  </div>
+  <div id="header"></div>
+  <div id="nav"></div>
+  <div id="settings"></div>
 
-    <div class="container">
-      <div class="how-to-content">
-        <h4>
-          <p>
-            Um weitere Gegenstände hinzuzufügen muss eine Verbindung mit dem
-            Server hergestellt werden. Um dies zu tun, vergewissern Sie sich,
-            dass Sie die benötigten SSH Keys besitzen. Zum Verbinden öffnen Sie
-            das Terminal und führen Sie diesen Befehl aus: um weitere
-            Gegenstände hinzuzufügen muss eine verbindung mit dem Server
-            hergestellt werden. um dies zu tun, vergewissern sie sich, dass sie
-            die Benötigten SSH Keys besitzen. zum Verbinden, öffnen sie das
-            Terminal und führen sie diesen Befehl aus:
-          </p>
-        </h4>
+  <div class="container">
+    <h1 data-i18n="howto_title">Wie Fügt man Weitere Gegenstände hinzu?</h1>
+  </div>
 
-        <div class="code-block">
-          <code>ssh -L 8080:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
-        </div>
-
-        <h4>
-          <p>
-            Wenn dies getan ist, können Sie Ihren Browser öffnen und auf die
-            Seite
-            <a href="http://localhost:8080" target="_blank"
-              >http://localhost:8080</a
-            >
-            navigieren.
-          </p>
-        </h4>
+  <div class="container">
+    <div class="how-to-content">
+      <h4>
+        <p data-i18n="howto_text1">Um weitere Gegenstände hinzuzufügen muss eine Verbindung mit dem Server hergestellt
+          werden. Um dies zu tun, vergewissern Sie sich, dass Sie die benötigten SSH Keys besitzen. Zum Verbinden öffnen
+          Sie das Terminal und führen Sie diesen Befehl aus:</p>
+      </h4>
+      <div class="code-block">
+        <code>ssh -L 8080:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
       </div>
+
+      <h4>
+        <p data-i18n="howto_text2">Wenn dies getan ist, können Sie Ihren Browser öffnen und auf die Seite navigieren.
+        </p>
+        <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
+      </h4>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
