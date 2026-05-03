@@ -23,6 +23,8 @@ const FETCH_TIMEOUT = 5000;
 let loadedComponents = 0;
 const totalComponents = 3;
 
+
+
 /**
  * Fetch mit Timeout
  */
@@ -275,12 +277,33 @@ window.addEventListener("unhandledrejection", (e) => {
 // Initialisierung mit Error Handling
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // Scroll-Position zurücksetzen
-    // so oft habe ich das irgentwo hingeshriebn und es hat nie was geändert
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
 
-    // Komponenten parallel laden
+    // 1. Sprache laden
+    const saved = localStorage.getItem("lang") || "de";
+    try {
+      const res = await fetch("/config/lang.index.json");
+      const translations = await res.json();
+      window.T = translations[saved] || translations["de"] || {};
+    } catch (e) {
+      console.warn("[lang] Fallback auf leer");
+      window.T = {};
+    }
+    window._currentLang = saved;
+    window.applyTranslations = function () {
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.dataset.i18n;
+        if (window.T[key]) el.textContent = window.T[key];
+      });
+      document.documentElement.lang = window._currentLang;
+    };
+    window.setLang = function (lang) {
+      localStorage.setItem("lang", lang);
+      location.reload();
+    };
+
+    // 2. Partials laden
     await Promise.all([
       loadHTML("header", "/partials/header.html"),
       loadHTML("nav", "/partials/nav.html"),
@@ -290,29 +313,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         : Promise.resolve(),
     ]);
 
-    // Kurze Verzögerung für Animation
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // 3. Übersetzen
+    window.applyTranslations();
 
-    // Seite als geladen markieren
+    await new Promise((resolve) => setTimeout(resolve, 100));
     document.body.classList.add("loaded");
     document.body.classList.remove("loading");
     document.body.style.overflow = "";
 
-    // Loader ausblenden
     const loader = document.querySelector(".page-loader");
     if (loader) {
       loader.classList.add("hidden");
       setTimeout(() => loader.remove(), 300);
     }
 
-    // Event Delegation für Settings
     document.body.addEventListener("click", handleGlobalClicks);
   } catch (error) {
     console.error("Fehler beim Laden der Komponenten:", error);
     document.body.classList.add("loaded");
     document.body.classList.remove("loading");
     document.body.style.overflow = "";
-
     const loader = document.querySelector(".page-loader");
     if (loader) loader.remove();
   }
@@ -333,6 +353,7 @@ function handleGlobalClicks(e) {
     modal.classList.remove("active");
   }
 }
+
 
 // Zusammenfassend lässt sich sagen, dass der haubtteil des loaders einfahc nur aus event listeners und halt abischerung damit alles gut funktioniert.
 // das wirkliche laden der datei ist nciht sehr schwer, aber das was halt mit sich kommt und was halt in der datei ist muss halt erstmal alles gehandeld werden.

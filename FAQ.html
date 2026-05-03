@@ -1,60 +1,63 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MakerAG</title>
-    <script src="/js/theme-loader.js"></script>
-    <link rel="stylesheet" href="/styles/animation.css" />
 
-    <link rel="stylesheet" href="/styles/base.css" />
-    <link rel="stylesheet" href="/styles/faq.css" />
-    <link rel="icon" href="/images/logo.png" type="image/png" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MakerAG</title>
+  <script src="/js/theme-loader.js"></script>
+  <link rel="stylesheet" href="/styles/animation.css" />
 
-  <body>
-    <script src="/js/loader.js"></script>
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/faq.css" />
+  <link rel="icon" href="/images/logo.png" type="image/png" />
+</head>
 
-    <div class="page-loader">
-      <div class="loader-spinner"></div>
-    </div>
-    <div id="header"></div>
-    <div id="settings"></div>
-    <div id="nav"></div>
+<body>
+  <script src="/js/loader.js"></script>
 
-    <div class="container">
-      <h4 class="info">
-        Falls Irgentwelche Fragen aufkommen welche nicht hier aufgelistet sind,
-        oder sie Feedback geben möchten, kann dies gerne hier gemacht werden:
-        <a href="/feedback.html" target="_blank">Feedback geben</a>
-      </h4>
+  <div class="page-loader">
+    <div class="loader-spinner"></div>
+  </div>
+  <div id="header"></div>
+  <div id="settings"></div>
+  <div id="nav"></div>
 
-      <h1>Häufig gestellte Fragen</h1>
-
-      <h2 class="frage">Wie füge ich einen Gegenstand hinzu?</h2>
-      <p class="antwort">
-        Alle Infos zum Hinzufügen eines Gegenstands finden sie
-        <a href="/how_to.html" target="_blank">hier</a>
-      </p>
-
-      <h2 class="frage">Wo finde ich eine Bestimmte Gruppe an Gegenständen?</h2>
-      <p class="antwort">
-        Das Filtern von Gegenständen erfolgt über die Suchoption in der
-        <a href="/search.html" target="_blank">Gegenstandssuche</a>.
-      </p>
+  <div class="container">
+    <h4 class="info" id="faq-info"></h4>
+    <h1 data-i18n="faq_title">Häufig gestellte Fragen</h1>
+    <div id="faq-list"></div>
+  </div>
 
 
-      <h2 class="frage">Wo ist die Dokumentation dieses Projektes zu finden</h2>
-      <p class="antwort">
-        Die Dokumentaiton ist unter dem Abschnitt "Hilfe" zu finden oder alternativ direkt <a href="/docs/1/index.html">hier⤴</a>.<br>
-        Die Dokumentation selbst ist eine Obsidian Markdown datei, welche mithilfe eines Plugins als eine html Seite exportiert wurde.
-        Eine Docx version ist <a href="/docs/1/Dokumentation.docx">hier⤴</a>.<br> zu finden (zu beachten ist, dass die Docx version der Dokumentation nicht vollständig alles im detail erläutert)  
-        <!-- nicht zu verwechseln mit /docs/1/dokumentation.docs, welche für die website glaube ich benötigt wird oder so-->
-      </p>
+  <!-- TODO: einfach mall alles nochmal verbessern + css-->
 
+  <script>
+    function renderFaq() {
+      const faqList = document.getElementById("faq-list");
+      const faqInfo = document.getElementById("faq-info");
 
+      if (!faqList || !window.T?.faq_items) {
+        setTimeout(renderFaq, 50); // kurz warten bis T gesetzt ist
+        return;
+      }
 
-      <!-- TODO: einfach mall alles nochmal verbessern + css-->
-    </div>
-  </body>
+      faqList.innerHTML = window.T.faq_items.map(item => `
+    <h2 class="frage">${item.q}</h2>
+    <p class="antwort">
+      ${item.a}
+      ${item.link ? `<a href="${item.link}" target="_blank">${item.link_text}</a>` : ""}
+    </p>
+  `).join("");
+
+      if (faqInfo && window.T.faq_info) {
+        faqInfo.innerHTML = `${window.T.faq_info} <a href="/feedback.html" target="_blank">${window.T.faq_feedback_link}</a>`;
+      }
+    }
+
+    renderFaq();
+  </script>
+
+</body>
+
 </html>

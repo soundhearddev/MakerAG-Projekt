@@ -85,5 +85,5 @@
 .submit:hover {
   scale: 1.2;
   background: var(--cat-accent);
-  /* warum auch immer hat es ohne das nicht funktioniert... eignetlich sollte es auch ohne ghene aber ich bin zu müde um herrauszufinden warum  */
+  color: var(--cat-primary);
 }

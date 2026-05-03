@@ -277,12 +277,8 @@ async function searchItems(query) {
         "Die Suche dauerte zu lange und wurde abgebrochen. Bitte versuchen Sie es erneut.",
       );
     } else if (
-      err.message.includes("NetworkError") ||
       err.message.includes("Failed to fetch")
     ) {
-      log.error(
-        "Verbindung zum Server fehlgeschlagen. Bitte prüfen Sie Ihre Internetverbindung.",
-      );
 
       if (state.retryCount < state.maxRetries) {
         state.retryCount++;
@@ -308,7 +304,7 @@ function updateSearchInfo(count, query) {
     return;
   }
 
-  countEl.textContent = `${count} ${count === 1 ? "Ergebnis" : "Ergebnisse"}`;
+  countEl.textContent = `${count} ${count === 1 ? (window.T?.search_result_singular || "Ergebnis") : (window.T?.search_result_plural || "Ergebnisse")}`;
 
   if (query) {
     const fieldLabel = state.searchFor ? ` in ${state.searchFor}` : "";
@@ -341,7 +337,7 @@ function renderTable(data, query) {
 
   if (!data || data.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="9" class="no-results">Keine Ergebnisse gefunden</td></tr>';
+      `<tr><td colspan="9" class="no-results">${window.T?.search_no_results || "Keine Ergebnisse gefunden"}</td></tr>`
     return;
   }
 
@@ -435,8 +431,9 @@ function renderFilterChips(query) {
   if (state.searchFor) {
     const chip = document.createElement("span");
     chip.className = "filter-chip";
-    chip.innerHTML = `Feld: <strong>${escapeHtml(state.searchFor)}</strong>
-      <button class="filter-chip-remove" title="Filter entfernen">✕</button>`;
+    chip.innerHTML = `${window.T?.search_field_prefix || "Feld:"} <strong>${escapeHtml(state.searchFor)}</strong>
+  <button class="filter-chip-remove" title="${window.T?.search_filter_remove || "Filter entfernen"}">✕</button>`;
+
     chip.querySelector("button").addEventListener("click", () => {
       state.searchFor = "";
       document.getElementById("searchFor").value = "";
@@ -448,8 +445,9 @@ function renderFilterChips(query) {
   if (state.categoryId > 0) {
     const chip = document.createElement("span");
     chip.className = "filter-chip";
-    chip.innerHTML = `Kategorie-Filter aktiv
-      <button class="filter-chip-remove" title="Filter entfernen">✕</button>`;
+    chip.innerHTML = `${window.T?.search_category_filter || "Kategorie-Filter aktiv"}
+  <button class="filter-chip-remove" title="${window.T?.search_filter_remove || "Filter entfernen"}">✕</button>`;
+
     chip.querySelector("button").addEventListener("click", () => {
       state.categoryId = 0;
       searchItems(state.currentQuery);
@@ -609,25 +607,3 @@ window.addEventListener("unhandledrejection", (e) => {
   });
 });
 
-// =============================================================================
-// NETWORK STATUS MONITORING
-// =============================================================================
-window.addEventListener("online", () => {
-  // log.success("Internetverbindung wiederhergestellt");
-  showToast("Internetverbindung wiederhergestellt", "success");
-
-  if (state.currentQuery !== null && !state.isLoading) {
-    searchItems(state.currentQuery);
-  }
-});
-
-window.addEventListener("offline", () => {
-  log.warning("Internetverbindung verloren");
-  showToast("Keine Internetverbindung", "warning", 5000);
-
-  if (state.activeRequest) {
-    state.activeRequest.abort();
-    state.activeRequest = null;
-    state.isLoading = false;
-  }
-});

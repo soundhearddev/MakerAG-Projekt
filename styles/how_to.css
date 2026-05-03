@@ -101,57 +101,6 @@
   pointer-events: none;
 }
 
-/* Copy Button */
-.code-block .copy-btn {
-  position: absolute;
-  top: 0.45rem;
-  right: 0.5rem;
-  background: transparent;
-  border: 1px solid var(--cat-extra);
-  color: var(--cat-text);
-  padding: 0.2rem 0.55rem;
-  font-size: 0.7rem;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(-3px);
-  transition:
-    opacity 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease;
-  z-index: 2;
-  letter-spacing: 0.05em;
-  line-height: 1.5;
-  min-height: unset;
-  min-width: unset;
-}
-
-.code-block:hover .copy-btn {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.code-block .copy-btn:hover {
-  background-color: var(--cat-extra);
-  color: var(--cat-primary);
-}
-
-.code-block .copy-btn:active {
-  transform: translateY(1px);
-}
-
-/* Zustand: erfolgreich kopiert */
-.code-block .copy-btn.copied {
-  background-color: var(--cat-accent);
-  border-color: var(--cat-accent);
-  color: var(--cat-primary);
-  opacity: 1;
-  transform: translateY(0);
-}
-
 /* <code> innerhalb des Wrappers */
 .code-block code {
   display: block;
@@ -159,7 +108,7 @@
   color: var(--cat-accent);
   font-family: "Courier New", Courier, monospace;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 800;
   padding: 1rem 1.2rem;
   padding-right: 4rem;
   overflow-x: auto;
