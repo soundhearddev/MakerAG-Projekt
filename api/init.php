@@ -8,14 +8,11 @@
 // ─── 0. DEBUG-FLAG ────────────────────────────────────────────────────────────
 // define() legt eine Konstante fest – kein $ davor, kann später nicht überschrieben werden.
 // true = Fehlermeldungen werden in der JSON-Antwort mitgeschickt (nur für Entwicklung!)
-// NIEMALS auf einem Produktions-Server auf true lassen!
-define('API_DEBUG', true);
+define('API_DEBUG', false);
 
 // ─── 1. MYSQLI EXCEPTIONS AKTIVIEREN ─────────────────────────────────────────
 // Standardmäßig gibt mysqli bei Fehlern nur false zurück – das merkt man oft nicht.
 // MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT = Fehler werden als Exceptions geworfen,
-// also fängt das try/catch sie auf und nichts fällt still durch.
-// MUSS vor jeder DB-Nutzung stehen, sonst knallt prepare() unkontrolliert.
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // ─── 2. ERROR REPORTING ───────────────────────────────────────────────────────
@@ -23,8 +20,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 error_reporting(E_ALL);
 // display_errors = 0: Fehler werden NIE direkt ausgegeben (würde das JSON kaputt machen!)
 ini_set('display_errors', 0);
-// log_errors = 1: Fehler stattdessen in die Logdatei schreiben
-ini_set('log_errors', 1);
+
 
 // ─── 3. HEADERS ───────────────────────────────────────────────────────────────
 // Dem Browser sagen dass die Antwort JSON ist, auf UTF-8 kodiert
