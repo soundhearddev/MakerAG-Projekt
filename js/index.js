@@ -184,8 +184,8 @@ async function loadRandomItem() {
       }
                     <div class="random-actions">
                         ${item.docs_link
-        ? <a href="..." class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>
-        : ""
+          ? `<a href="..." class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>`
+          : ""
       }
                         <a href="/search.html?query=${encodeURIComponent(
         item.name,
