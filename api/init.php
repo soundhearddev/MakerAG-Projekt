@@ -9,7 +9,7 @@
 // define() legt eine Konstante fest – kein $ davor, kann später nicht überschrieben werden.
 // true = Fehlermeldungen werden in der JSON-Antwort mitgeschickt (nur für Entwicklung!)
 // NIEMALS auf einem Produktions-Server auf true lassen!
-define('API_DEBUG', true);
+define('API_DEBUG', false);
 
 // ─── 1. MYSQLI EXCEPTIONS AKTIVIEREN ─────────────────────────────────────────
 // Standardmäßig gibt mysqli bei Fehlern nur false zurück – das merkt man oft nicht.
