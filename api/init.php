@@ -110,7 +110,7 @@ function getStringParam(string $key, string $default = ''): string
 
 /**
  * Thumbnail-Bild für ein Item im Dateisystem suchen.
- * Gibt den Web-Pfad zurück (z.B. "/docs/42/images/thumb.png") oder null wenn nichts gefunden.
+ * Gibt den Web-Pfad zurück (z.B. "/docs/items/42/images/thumb.png") oder null wenn nichts gefunden.
  */
 function findThumbnail(int $id): ?string
 {
@@ -118,8 +118,8 @@ function findThumbnail(int $id): ?string
 
     // Zwei mögliche Basispfade – je nachdem wie der Server konfiguriert ist
     $dirs = [
-        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/{$id}/images/",
-        "/var/www/public/docs/{$id}/images/",
+        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/items/{$id}/images/",
+        "/var/www/public/docs/items/{$id}/images/",
     ];
 
     foreach ($dirs as $dir) {
@@ -128,7 +128,7 @@ function findThumbnail(int $id): ?string
         // Zuerst explizit benannte Thumbnails suchen
         foreach (['thumb.png', 'thumb.jpg', 'thumb.jpeg', 'thumb.webp'] as $thumb) {
             if (file_exists($dir . $thumb)) {
-                return "/docs/{$id}/images/{$thumb}";
+                return "/docs/items/{$id}/images/{$thumb}";
             }
         }
 
@@ -140,7 +140,7 @@ function findThumbnail(int $id): ?string
             // pathinfo() zerlegt den Dateinamen → PATHINFO_EXTENSION gibt nur die Endung
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp'], true)) {
-                return "/docs/{$id}/images/{$file}";
+                return "/docs/items/{$id}/images/{$file}";
             }
         }
     }
@@ -156,12 +156,12 @@ function findDocsLink(int $id): ?string
     if ($id <= 0) return null;
 
     $paths = [
-        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/{$id}/index.html",
-        "/var/www/public/docs/{$id}/index.html",
+        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/items/{$id}/index.html",
+        "/var/www/public/docs/items/{$id}/index.html",
     ];
 
     foreach ($paths as $path) {
-        if (file_exists($path)) return "/docs/{$id}/index.html";
+        if (file_exists($path)) return "/docs/items/{$id}/index.html";
     }
 
     return null;

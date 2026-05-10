@@ -147,7 +147,7 @@
         "q": "Wie füge ich einen Gegenstand hinzu?",
         "a": "Alle Infos zum Hinzufügen eines Gegenstands finden sie",
         "link": "/how_to.html",
-        "link_text": "hier"
+        "link_text": "hier⤴"
       },
       {
         "q": "Wo finde ich eine Bestimmte Gruppe an Gegenständen?",
@@ -158,7 +158,7 @@
       {
         "q": "Wo ist die Dokumentation dieses Projektes zu finden",
         "a": "Die Dokumentation ist unter dem Abschnitt \"Hilfe\" zu finden oder alternativ direkt",
-        "link": "/docs/1/index.html",
+        "link": "/docs/project/index.html",
         "link_text": "hier⤴"
       }
     ],
@@ -320,7 +320,7 @@
         "q": "How do I add an item?",
         "a": "All information on adding an item can be found",
         "link": "/how_to.html",
-        "link_text": "here"
+        "link_text": "here⤴"
       },
       {
         "q": "Where can I find a specific group of items?",
@@ -331,7 +331,7 @@
       {
         "q": "Where can I find the documentation for this project?",
         "a": "The documentation can be found under the \"Help\" section or alternatively directly",
-        "link": "/docs/1/index.html",
+        "link": "/docs/project/index.html",
         "link_text": "here⤴"
       }
     ],
