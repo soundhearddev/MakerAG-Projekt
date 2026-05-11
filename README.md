@@ -62,7 +62,13 @@ feedback        – Name · Nachricht · Timestamp · IP (nur Rate-Limiting)
 ```
 
 
+# TODO
+- [ ] Dokumentation beenden und vervollständigen :
 
+### Später Planung
+- [ ] QoL für Gegenstände und deren Status hinzufügen
+- [ ] Generellen UI-/Design-Overhaul 
+- [ ] Tagsystem überarbeiten oder erweitern
 
 
 ## Mitmachen
