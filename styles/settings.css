@@ -1536,7 +1536,7 @@ body {
 
 /* ===== PERFORMANCE OPTIMIZATIONS ===== */
 .settings-modal-content {
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 
 .tab-btn,
@@ -1597,7 +1597,7 @@ body::after {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  will-change: left, top;
+  will-change: transform;
 }
 
 .theme-confirm-title {

@@ -13,6 +13,16 @@
 
 // viele Probleme kamen auch durch dieses laden. So wenn man html/css dateien in eine andere datei lädt sind SEHR oft die timing fehler, wo es dann einfach nichts mehr richtig anpassen kann. 
 
+
+
+if (window._loaderLoaded) {
+  console.warn("loader.js wurde doppelt geladen – abgebrochen");
+  throw new Error("stop");
+}
+window._loaderLoaded = true;
+
+
+
 // Cache für geladene HTML-Dateien
 const htmlCache = new Map();
 
