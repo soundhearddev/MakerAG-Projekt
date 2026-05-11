@@ -1,42 +1,78 @@
-# [Docs](./docs/project/index.html)
+# MakerAG Inventarverwaltung
 
-# Maker AG
-![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=Raleway&pattern=Transparent&theme=Dark)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/images/MakerAG-Black.png">
+  <source media="(prefers-color-scheme: light)" srcset="/images/MakerAG-White.png">
+  <img alt="Logo" src="/images/MakerAG-Black.png">
+</picture>
 
+> Webbasiertes Inventarsystem für die Maker-AG – entwickelt als Praktikumsersatz im Rahmen der zweijährigen Assistentenausbildung für Informationsverarbeitung.
 
-## Organisationssystem
-### *ja ich habe immernoch keinen richtigen Namen für das Projekt gefunden*
+![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)
+![MariaDB](https://img.shields.io/badge/MariaDB-10.x-003545?logo=mariadb&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=black)
+![Raspberry Pi](https://img.shields.io/badge/Raspberry_Pi-4B-A22846?logo=raspberrypi&logoColor=white)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+---
 
-# Projektübersicht
-Dieses Projekt ist ein Sortiersystem für die Räume U24, U25 und den Hardware-Raum. Es nutzt eine MariaDB-Datenbank, ein PHP-Backend und ein Web-Frontend, um alle Gegenstände strukturiert darzustellen, zu dokumentieren und jederzeit abrufbar zu machen.
+## Über das Projekt
 
-
-# Motivation
-Die Maker-AG diente als Alternative zum Praktikum in der Assistentenausbildung. Ziel war es, ein praxisnahes Projekt zu entwickeln, das langfristig die Verwaltung von Materialien erleichtert.
-
-# Ziele
-
-- Eintragung und Dokumentation aller Gegenstände in den Räumen U24, U25 und Hardware-Raum
-
-- Speicherung der Daten in MariaDB
-
-- Webbasierter Zugriff über Frontend
-
-- Backend in PHP zur Verwaltung und Abfrage der Daten
-
-- Dokumentation zu jedem Gegenstand
-
-- GitHub-Integration für Versionskontrolle und Kontribution
+Die Maker-AG verfügt über mehrere Schränke in den Räumen U24–U26 sowie einem Lagerraum – bisher ohne strukturierte Übersicht. Dieses System löst das Problem: Gegenstände werden erfasst, dokumentiert und bleiben dauerhaft auffindbar. Jeder Nutzer kann ohne Login den Status oder Standort eines Gegenstands aktualisieren.
 
 
-# Technologien
 
-- **Backend:** PHP
+## Features
 
-- **Frontend:** HTML, CSS, JavaScript
+- **Isometrische Raumansicht** – SVG-basierte Karte der Räume und Schränke, per JavaScript gerendert
+- **Volltextsuche** – Filterbar nach Name, Kategorie, Schrank u. v. m., mit sortierbarer Ergebnisliste
+- **Gegenstandsdokumentation** – Eigene Seite pro Eintrag mit allen Specs, Tags, Bildern und Dateien
+- **Status & Standort** – Ohne Login direkt auf der Infoseite änderbar
+- **Themes** – Wechselbare Farbpaletten
+- **i18n** – Mehrsprachigkeit via JSON-Sprachdateien und `data-i18n`-Attributen
+- **Feedback-System** – Name + Nachricht, mit serverseitigem Rate-Limiting
 
-- **Datenbank:** MariaDB
 
-- **Hardware:** Raspberry Pi 4 B 2GB
+
+
+## Tech Stack
+
+| Schicht | Technologie |
+|---|---|
+| Backend | PHP |
+| Frontend | HTML · CSS · Vanilla JS |
+| Datenbank | MariaDB |
+| Server | Raspberry Pi 4B · 2 GB RAM |
+| Webserver | Apache2 |
+
+
+
+## Datenbankstruktur
+
+```
+items           – Haupttabelle aller Gegenstände
+categories      – Selbstreferenziell, beliebig tief verschachtelbar
+                  (z. B. Hardware → Computer → Laptop)
+specs           – Key-Value-Pairs pro Item (flexibles Schema)
+item_tags       – Pivot-Tabelle (Items ↔ Tags, n:m)
+locations       – Standorte mit room_id-Referenz
+rooms           – Räume
+changelog       – Vollständige Änderungshistorie pro Item
+feedback        – Name · Nachricht · Timestamp · IP (nur Rate-Limiting)
+```
+
+
+
+
+
+## Mitmachen
+
+Pull Requests sind willkommen. Änderungen bitte gegen `develop` stellen – von dort wird in `main` gemergt.
+
+| Branch | Zweck |
+|---|---|
+| `main` | Produktivbetrieb |
+| `develop` | Neue Features, Tests |
+
+---
 
