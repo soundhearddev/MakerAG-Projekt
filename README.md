@@ -3,7 +3,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="/images/MakerAG-Black.png">
   <source media="(prefers-color-scheme: light)" srcset="/images/MakerAG-White.png">
-  <img alt="Logo" src="/images/MakerAG-Black.png">
+  <img alt="Logo" src="/images/MakerAG-White.png">
 </picture>
 
 > Webbasiertes Inventarsystem für die Maker-AG – entwickelt als Praktikumsersatz im Rahmen der zweijährigen Assistentenausbildung für Informationsverarbeitung.
