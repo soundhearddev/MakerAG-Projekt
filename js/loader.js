@@ -315,8 +315,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 3. Übersetzen
     window.applyTranslations();
-    
-    if (typeof init === "function") init();
 
     await new Promise((resolve) => setTimeout(resolve, 100));
     document.body.classList.add("loaded");

@@ -3,8 +3,8 @@
  * get_data.php
  * Listet Dateien aus dem Dateisystem für ein Item auf.
  * Liest aus:
- *   /docs/{id}/images/   → type=image
- *   /docs/{id}/data/     → type=pdf (und andere Dokumente)
+ *   /docs/items/{id}/images/   → type=image
+ *   /docs/items/{id}/data/     → type=pdf (und andere Dokumente)
  *
  * GET ?id=42&type=image  → alle Bilder für Item 42
  * GET ?id=42&type=pdf    → alle PDFs für Item 42
@@ -36,44 +36,44 @@ $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '/var/www/public', '/');
 $dirs = match ($type) {
     'image' => [
         [
-            'path' => "{$docRoot}/docs/{$itemId}/images/",
-            'webBase' => "/docs/{$itemId}/images/",
+            'path' => "{$docRoot}/docs/items/{$itemId}/images/",
+            'webBase' => "/docs/items/{$itemId}/images/",
             'exts' => $imageExts,
         ]
     ],
     'pdf' => [
         [
-            'path' => "{$docRoot}/docs/{$itemId}/data/",
-            'webBase' => "/docs/{$itemId}/data/",
+            'path' => "{$docRoot}/docs/items/{$itemId}/data/",
+            'webBase' => "/docs/items/{$itemId}/data/",
             'exts' => $pdfExts,
         ]
     ],
 
     'html' => [
         [
-            'path' => "{$docRoot}/docs/{$itemId}/data/",
-            'webBase' => "/docs/{$itemId}/data/",
+            'path' => "{$docRoot}/docs/items/{$itemId}/data/",
+            'webBase' => "/docs/items/{$itemId}/data/",
             'exts' => ['html', 'htm'],
         ]
     ],
 
     'all' => [
         [
-            'path' => "{$docRoot}/docs/{$itemId}/images/",
-            'webBase' => "/docs/{$itemId}/images/",
+            'path' => "{$docRoot}/docs/items/$itemId}/images/",
+            'webBase' => "/docs/items/{$itemId}/images/",
             'exts' => $imageExts,
         ],
         [
-            'path' => "{$docRoot}/docs/{$itemId}/data/",
-            'webBase' => "/docs/{$itemId}/data/",
+            'path' => "{$docRoot}/docs/items/{$itemId}/data/",
+            'webBase' => "/docs/items/{$itemId}/data/",
             'exts' => $dataExts,
         ],
     ],
     // default = alles was nicht 'image', 'pdf', 'all' ist → data-Ordner
     default => [
         [
-            'path' => "{$docRoot}/docs/{$itemId}/data/",
-            'webBase' => "/docs/{$itemId}/data/",
+            'path' => "{$docRoot}/docs/items/{$itemId}/data/",
+            'webBase' => "/docs/items/{$itemId}/data/",
             'exts' => $dataExts,
         ]
     ],

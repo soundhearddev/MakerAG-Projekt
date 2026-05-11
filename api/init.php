@@ -8,14 +8,11 @@
 // ─── 0. DEBUG-FLAG ────────────────────────────────────────────────────────────
 // define() legt eine Konstante fest – kein $ davor, kann später nicht überschrieben werden.
 // true = Fehlermeldungen werden in der JSON-Antwort mitgeschickt (nur für Entwicklung!)
-// NIEMALS auf einem Produktions-Server auf true lassen!
 define('API_DEBUG', false);
 
 // ─── 1. MYSQLI EXCEPTIONS AKTIVIEREN ─────────────────────────────────────────
 // Standardmäßig gibt mysqli bei Fehlern nur false zurück – das merkt man oft nicht.
 // MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT = Fehler werden als Exceptions geworfen,
-// also fängt das try/catch sie auf und nichts fällt still durch.
-// MUSS vor jeder DB-Nutzung stehen, sonst knallt prepare() unkontrolliert.
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // ─── 2. ERROR REPORTING ───────────────────────────────────────────────────────
@@ -23,8 +20,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 error_reporting(E_ALL);
 // display_errors = 0: Fehler werden NIE direkt ausgegeben (würde das JSON kaputt machen!)
 ini_set('display_errors', 0);
-// log_errors = 1: Fehler stattdessen in die Logdatei schreiben
-ini_set('log_errors', 1);
+
 
 // ─── 3. HEADERS ───────────────────────────────────────────────────────────────
 // Dem Browser sagen dass die Antwort JSON ist, auf UTF-8 kodiert
@@ -114,7 +110,7 @@ function getStringParam(string $key, string $default = ''): string
 
 /**
  * Thumbnail-Bild für ein Item im Dateisystem suchen.
- * Gibt den Web-Pfad zurück (z.B. "/docs/42/images/thumb.png") oder null wenn nichts gefunden.
+ * Gibt den Web-Pfad zurück (z.B. "/docs/items/42/images/thumb.png") oder null wenn nichts gefunden.
  */
 function findThumbnail(int $id): ?string
 {
@@ -122,8 +118,8 @@ function findThumbnail(int $id): ?string
 
     // Zwei mögliche Basispfade – je nachdem wie der Server konfiguriert ist
     $dirs = [
-        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/{$id}/images/",
-        "/var/www/public/docs/{$id}/images/",
+        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/items/{$id}/images/",
+        "/var/www/public/docs/items/{$id}/images/",
     ];
 
     foreach ($dirs as $dir) {
@@ -132,7 +128,7 @@ function findThumbnail(int $id): ?string
         // Zuerst explizit benannte Thumbnails suchen
         foreach (['thumb.png', 'thumb.jpg', 'thumb.jpeg', 'thumb.webp'] as $thumb) {
             if (file_exists($dir . $thumb)) {
-                return "/docs/{$id}/images/{$thumb}";
+                return "/docs/items/{$id}/images/{$thumb}";
             }
         }
 
@@ -144,7 +140,7 @@ function findThumbnail(int $id): ?string
             // pathinfo() zerlegt den Dateinamen → PATHINFO_EXTENSION gibt nur die Endung
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp'], true)) {
-                return "/docs/{$id}/images/{$file}";
+                return "/docs/items/{$id}/images/{$file}";
             }
         }
     }
@@ -160,12 +156,12 @@ function findDocsLink(int $id): ?string
     if ($id <= 0) return null;
 
     $paths = [
-        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/{$id}/index.html",
-        "/var/www/public/docs/{$id}/index.html",
+        ($_SERVER['DOCUMENT_ROOT'] ?? '') . "/docs/items/{$id}/index.html",
+        "/var/www/public/docs/items/{$id}/index.html",
     ];
 
     foreach ($paths as $path) {
-        if (file_exists($path)) return "/docs/{$id}/index.html";
+        if (file_exists($path)) return "/docs/items/{$id}/index.html";
     }
 
     return null;

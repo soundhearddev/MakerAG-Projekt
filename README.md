@@ -1,4 +1,4 @@
-# [Docs](./docs/1/Dokumentation.html)
+# [Docs](./docs/project/index.html)
 
 # Maker AG
 ![](https://socialify.git.ci/soundhearddev/MakerAG-Projekt/image?font=Raleway&pattern=Transparent&theme=Dark)

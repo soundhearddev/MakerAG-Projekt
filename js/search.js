@@ -353,7 +353,7 @@ function renderTable(data, query) {
 
     // Zeile klickbar machen (optional. hat mich manchmal genervt als ich infos kopieren wollte)
     //    row.addEventListener("click", () => {
-    //      window.location.href = `/docs/${item.id}/index.html`;
+    //      window.location.href = `/docs/items/${item.id}/index.html`;
     //    });
 
     const SEARCH_FOR_FIELD_MAP = {
@@ -409,7 +409,7 @@ function renderThumbnail(path, itemId) {
 }
 
 function renderDocsLink(itemId) {
-  return `<a href="/docs/${itemId}/index.html"
+  return `<a href="/docs/items/${itemId}/index.html"
              target="_blank"
              rel="noopener noreferrer"
              class="docs-link"

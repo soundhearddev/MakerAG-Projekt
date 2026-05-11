@@ -8,7 +8,7 @@
 (function () {
   "use strict";
 
-  const match = window.location.pathname.match(/\/docs\/(\d+)\//);
+  const match = window.location.pathname.match(/\/docs\/items\/(\d+)\//);
   const id = match ? match[1] : 17;
 
   // ── Hilfsfunktionen ──────────────────────────────────────────────────────
