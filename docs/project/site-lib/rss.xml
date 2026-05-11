@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Dokumentation]]></title><description><![CDATA[Obsidian digital garden]]></description><link>http://github.com/dylang/node-rss</link><image><url>site-lib/media/favicon.png</url><title>Dokumentation</title><link></link></image><generator>Webpage HTML Export plugin for Obsidian</generator><lastBuildDate>Sat, 02 May 2026 16:07:41 GMT</lastBuildDate><atom:link href="site-lib/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Sat, 02 May 2026 16:07:37 GMT</pubDate><ttl>60</ttl><dc:creator></dc:creator><item><title><![CDATA[Benutzeranleitung]]></title><description><![CDATA[In dieser Benutzeranleitung wird erklärt wie diese Software / Website zu nutzen ist und außerdem die Verwaltung, welche dahinter steht. <a class="internal-link" data-href="#Benutzer" href="extra/benutzeranleitung.html#Benutzer_1" target="_self" rel="noopener nofollow">Benutzer</a> <br><a class="internal-link" data-href="#Einstellungen" href="extra/benutzeranleitung.html#Einstellungen_0" target="_self" rel="noopener nofollow">Einstellungen</a>
+<br><a class="internal-link" data-href="#Themes" href="extra/benutzeranleitung.html#Themes_0" target="_self" rel="noopener nofollow">Themes</a>
+<br><a class="internal-link" data-href="#Hilfe" href="extra/benutzeranleitung.html#Hilfe_0" target="_self" rel="noopener nofollow">Hilfe</a> <br><a class="internal-link" data-href="#Verwaltung" href="extra/benutzeranleitung.html#Verwaltung_0" target="_self" rel="noopener nofollow">Verwaltung</a> <br><a class="internal-link" data-href="#Gegenstadtverwaltung" href="extra/benutzeranleitung.html#Gegenstadtverwaltung_0" target="_self" rel="noopener nofollow">Gegenstadtverwaltung</a>
+<br><a class="internal-link" data-href="#Hinzufügen" href="extra/benutzeranleitung.html#Hinzufügen_0" target="_self" rel="noopener nofollow">Hinzufügen</a> <br><a class="internal-link" data-href="#Grunddaten" href="extra/benutzeranleitung.html#Grunddaten_0" target="_self" rel="noopener nofollow">Grunddaten</a>
+<br><a class="internal-link" data-href="#Kategorie" href="extra/benutzeranleitung.html#Kategorie_0" target="_self" rel="noopener nofollow">Kategorie</a>
+<br><a class="internal-link" data-href="#Standort" href="extra/benutzeranleitung.html#Standort_0" target="_self" rel="noopener nofollow">Standort</a>
+<br><a class="internal-link" data-href="#Specs &amp; Tags" href="extra/benutzeranleitung.html#Specs_&amp;_Tags_0" target="_self" rel="noopener nofollow">Specs &amp; Tags</a>
+<br><a class="internal-link" data-href="#Dateien" href="extra/benutzeranleitung.html#Dateien_0" target="_self" rel="noopener nofollow">Dateien</a> <br><a class="internal-link" data-href="#Bestand" href="extra/benutzeranleitung.html#Bestand_0" target="_self" rel="noopener nofollow">Bestand</a> <br><a class="internal-link" data-href="#Status Änderung" href="extra/benutzeranleitung.html#Status_Änderung_0" target="_self" rel="noopener nofollow">Status Änderung</a>
+<br><a class="internal-link" data-href="#Ort Änderung" href="extra/benutzeranleitung.html#Ort_Änderung_0" target="_self" rel="noopener nofollow">Ort Änderung</a> <br><a class="internal-link" data-href="#Branches" href="extra/benutzeranleitung.html#Branches_0" target="_self" rel="noopener nofollow">Branches</a>
+<br><a class="internal-link" data-href="#Benutzer" href="extra/benutzeranleitung.html#Benutzer_1" target="_self" rel="noopener nofollow">Benutzer</a>
+<br><a class="internal-link" data-href="#Logs" href="extra/benutzeranleitung.html#Logs_0" target="_self" rel="noopener nofollow">Logs</a> Für die normale Nutzung der Website ist wenig zu sagen.
+Auf der Index Seite findet man eine Übersicht von den Schränken und Räumen, welche sich auf U24-26 und dem Lager beschränken. Das Klicken auf die jeweiligen Schränke öffnet darauf die Suche nach allen Gegenständen, welche in diesem Schrank oder Raum zu findet sind.Etwas weiter unten sind die einzelnen Kategorien zu finden. Dies zeigt zusätzlich wie viele Gegenstände es in den jeweiligen Kategorien gibt.
+Direkt darunter ist ein Button, welcher die neusten Einträge lädt.Bei dem darunterliegenden Zufallsgenerator ist auch nicht viel zu sagen. Dieser nimmt einen zufälligen Gegenstand aus der Datenbank und zeigt diesen an mit links zu Docs und weiteremGanz unten findet man dann noch einen Zähler, welcher die Anzahl aller Gegenstände anzeigt.Wenn man nun oben auf den Quicklink "Suchen"drückt, wird man zu einer weiteren Datei weitergeleitet:Die Suchfunktion ist sehr umfangreich und hat viele Optionen, welche wahrscheinlich überflüssig sind. Zuerst:
+Die große Suchliste oben kann nach allem suchen und sucht einfach nach Matches. Das heißt, wenn man nach einem Gegenstand mit der Zahl 2 sucht und man in die Suchleiste 10 eingibt, wird der Gegenstand mit der ID 20, oder mit dem Schrank 2, oder der Modellnummer mit einer Zwei drin. Deshalb wird empfohlen, die Filterung zu nutzen, um die Suche einzugrenzen. Zur Anpassung der Suche gibt es:
+„Sortieren nach“ ermöglicht es, die Sortierung nach Name, Schrank usw. zu ändern. Zusammen mit „Reihenfolge“ kann die Ausgabe dann entweder aufsteigend oder absteigend sortiert werden. Zusätzlich kann mit „Ergebnisse“ die Anzahl der angezeigten Gegenstände festgelegt werden, die geladen werden. Zuletzt gibt es die Option „Suche nach“, welche es ermöglicht, nach einem Suchkriterium wie Name oder Kategorie isoliert zu suchen. Das bedeutet: Anstatt wie bei der normalen Suche (z. B. bei der Eingabe „2“) alle Ergebnisse mit einer „2“ anzuzeigen, wird bei „Suche nach“ nur innerhalb des ausgewählten Suchkriteriums nach dem eingegebenen Wert gesucht.<br>Die Suchergebnisse sind logisch strukturiert und enthalten die klassischen Kategorien, wie den Namen, ein Bild, die Kategorie, etc. Die zwei Besonderheiten hier sind die Menge, welche ich <a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index &gt; Anzahl" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index#Anzahl" href="index.html#Anzahl" class="internal-link" target="_self" rel="noopener nofollow">hier</a> nochmal genauer erläutern werde, und die Dokumentation welche ein Link zum gegeben Gegenstand zeigt.<br>Damit kommen wir auch zum nächsten Thema: Die Gegenstanddokumentation. Informationen zur Funktionsweise der Seite <a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index &gt; Gegenstanddokumentation" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index#Gegenstanddokumentation" href="index.html#Gegenstanddokumentation" class="internal-link" target="_self" rel="noopener nofollow">hier</a>.
+Die Dokumentation hilft dabei, die Informationen der einzelnen Gegenstände einzelnd und vollständig anzuzeigen und zusätzlich zu erlauben, dass diese bearbeitet werden können. Ohne irgendein Admininstrationszugriff ist es möglich den Status und den Standort eines Gegenstandes anzupassen.
+Für die Änderung des Status muss einfach nur auf den Button „Status ändern“ gedrückt werden, der gewünschte Status ausgewählt werden und auf „Speichern“ gedrückt werden.
+Beim Standort ist es sehr ähnlich, nur dass hierbei zusätzlich optional eine Notiz hinzugefügt werden kann, welche bei Orten, die nicht so gut erklärbar sind, mit nur „Raum …, Schrank …, Fach …“ hilfreich ist.Viele Gegenstände haben auch ein "Specs" Bereich, welcher einfach die genauen Angaben des Objektes angeben.Darunter sind meistens Bilder von dem Gegenstand zu finden.Manchmal wird ein Gegenstand auch ein Abschnitt unter Bilder haben welcher weitere Informationen wie PDF Dateien oder weiteres zur Verfügung stellen.Zu guter Letzt gibt es noch ein paar dinge zu dem Menü zu sagen.
+Die drei Optionen welche auftauchen, wenn man oben rechts auf dem Burger Symbol klicken, helfen die Seite anzupassen:<br>Der Einstellungsbutton öffnet ein bewegliches Fenster, in dem die wesentlichen Einstellungen angepasst werden können (hauptsächlich ist es ein Ort, um ein paar „crazy“ Features zu aktivieren. Ich habe mir eigentlich wenig Gedanken zu den wirklichen Einstellungen gemacht.). Für Informationen zu diesen Einstellungen <a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index &gt; Gegenstanddokumentation" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index#Gegenstanddokumentation" href="index.html#Gegenstanddokumentation" class="internal-link" target="_self" rel="noopener nofollow">hier</a>.Themes gibt die Möglichkeit die Farbpalette der Website anzupassen. Unter Hilfe findet man Diese Dokumentation und ein paar Links wie den GitHub dieses Projektes.Das war es hauptsächlich. Falls immernoch ein paar fragen offen sind, ist es immer möglich mich zu kontaktieren oder ein Feedback zu hinterlassen, welches bei FAQ oben zu finden ist.Für die Nutzung der Verwaltung wird ein aktiver SSH-Tunnel sowie ein gültiger Proxy-User vorausgesetzt. Alle Bereiche der Administrationsseite sind ausschließlich über diesen Tunnel erreichbar. Der Verbindungsbefehl lautet:bashssh -L 8080:127.0.0.1:80 -N user@10.1.200.8 -p 222
+<br>Sobald die Verbindung steht, ist die Administrationsseite unter localhost:8080 erreichbar. Für weitere Informationen zur Verbindung und dem SSH-Tunnel siehe <a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index &gt; SSH-Tunnel / Verbindung" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index#SSH-Tunnel / Verbindung" href="index.html#SSH-Tunnel / Verbindung" class="internal-link" target="_self" rel="noopener nofollow">Verbindung</a>Die Gegenstandsverwaltung ist in fünf Abschnitte eingeteilt. Falls noch keine Proxy-User angelegt wurden, kann der maintain-Nutzer verwendet werden, um diese zu erstellen. Es wird jedoch davon abgeraten, den maintain-Nutzer für eine dauerhafte Proxy-Sitzung zu verwenden, da dieser nur für wirkliche shell Nutzung genutzt werden sollte.Das Hinzufügen neuer Gegenstände ist ein sehr simpler Prozess, der in fünf Schritte eingeteilt ist:In Schritt 1 werden Grunddaten wie der Name, die Marke und das Modell sowie optional die Seriennummer, der Status, der Zustand und ein Feld für eine optionale Notiz erfasst.In Schritt 2 wird nach der Kategorie gefragt. Es ist möglich, eine neue zu erstellen oder aus den bereits erstellten Kategorien zu wählen.Schritt 3 fragt nach dem Raum/Schrank/Fach, also dem Standort. Es ist zusätzlich möglich, eine Notiz zu hinterlassen, wo genau sich dieser Gegenstand befindet. Es ist natürlich möglich, einen neuen Raum, Schrank oder ein neues Fach zu erstellen, falls gewünscht.In Schritt 4 können technische Daten (Specs) eines Gegenstands hinzugefügt werden.
+Zuerst kann man die Anzahl anpassen, also wenn man vielleicht einen Stapel an Lizenzen hat, können diese direkt als ein Gegenstand gespeichert werden. Darunter können anschließend beliebige Specs hinzugefügt werden. Hier kommen alle Angaben rein, die man einfach zu dem Gerät finden kann.
+Zuletzt kann man noch Tags auswählen oder neue Tags dem Gegenstand hinzufügen.Schritt 5: Hier kann man Bilder sowie PDFs, Docs etc. hochladen. Es dient einfach für zusätzliche Inhalte, die man eintragen möchte, wie auch Bilder, um den Gegenstand zu zeigen. Das Thumbnail wird separat hochgeladen, kann aber, wenn man wirklich will, auch als normales Bild mit dem Namen „thumb".png oder ähnlich hochgeladen werden.Die Änderung der Daten enthält alles, was ein Benutzer ohne größeren Aufwand tun kann. Zum Beispiel kann Änderung an Status und Standort eines schon erstellten Gegenstandes angepasst werden. Somit kann jeder, welcher Zugriff auf die Website hat und somit auch Zugriff auf die Schränke die Möglichkeit, die Daten zu ändern.Der Status eines Gegenstandes kann ganz simpel in der Dokumentationsseite des gewünschten Gegenstandes geändert werden.<br>
+<img alt="Status_bsp2.png" src="img/status_bsp2.png" target="_self"><br>
+<img alt="Status_bsp1.png" src="img/status_bsp1.png" target="_self">
+Es ist zu erwähnen, dass jede Aktion geloggt wird.Der Ort kann genau wie der Status auch auf der Dokumentationsseite des gewünschten Gegenstandes geändert werden.<br>
+<img alt="Standort_bsp1.png" src="img/standort_bsp1.png" target="_self"><br>
+<img alt="Standort_bsp2.png" src="img/standort_bsp2.png" target="_self">
+Zusätzlich zu den Schränken kann auch angegeben werden, falls der Gegenstand nicht verfügbar ist, dass er keinen Standort hat, oder es kann eine eigene kurze Nachricht eingegeben werden, wo dieser Gegenstand ist, falls keine der Optionen zu dem derzeitigen Standort passen.Im Branches-Bereich ist es möglich, den Branch der MakerAG-Seite zu wechseln. Wer schon einen Blick ins Repository geworfen hat, kennt die Branches bereits, aber falls noch nicht:
+main: Der main-Branch trackt den origin/main-Branch und läuft standardmäßig als offizieller Branch, der auf dem Server angezeigt wird.
+develop: Der develop-Branch trackt den origin/develop-Branch und ist für Entwicklungs- und Testzwecke gedacht, falls man Features mit der echten Datenbank testen möchte. Zusätzlich ist es möglich, von diesem Branch weitere Branches abzuzweigen. Am Ende sollte jedoch immer von develop in main gemerged werden.
+*Wie wechselt man den Branch konkret — also der tatsächliche Befehl auf dem Server. Die Benutzerverwaltung kann dazu genutzt werden, Benutzer für die Serververwaltung zu erstellen und zu bearbeiten. Zu beachten ist, dass die erstellten Benutzer keinen Zugriff auf eine Shell haben und einzig dem Zweck dienen, Zugriff auf die Administrationsoberfläche per SSH-Tunneling zu erlauben. Zum Erstellen eines neuen Benutzers kann einfach auf + User anlegen gedrückt werden. Dies öffnet ein Fenster, in dem man einen Benutzernamen und ein Passwort eingeben kann. Sobald ein Benutzer erstellt wurde, wird dieser in der Tabelle mit der UID angezeigt. Von da an kann der Benutzer für den SSH-Zugriff auf die Seite genutzt werden. Bei erstellten Benutzern kann das Passwort verändert und der Benutzer komplett gelöscht werden.<br>
+Für weitere Informationen über den Prozess der Benutzererstellung siehe <a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index &gt; SSH-Tunnel / Verbindung" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index#SSH-Tunnel / Verbindung" href="index.html#SSH-Tunnel / Verbindung" class="internal-link" target="_self" rel="noopener nofollow">hier</a>. *Was passiert wenn man das Passwort eines Proxy-Users vergisst — kann man es zurücksetzen oder muss man den User löschen und neu erstellen?
+Die Logs sind in Level aufgeteilt:<br>
+<img alt="Logs.png" src="img/logs.png" target="_self">
+Log-Level funktionieren nach einem Filtersystem von oben nach unten:
+Level 0 – Debug: Alles wird geloggt, also jede kleine Aktion und Information. Nützlich zur Fehlersuche, im normalen Betrieb jedoch sehr unübersichtlich.
+Level 1 – Info: Normale Aktionen wie Status- oder Standortänderungen werden geloggt, Debug-Meldungen fallen weg.
+Level 2 – Warning: Nur ungewöhnliche Ereignisse und potenzielle Probleme werden geloggt.
+Level 3 – Error: Nur kritische Fehler werden geloggt, alles andere wird ignoriert.
+Je höher der Level, desto weniger wird geloggt. Im normalen Betrieb empfiehlt sich Level 1, da so alle relevanten Aktionen nachvollziehbar bleiben ohne den Log mit Debug-Informationen zu überhäufen.
+*Was wird konkret geloggt? Also welche Aktionen tauchen in den Logs auf — Status-Änderung, neue Gegenstände, Login-Versuche? Ein kurzes Beispiel eines Log-Eintrags wäre sehr hilfreich.
+*Wer hat überhaupt Zugriff auf die Logs — nur über die Admin-Seite also nur per SSH-Tunnel?
+<br><a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>extra/benutzeranleitung.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/extra/Benutzeranleitung.md</guid><pubDate>Sat, 02 May 2026 16:06:32 GMT</pubDate><enclosure url="img/status_bsp2.png" length="0" type="image/png"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/status_bsp2.png&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[index]]></title><description><![CDATA[Dies ist die Dokumentation zu der InventarverwaltungFür die Benutzeranleitung hier klicken:
+<a data-href="Benutzeranleitung" href="extra/benutzeranleitung.html" class="internal-link" target="_self" rel="noopener nofollow">Benutzeranleitung</a>
+<br><a class="internal-link" data-href="#Einleitung" href="index.html#Einleitung_0" target="_self" rel="noopener nofollow">Einleitung</a> <br><a class="internal-link" data-href="#Motivation" href="index.html#Motivation_0" target="_self" rel="noopener nofollow">Motivation</a>
+<br><a class="internal-link" data-href="#Ziel" href="index.html#Ziel_0" target="_self" rel="noopener nofollow">Ziel</a>
+<br><a class="internal-link" data-href="#Definitionen" href="index.html#Definitionen_0" target="_self" rel="noopener nofollow">Definitionen</a> <br><a class="internal-link" data-href="#Planung" href="index.html#Planung_0" target="_self" rel="noopener nofollow">Planung</a>
+<br><a class="internal-link" data-href="#Ausgangssituation" href="index.html#Ausgangssituation_0" target="_self" rel="noopener nofollow">Ausgangssituation</a>
+<br><a class="internal-link" data-href="#Soll-Zustand" href="index.html#Soll-Zustand_0" target="_self" rel="noopener nofollow">Soll-Zustand</a>
+<br><a class="internal-link" data-href="#Umfeld" href="index.html#Umfeld_0" target="_self" rel="noopener nofollow">Umfeld</a>
+<br><a class="internal-link" data-href="#Design" href="index.html#Design_0" target="_self" rel="noopener nofollow">Design</a> <br><a class="internal-link" data-href="#Legende" href="index.html#Legende_0" target="_self" rel="noopener nofollow">Legende</a>
+<br><a class="internal-link" data-href="#Administration" href="index.html#Administration_0" target="_self" rel="noopener nofollow">Administration</a> <br><a class="internal-link" data-href="#Netzwerk-Setup" href="index.html#Netzwerk-Setup_0" target="_self" rel="noopener nofollow">Netzwerk-Setup</a>
+<br><a class="internal-link" data-href="#SSH-Tunnel / Verbindung" href="index.html#SSH-Tunnel_/_Verbindung_0" target="_self" rel="noopener nofollow">SSH-Tunnel / Verbindung</a>
+<br><a class="internal-link" data-href="#Sicherheitskonzept" href="index.html#Sicherheitskonzept_0" target="_self" rel="noopener nofollow">Sicherheitskonzept</a>
+<br><a class="internal-link" data-href="#Eintragungs besonderheiten" href="index.html#Eintragungs_besonderheiten_0" target="_self" rel="noopener nofollow">Eintragungs besonderheiten</a> <br><a class="internal-link" data-href="#Anzahl" href="index.html#Anzahl_0" target="_self" rel="noopener nofollow">Anzahl</a> <br><a class="internal-link" data-href="#Implementierung" href="index.html#Implementierung_0" target="_self" rel="noopener nofollow">Implementierung</a> <br><a data-tooltip-position="top" aria-label="#Git:" rel="noopener nofollow" class="external-link" href="index.html#Git_0" target="_self">Git:</a> <br><a class="internal-link" data-href="#Branches" href="index.html#Branches_0" target="_self" rel="noopener nofollow">Branches</a> <br><a class="internal-link" data-href="#Schrank Übersicht" href="index.html#Schrank_Übersicht_0" target="_self" rel="noopener nofollow">Schrank Übersicht</a> <br><a class="internal-link" data-href="#Ergebnis" href="index.html#Ergebnis_0" target="_self" rel="noopener nofollow">Ergebnis</a><br>
+- <a class="internal-link" data-href="#Seiten" href="index.html#Seiten_0" target="_self" rel="noopener nofollow">Seiten</a><br>
+- <a class="internal-link" data-href="#Gegenstanddokumentation" href="index.html#Gegenstanddokumentation_0" target="_self" rel="noopener nofollow">Gegenstanddokumentation</a><br>
+- <a class="internal-link" data-href="#Einstellungen" href="index.html#Einstellungen_0" target="_self" rel="noopener nofollow">Einstellungen</a>
+<br><a class="internal-link" data-href="#Erklärung" href="index.html#Erklärung_0" target="_self" rel="noopener nofollow">Erklärung</a>
+<br><a class="internal-link" data-href="#Fazit" href="index.html#Fazit_0" target="_self" rel="noopener nofollow">Fazit</a>
+<br><a class="internal-link" data-href="#Ausblick" href="index.html#Ausblick_0" target="_self" rel="noopener nofollow">Ausblick</a>
+<br><a class="internal-link" data-href="#Anhang" href="index.html#Anhang_0" target="_self" rel="noopener nofollow">Anhang</a>
+In der zweijährigen Assistentenausbildung für Informationsverarbeitung – Technik muss ein vierwöchiges Praktikum nachgewiesen werden, um die Ausbildung abzuschließen. Alternativ darf während der gesamten Ausbildungszeit an einer AG teilgenommen werden, um dasselbe Ergebnis zu erzielen wie durch ein Praktikum.
+Zur Auswahl standen die Game-Design-AG und die Maker-AG. Da die Maker-AG interessant aussah und ich somit kein Praktikum absolvieren müsste, habe ich mich für die Maker-AG eingeschrieben.Nun, ein Jahr später, hat unser Lehrer der AG, Herr Keller, gesagt, dass jeder Schüler, der die Maker-AG als Praktikumsalternative nutzen will, ein Projekt abschließen muss, das der AG langfristig helfen wird. Gesagt, getan...
+Die Idee für ein Organisations- und Sortiersystem hatte ich schon etwas länger, wusste aber noch nicht genau, wie ich sie umsetzen würde. Nach weiterer Überlegung und Rücksprache mit dem Lehrer ist schließlich dieses Projekt entstanden. Das ganze Projekt hat mich noch einmal herausgefordert, alles anzuwenden, was ich in der Assistentenausbildung gelernt habe, was sehr viel Spaß gemacht hat.Das Ziel des Projektes ist es, ein System zu entwickeln, welches die Gegenstände in den Schränken im Raum U24, U25 und des Hardware-Raumes sortiert und organisiert. Dies wird durch die Erstellung einer Datenbank erfolgen, welche die Informationen zu den Gegenständen speichert, wie Anzahl, Modell/Marke, Standort (Schrank/Raum/Regal) etc. Außerdem wird jeder Gegenstand eine eigene kleine Dokumentation bekommen, welche noch einmal im Detail den Gegenstand beschreibt und Weiteres.Da viele Fachbegriffe in dieser Dokumentation vorkommen werden, wird hier nun jeder wichtige Fachbegriff ausführlich erklärt:
+<br><a data-href="Datenbank" href="definitionen/datenbank.html" class="internal-link" target="_self" rel="noopener nofollow">Datenbank</a>
+<br><a data-href="Frontend - Backend" href="definitionen/frontend-backend.html" class="internal-link" target="_self" rel="noopener nofollow">Frontend - Backend</a>
+<br><a data-href="Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Webserver" href="definitionen/webserver.html" class="internal-link" target="_self" rel="noopener nofollow">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Webserver</a>
+<br><a data-href="Raspberry PI" href="definitionen/raspberry-pi.html" class="internal-link" target="_self" rel="noopener nofollow">Raspberry PI</a>
+<br><a data-href="API" href="definitionen/api.html" class="internal-link" target="_self" rel="noopener nofollow">API</a>
+<br><a data-href="Git" href="definitionen/git.html" class="internal-link" target="_self" rel="noopener nofollow">Git</a>
+<br><a data-href="SSH" href="definitionen/ssh.html" class="internal-link" target="_self" rel="noopener nofollow">SSH</a>
+<br><a data-href="Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Proxy" href="definitionen/proxy.html" class="internal-link" target="_self" rel="noopener nofollow">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Proxy</a>
+<br><a data-href="PHP" href="definitionen/php.html" class="internal-link" target="_self" rel="noopener nofollow">PHP</a>
+<br><a data-href="PHPMyAdmin" href="definitionen/phpmyadmin.html" class="internal-link" target="_self" rel="noopener nofollow">PHPMyAdmin</a>
+<br><a data-href="SQL" href="definitionen/sql.html" class="internal-link" target="_self" rel="noopener nofollow">SQL</a>
+<br><a data-href="http REQUESTS" href="definitionen/http-requests.html" class="internal-link" target="_self" rel="noopener nofollow">http REQUESTS</a>
+Planung hierDas Projekt ging durch viele Überarbeitungen. Eine davon war die Auswahl der Datenbank, welche genutzt werden würde, um alle Daten der Gegenstände zu speichern. Herr Keller schlug mir MongoDB vor, wovon ich davor noch nicht gehört hatte. MongoDB wäre in diesem Fall sogar etwas besser gewesen, da man es einfacher hätte integrieren können. Ein Problem war jedoch die Installation. Da der Raspberry Pi ein ARM64-Produkt ist und MongoDB hauptsächlich auf x86-64 läuft, waren die wenigen Versionen, die für ARM erstellt wurden, entweder veraltet, inkompatibel oder einfach instabil. Das war etwas frustrierend, und nach einiger Zeit habe ich aufgegeben und stattdessen MariaDB installiert, welches auf SQL basiert.
+Funktionierende Datenbank
+Laufende Website (Frontend)
+Funktionierendes Backend (API)
+Eintragung aller Gegenstände in die Datenbank
+Dokumentation zu allen Gegenständen
+Integration für Kontribution (GitHub)
+Vollständige Dokumentation zum Code und Weiterem
+Um klarzustellen, was für dieses Projekt genutzt wurde, ist hier nun eine Liste:
+Backend: PHP
+Frontend: HTML/CSS/JavaScript
+Datenbank: MariaDB
+Hardware: Raspberry Pi 4 B 2GB
+Verbindung: hauptsächlich SSH
+IDE: VS Code
+Der Prozess läuft so ab, dass, sobald ein Nutzer die Website aufruft, ein Request an den Server gesendet wird, um alle HTML-Seiten zu bekommen. Diese HTML-Seiten verlinken zu den JavaScript- und CSS-Dateien, welche ebenfalls angefragt werden. In den JavaScript-Dateien ist eine Verlinkung zu einer PHP-Datei, welche dann auch auf die Seite geladen wird. In der PHP-Datei befindet sich Code, welcher eine Verbindung mit einer MariaDB-Datenbank auf dem Raspberry Pi herstellt und von dort die gewünschten Daten abruft.Datenbank:
+Die Datenbank hat sich über die Projektzeit stark verändert und viele Anpassungen bekommen:
+Um die Datenbank besser zu verstehen und zu visualisieren, habe ich ein Entity-Relationship-Modell erstellt:<br><img alt="Datenbank.svg" src="img/datenbank.svg" target="_self">
+categories.parent_id (Self-Reference) zeigt auf eine andere Zeile in derselben Tabelle. Damit lassen sich Kategorien beliebig tief verschachteln, z.B. Hardware → Computer → Laptop. NULL bedeutet: oberste Ebene, kein Elternteil.
+specs (Key-Value) statt für jeden möglichen Spec eine eigene Spalte in items anzulegen, speichert diese Tabelle beliebige Eigenschaften als Schlüssel-Wert-Paare. Ein Laptop bekommt "Prozessor / i5", ein Hammer bekommt "Gewicht / 800g", ohne dass die Datenbankstruktur geändert werden muss.
+item_tags (Pivot-Tabelle) verbindet Items und tags in einer Viele-zu-Viele-Beziehung. Ein Item kann mehrere Tags haben, ein Tag kann mehreren Items zugewiesen sein. Die Tabelle selbst hat keine eigenen Daten, nur die zwei Fremdschlüssel.
+changelog protokolliert jede Änderung an einem Item. Welches Feld wurde geändert, von welchem Wert, auf welchen Wert, wann und von wem. Damit lässt sich der komplette Verlauf eines Eintrags nachvollziehen.
+feedback ist eine sehr simpel gehaltene Tabelle welche nur Name Problem (also Nachricht) und halt den Timestamp anzeigt. Das einzige anzumerkende ist, dass es extra so simpel gehalten ist, da ich keine Lust hatte ein Benutzersystem zu erstellen (welches auch noch mehr Probleme mit sich bringt).
+Da die Administrationsseite ausschließlich lokal auf dem Raspberry Pi erreichbar ist, wird für den Zugriff ein SSH-Tunnel genutzt. Dies hat den Vorteil, dass der gesamte Traffic über eine verschlüsselte SSH-Verbindung läuft, ohne dass HTTPS extra konfiguriert werden muss.Da der Raspberry Pi zurzeit über keine statische IP-Adresse verfügt und die Schulfirewall alle Ports außer Port 80 blockiert, musste eine Lösung gefunden werden, um den Server dauerhaft und stabil erreichbar zu machen.Für den HTTP-Zugriff wurde ein NAS-Server als Reverse Proxy genutzt, welcher eine statische IP-Adresse besitzt. Dadurch ist der Webserver über Port 80 dauerhaft erreichbar.Für den SSH-Zugriff wurde auf demselben NAS eine iptables-Regel erstellt, die eingehenden Traffic auf Port 222 an den Raspberry Pi auf Port 22 weiterleitet:#!/bin/sh
+echo 1 &gt; /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A PREROUTING -p tcp -d 10.1.200.8 --dport 222 -j DNAT --to 172.17.17.131:22
+iptables -t nat -A POSTROUTING -p tcp -d 172.17.17.131 --dport 22 -j MASQUERADE
+Da beim Neustart des NAS alle iptables-Regeln zurückgesetzt werden, wurde ein Script hinterlegt, das diese Regel automatisch wiederherstellt. *[Wo genau liegt das Script, wie wird es beim Start ausgeführt — cronjob, rc.local, systemd?]SSH Local Port Forwarding ermöglicht es, einen lokalen Port auf dem eigenen Rechner mit einem Port auf dem Zielserver zu verbinden.<br>
+Um die Verbindung mit SSH zu der Administration zu veranschaulichen, ist hier eine kleine Grafik:<img alt="Untitled Diagram.drawio(1).png" src="img/untitled-diagram.drawio(1).png" target="_self">
+In dieser Grafik wird gezeigt, dass der apache2 Webserver 2 Webseiten hostet. Die eine ist eine öffentliche Seite, welche von jedem Nutzer besucht werden kann und die zweite Website ist eine Private Seite, welche nur von dem localhost aus aufrufbar istDer Befehl dafür sieht so aus:ssh -L 8080:127.0.0.1:80 -N user@10.1.200.8 -p 222 -L 8080:127.0.0.1:80 — leitet den lokalen Port 8080 an Port 80 auf dem Raspberry Pi weiter
+-N — öffnet keine Shell, hält nur den Tunnel offen
+-p 222 — verbindet über Port 222, welcher vom NAS an Port 22 des Raspberry Pi weitergeleitet wird
+Sobald die Verbindung steht, ist die Administrationsseite unter localhost:8080 im Browser erreichbar. *[Irgentwie ncoh erweähnen mit halt temirnal offen halten oder so][Hier würde sich ein kurzer Abschnitt eignen der zusammenfasst warum dieses Setup sicherer ist als z.B. phpMyAdmin direkt erreichbar zu machen — also: keine offenen Ports, verschlüsselter Traffic, eingeschränkte Proxy-User ohne Shell-Zugriff. Das wäre eine gute Zusammenfassung der Designentscheidung.]Mir war es wichtig, dass man einfach Feedback geben kann und somit Fehler oder Verbesserungsvorschläge unkompliziert übermittelt werden können. Da ich auch nach meiner Assistentenausbildung entweder das Repository an jemand anderen übergeben oder selbst weiter daran arbeiten möchte, ist das besonders sinnvoll.Im Allgemeinen ist das Feedback-System ziemlich simpel aufgebaut:
+Name und Nachricht.
+In der Datenbank wird zusätzlich die IP-Adresse des Nutzers gespeichert, allerdings nur aus Sicherheitsgründen und für Rate-Limiting. Die Sicherheit besteht darin, dass man nicht unbegrenzt oft hintereinander Feedback einreichen kann.Der Server hat ein öffentliches Git-Repository und kann somit modular verändert werden, ohne dass jemand direkt auf dem System arbeiten muss.Dieses Git-Repository hat mehrere Branches. Zurzeit gibt es den main- und den develop-Branch. Wie die Namen schon sagen, ist der eine der Hauptbranch, auf dem das System normalerweise stabil läuft. Der develop-Branch ist für Updates gedacht, die noch getestet werden müssen und noch nicht vollständig fertig sind. Testweise kann natürlich der Branch auf dem Server auf develop geändert werden, falls dies gewünscht ist. Dies kann jedoch nur der Administrator des Systems. Vielleicht werde ich in Zukunft einen Weg implementieren, um zwischen den Branches zu wechseln, ohne direkt auf das System zugreifen zu müssen.Auf dem Server selbst wurde ein Crontab erstellt, welcher jeden Morgen um 07:45 einen Pull vom GitHub-Repository ausführt. Das Skript sollte unter keinen Umständen Fehler enthalten, aber falls doch, würde das System keine regelmäßigen Updates mehr erhalten.Zu beachten ist, dass unter keinen Umständen direkt auf dem Server Änderungen an der Website vorgenommen werden sollten, da dies zu Konflikten führen kann.Die Schrank / Raum Darstellung war zusätzlich zuerst ach eine Herausforderung. Für eine lange Zeit waren auf der Index Seite einfach nur die paar schränke als grüne und braune Vierecke dargestellt und konnten nichts machen, da ich lange nicht wusste, was ich damit anfangen soll. Nach langer Überlegung bin ich zu der isometrischen Sicht gekommen. Man schaut von oben auf die Räume drauf und somit kann man Räume wie den Abstellraum, sowie jeden Schrank übersichtlich darstellen. Außerdem sieht es richtig cool aus! Das Ganze ist aus SVG's aufgebaut, welche in Javascript aus gezeichnet werden. Somit muss man nicht zusätzlich jeden Tile selber malen. Jedoch wird somit der Workload der Clients etwas erhöht.
+Die Map wird natürlich auch in Javascript erstellt, *Endergebnis von allem so halterklären wie die gegenstandokumetionsseite im hintergtrund funktioniert und soIn den Einstellungen habe ich ein paar experimentelle Features hinzugefügt, welche einfach nur aus Spaß dort sind. Hier werde ich kurz erklären, was diese sind und wie diese genau funktionieren: <br>Das erste Feature ist der Game-of-Life-Modus. Dieser füllt, wenn aktiviert, den kompletten Bildschirm mit <a data-tooltip-position="top" aria-label="https://de.wikipedia.org/wiki/Conways_Spiel_des_Lebens" rel="noopener nofollow" class="external-link is-unresolved" href="https://de.wikipedia.org/wiki/Conways_Spiel_des_Lebens" target="_self">Conways Spiel des Lebens</a>. Ich werde nicht erklären, wie Conways Spiel des Lebens genau funktioniert, nur dass es ein faszinierendes Thema ist. Der Code selbst ist technisch unspektakulär: JavaScript erstellt ein Overlay über den Bildschirm, auf dem viele Zellen simuliert werden, die miteinander interagieren. Die Implementierung ist dabei sehr effizient und bringt die Seite in der Regel nicht zum Laggen.Das nächste Feature ist der Vim-Modus. Ich habe versucht, so viele Befehle wie möglich umzusetzen, ohne größere Änderungen am bestehenden Code vorzunehmen, und kann bestätigen, dass die Nutzung des Vim-Modus™ die Effizienz spürbar steigert. Für eine Liste an Befehlen kann der :help-Befehl genutzt werden. Hauptsächlich führen die Befehle einfach Funktionen aus den Settings aus, aber es ermöglicht sehr gute Navigationsfunktionen.Erklärung vom Rest: also code und so detailliert, falls es nicht schon in der Implementierung gemacht wurdeFazit halt
+**- Kurze Zusammenfassung
+→ Was war das Ziel? Wurde es erreicht?
+Eigene Bewertung
+**→ Was lief gut? Was eher nicht?
+Erkenntnisse / Learnings
+**→ Was hast du gelernt (technisch oder allgemein)?
+**Optional: kurze Einordnung
+→ Ist das Projekt „fertig genug“ oder eher ein Prototyp?
+Da ich in den nächsten zweieinhalb Jahren weiterhin an dieser Schule bin, werde ich das Projekt gelegentlich weiterentwickeln und bei Bedarf Updates veröffentlichen. Außerdem stehe ich weiterhin für Fragen oder Feedback zur Verfügung.Geplant sind noch einige Verbesserungen und Erweiterungen, insbesondere in den Bereichen Funktionalität und Benutzerfreundlichkeit, wie ein bisschen bessere Übersicht und Kontrolle den Gegenständen und eine überabeitung der Index Seite. Unabhängig davon bin ich mit dem aktuellen Stand des Projekts bereits zufrieden, da die wichtigsten Ziele erreicht wurden.Mein Ziel ist es, dass das System in Zukunft eine stabile und nutzbare Plattform für andere darstellt, um Informationen über das derzeitige Sortiment zu finden und insbesondere Ordnung in den Schränken im Raum U25 zu schaffen.Für die weitere Zukunft, sofern dieses Projekt bis dahin nicht bereits verworfen wurde, werde ich wahrscheinlich das Repository an jemand anderen weitergeben, der es dann künftig weiterführen und Updates veröffentlichen kann.Anhang
+alles was sosnt z uviel wäre:
+große Diagramme
+SQL-Schemata
+Config-Dateien
+Codeausschnitte
+Screenshots
+secure/config.php:&lt;?php
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); class Database
+{ private static $connection = null; public static function connect() { // Verbindung nur einmal erstellen if (self::$connection === null) { $envPath = "/var/www/secure/.env"; $env = parse_ini_file($envPath); $host = $env["DB_HOST"]; $user = $env["DB_USER"]; $pass = $env["DB_PASS"]; $name = $env["DB_NAME"]; $conn = new mysqli($host, $user, $pass, $name); $conn-&gt;set_charset("utf8mb4"); self::$connection = $conn; } return self::$connection; }
+}
+]]></description><link>index.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/index.md</guid><pubDate>Sat, 02 May 2026 16:06:13 GMT</pubDate><enclosure url="img/datenbank.svg" length="0" type="image/svg+xml"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/datenbank.svg&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Untitled Diagram.drawio(1)]]></title><description><![CDATA[<img src="img/untitled-diagram.drawio(1).png" target="_self">]]></description><link>img/untitled-diagram.drawio(1).html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Untitled Diagram.drawio(1).png</guid><pubDate>Sat, 02 May 2026 10:11:35 GMT</pubDate><enclosure url="." length="0" type="false"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;.&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Standort_bsp2]]></title><description><![CDATA[<img src="img/standort_bsp2.png" target="_self">]]></description><link>img/standort_bsp2.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Standort_bsp2.png</guid><pubDate>Fri, 01 May 2026 17:53:21 GMT</pubDate><enclosure url="img/standort_bsp2.png" length="0" type="image/png"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/standort_bsp2.png&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Standort_bsp1]]></title><description><![CDATA[<img src="img/standort_bsp1.png" target="_self">]]></description><link>img/standort_bsp1.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Standort_bsp1.png</guid><pubDate>Fri, 01 May 2026 17:37:17 GMT</pubDate><enclosure url="img/standort_bsp1.png" length="0" type="image/png"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/standort_bsp1.png&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Status_bsp1]]></title><description><![CDATA[<img src="img/status_bsp1.png" target="_self">]]></description><link>img/status_bsp1.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Status_bsp1.png</guid><pubDate>Fri, 01 May 2026 17:36:19 GMT</pubDate><enclosure url="img/status_bsp1.png" length="0" type="image/png"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/status_bsp1.png&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Status_bsp2]]></title><description><![CDATA[<img src="img/status_bsp2.png" target="_self">]]></description><link>img/status_bsp2.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Status_bsp2.png</guid><pubDate>Fri, 01 May 2026 17:35:47 GMT</pubDate><enclosure url="img/status_bsp2.png" length="0" type="image/png"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/status_bsp2.png&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Logs]]></title><description><![CDATA[<img src="img/logs.png" target="_self">]]></description><link>img/logs.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Logs.png</guid><pubDate>Fri, 01 May 2026 09:05:47 GMT</pubDate><enclosure url="img/logs.png" length="0" type="image/png"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/logs.png&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[API]]></title><description><![CDATA[Eine API ist einfach die Art und Weise, wie Programme miteinander sprechen. Wenn Software A etwas von Software B will, muss sie genau wissen:
+Was darf ich fragen?
+In welchem Format?
+Und was bekomme ich zurück?
+Das ist die API.Du willst eine Cola. Du wirfst Geld ein, drückst einen Knopf, die Dose fällt heraus. Du musst nicht wissen, wie der Mechanismus funktioniert, sondern nur, dass die Taste funktioniert.Genauso funktioniert eine API: Sie sagt dir, welche Knöpfe du drücken darfst. Was dahinter passiert, bleibt verborgen.Praktisch jede App, die man im Alltag nutzt, hängt von APIs ab:
+Google-Login in einer App → API
+Wetterdaten abrufen → API
+Spotify oder PayPal → API
+Die App fragt: „Gib mir das Wetter für Berlin.“
+Die API antwortet: „12 °C, leichter Regen.“
+Fertig.Eine API legt fest:
+Welche Anfragen erlaubt sind
+Wie die Daten aussehen müssen
+Welche Antworten möglich sind
+Wie Fehler gemeldet werden
+Kurz: Sie trennt Was von Wie.
+Was darf ich tun?
+Wie wird es intern umgesetzt?
+Diese Trennung nennt man Abstraktion. Sie erlaubt Teams, unabhängig zu arbeiten, Systeme auszutauschen und Komplexität zu verstecken.In diesem Projekt wurde auch eine Art API erstellt. Es wurde <a data-href="PHP" href="definitionen/php.html" class="internal-link" target="_self" rel="noopener nofollow">PHP</a> genutzt und <a data-href="Datenbank" href="definitionen/datenbank.html" class="internal-link" target="_self" rel="noopener nofollow">Datenbank</a>abfragen zu machen und die Antworten zurück an JavaScript zu geben. das ist eine ganz simple web-API.HIER NOCH EIN BILD ODER SO!!!!<br><a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/api.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/API.md</guid><pubDate>Mon, 27 Apr 2026 19:36:29 GMT</pubDate></item><item><title><![CDATA[Datenbank]]></title><description><![CDATA[Eine Datenbank ist ein System, das Daten speichert, organisiert und wieder aufrufbar macht.Wenn dein Programm Informationen dauerhaft behalten soll – Benutzer, Passwörter, Nachrichten dann landen diese Daten in einer Datenbank.Sie erlaubt dir vier grundlegende Dinge:
+Daten speichern
+Daten lesen
+Daten verändern
+Daten löschen
+In der Fachwelt nennt man das CRUD
+(Create, Read, Update, Delete). (PS: Niemand nennt das so...)Weil eine Datenbank mehr kann:
+Sie speichert Millionen Einträge effizient
+Sie findet Daten schnell (über sogenannte Indizes)
+Sie sorgt dafür, dass mehrere Zugriffe gleichzeitig funktionieren
+Wenn tausend Leute gleichzeitig eine Website benutzen, kümmert sich die Datenbank darum, dass nichts durcheinandergerät.eine <a data-href="SQL" href="definitionen/sql.html" class="internal-link" target="_self" rel="noopener nofollow">SQL</a> Datenbank:<br> eine <a data-href="SQL" href="definitionen/sql.html" class="internal-link" target="_self" rel="noopener nofollow">SQL</a>-Abfrage wie:SELECT * FROM users WHERE id = 42;<br>und die <a data-href="SQL" href="definitionen/sql.html" class="internal-link" target="_self" rel="noopener nofollow">SQL</a> Datenbank Antwortet mit den gespeicherten Daten
+Relationale Datenbanken (z. B. MySQL, MariaDB, PostgreSQL)
+Arbeiten mit Tabellen, Zeilen, Spalten. NoSQL-Datenbanken (z. B. MongoDB)
+Speichern Dokumente. Beide erfüllen denselben Zweck: strukturierte, dauerhafte Datenspeicherung.In Diesem Projekt wurde eine MariaDB Datenbank genutzt, um die Daten zu speichern.<br><a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/datenbank.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Datenbank.md</guid><pubDate>Mon, 27 Apr 2026 19:36:25 GMT</pubDate></item><item><title><![CDATA[Frontend - Backend]]></title><description><![CDATA[Frontend ist das, was der Nutzer sieht.
+Backend ist das, was im Hintergrund arbeitet.Das Frontend läuft dort, wo der Nutzer ist. Es kümmert sich um:
+Darstellung
+Interaktion
+Eingaben
+Layout
+Animationen
+Typische Technologien:
+HTML, CSS, JavaScript.Wenn du auf einen Button klickst, reagiert das Frontend.
+Wenn ein Formular abgeschickt wird, schickt das Frontend Daten los.Es ist sichtbar. Jeder kann es im Browser inspizieren.Das Backend läuft auf einem Server, auf den du keinen direkten Zugriff hast.Es kümmert sich um:
+Datenbankzugriffe
+Authentifizierung
+Sicherheitsregeln
+Verarbeitung von Anfragen
+Typische Sprachen:
+PHP, Node.js, Python, Java, Go …Wenn das Frontend sagt:
+„Hier sind Login-Daten“Dann prüft das Backend:
+Existiert der Nutzer?
+Stimmt das Passwort?
+Darf er das?
+Und dann antwortet es.BILDLICH ERKLÄHREN HIER!!!!Ich glaube, es ist schon klar, wie Frontend und Backend in diesem Projekt genutzt wurden.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/frontend-backend.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Frontend - Backend.md</guid><pubDate>Mon, 27 Apr 2026 19:36:22 GMT</pubDate></item><item><title><![CDATA[Git]]></title><description><![CDATA[Git ist ein Versionskontrollsystem. <a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/git.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Git.md</guid><pubDate>Mon, 27 Apr 2026 19:36:19 GMT</pubDate></item><item><title><![CDATA[http REQUESTS]]></title><description><![CDATA[HTTP Requests sind Anfragen, die ein Client (z. B. ein Browser oder ein Programm) an einen Webserver sendet, um Daten zu bekommen oder zu senden.Jede Website basiert im Hintergrund auf solchen Requests.Wenn du eine Website öffnest:
+Dein Browser schickt eine Anfrage an den Server
+Der Server verarbeitet die Anfrage
+Der Server schickt eine Antwort zurück
+Dein Browser zeigt die Daten an
+Ein Request besteht meistens aus:
+Methode (Was soll passieren?)
+URL (Wohin geht die Anfrage?)
+Header (Zusatzinfos wie Browser, Sprache, etc.)
+Body (Daten, die gesendet werden)
+GET /users HTTP/1.1→ Daten abrufen (z. B. Website laden)POST /login HTTP/1.1→ Daten senden (z. B. Login-Formular)→ Daten aktualisieren→ Daten löschenDu öffnest eine Website:
+Browser → GET /index.html
+Server → sendet HTML zurück
+Du klickst „Senden“ in einem Formular:
+Browser → POST /feedback
+Server → speichert Daten in der Datenbank
+Der Server antwortet immer mit:
+Status Code
+Daten (HTML, JSON, etc.)
+Beispiele:
+200 OK → alles gut
+404 Not Found → Seite nicht gefunden
+500 Server Error → Fehler im Backend
+HTTP ist zustandslos:Das heißt:
+jeder Request ist unabhängig
+der Server „merkt“ sich nichts automatisch
+Wenn man Zustand braucht (z. B. Login), nutzt man:
+Sessions
+Cookies
+Tokens
+In diesem Projekt werden HTTP Requests genutzt, um zwischen Frontend und Backend zu kommunizieren. Das Frontend sendet Requests (z. B. über JavaScript) an PHP-Skripte, welche wiederum Daten aus der MariaDB-Datenbank holen und als Antwort zurückgeben.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/http-requests.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/http REQUESTS.md</guid><pubDate>Mon, 27 Apr 2026 19:36:14 GMT</pubDate></item><item><title><![CDATA[PHP]]></title><description><![CDATA[PHP ist eine Programmiersprache, die auf dem Server läuft und dafür genutzt wird, dynamische Webseiten zu erstellen.Im Gegensatz zu JavaScript (Frontend) sieht der Nutzer den PHP-Code nicht.
+Er wird auf dem Server ausgeführt und das Ergebnis wird als fertige Website an den Browser geschickt.PHP kümmert sich um alles, was im Hintergrund passieren soll:
+Daten aus einer Datenbank holen
+Formulare verarbeiten
+Inhalte dynamisch generieren
+Logik ausführen (z. B. „Wenn Nutzer eingeloggt → zeige X“)
+Der Browser bekommt am Ende nur HTML zurück.Ein Nutzer ruft eine Seite auf.PHP macht dann z. B.:
+Verbindung zur Datenbank herstellen
+Daten laden
+HTML mit diesen Daten erstellen
+Das Ergebnis wird an den Nutzer geschickt, als wäre es eine normale statische Seite.
+Einfach zu lernen
+Direkt mit HTML kombinierbar
+Sehr weit verbreitet im Web
+Perfekt für klassische Webanwendungen
+Viele bekannte Systeme nutzen PHP, z. B. WordPress.In diesem Projekt wurde PHP verwendet, um die Verbindung zur Datenbank herzustellen und die Daten an das Frontend (JavaScript) weiterzugeben. Außerdem übernimmt PHP die Logik im Backend und verarbeitet die Anfragen der Nutzer.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/php.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/PHP.md</guid><pubDate>Mon, 27 Apr 2026 19:36:11 GMT</pubDate></item><item><title><![CDATA[PHPMyAdmin]]></title><description><![CDATA[phpMyAdmin ist ein webbasiertes Tool, mit dem man eine <a data-href="SQL" href="definitionen/sql.html" class="internal-link" target="_self" rel="noopener nofollow">SQL</a>-Datenbank über den Browser verwalten kann.Statt Datenbankbefehle nur über die Konsole auszuführen, bekommst du eine grafische Oberfläche, mit der du Tabellen sehen, bearbeiten und erstellen kannst.Es ermöglicht dir:
+Tabellen erstellen und löschen
+Daten direkt einsehen und ändern
+SQL-Abfragen ausführen
+Daten importieren und exportieren
+Benutzer und Rechte verwalten
+Alles passiert über eine Weboberfläche im Browser.Ohne phpMyAdmin müsstest du alles über SQL-Befehle machen.Mit phpMyAdmin kannst du:
+schneller arbeiten
+Fehler leichter finden
+Daten visuell verstehen
+Es ist im Grunde ein „Control Panel“ für Datenbanken.phpMyAdmin ist selbst eine Webanwendung, die:
+auf einem Server läuft
+sich mit der Datenbank verbindet
+SQL-Befehle im Hintergrund ausführt
+die Ergebnisse grafisch darstellt
+Der Nutzer klickt nur, aber im Hintergrund passiert SQL.In diesem Projekt wurde phpMyAdmin genutzt, um die MariaDB-Datenbank zu verwalten, Tabellen zu erstellen und Daten zu kontrollieren, ohne direkt über die Konsole arbeiten zu müssen.<br><a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/phpmyadmin.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/PHPMyAdmin.md</guid><pubDate>Mon, 27 Apr 2026 19:36:07 GMT</pubDate></item><item><title><![CDATA[Proxy]]></title><description><![CDATA[Proxy ist ein Vermittler zwischen einem Client (z. B. deinem Browser) und einem Zielserver.Statt dass du direkt mit einem Server sprichst, geht deine Anfrage zuerst durch den Proxy. Dieser leitet sie dann weiter und gibt die Antwort zurück.Ein Proxy kann:
+Anfragen weiterleiten
+IP-Adressen verstecken
+Zugriffe filtern
+Verbindungen absichern oder verschlüsseln
+interne Netzwerke zugänglich machen
+Er sitzt also „dazwischen“ und kontrolliert den Datenfluss.Ohne Proxy:
+Browser → Server → AntwortMit Proxy:
+Browser → Proxy → Server → Proxy → BrowserDer Server sieht dabei oft nur den Proxy, nicht den eigentlichen Nutzer.
+Sicherheit (Zugriffe kontrollieren)
+Datenschutz (eigene IP verbergen)
+Netzwerkzugang (interne Systeme erreichbar machen)
+Filterung (bestimmte Inhalte blockieren oder erlauben)
+Ein Proxy arbeitet auf Netzwerkebene und kann verschiedene Rollen haben:
+Forward Proxy (für Clients nach außen)
+Reverse Proxy (für Server nach innen)
+Ein Reverse Proxy wird oft genutzt, um Webserver hinter einer sicheren Schicht zu verstecken oder mehrere Dienste über eine Adresse erreichbar zu machen.In diesem Projekt wurde ein Proxy genutzt, um auf interne Dienste des Servers zuzugreifen, ohne diese direkt öffentlich freizugeben. Dadurch konnte der Zugriff kontrolliert und über eine sichere Verbindung (z. B. SSH-Tunnel) geleitet werden.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/proxy.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Proxy.md</guid><pubDate>Mon, 27 Apr 2026 19:36:04 GMT</pubDate></item><item><title><![CDATA[Raspberry PI]]></title><description><![CDATA[Raspberry Pi ist ein kleiner, günstiger Einplatinencomputer, der wie ein normaler PC funktioniert, aber deutlich kompakter und stromsparender ist.Er wird oft für Projekte, Server, Automatisierung oder zum Lernen verwendet.Trotz der kleinen Größe kann er:
+Programme ausführen
+als Server dienen (Webserver, Datenbank, API usw.)
+Netzwerkdienste bereitstellen
+Sensoren und Hardware steuern
+Betriebssysteme wie Linux ausführen
+Im Grunde ist es ein „Mini-PC“, der für technische Projekte gebaut wurde.
+sehr günstig
+klein und energieeffizient
+große Community und viele Tutorials
+perfekt für Linux-basierte Systeme
+ideal für Experimente und Projekte
+Ein Raspberry Pi hat:
+CPU (meist ARM-Architektur)
+RAM
+USB-Ports
+Netzwerkanschluss (LAN/WLAN)
+GPIO-Pins für Hardware-Steuerung
+Er läuft meistens mit Linux-Distributionen wie Raspberry Pi OS.In diesem Projekt wurde ein Raspberry Pi als Server verwendet, auf dem sowohl die Datenbank (MariaDB) als auch das Backend (PHP) läuft. Außerdem stellt er die Weboberfläche und die API bereit und dient als zentrale Hardware für das gesamte System.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/raspberry-pi.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Raspberry PI.md</guid><pubDate>Mon, 27 Apr 2026 19:36:01 GMT</pubDate></item><item><title><![CDATA[SQL]]></title><description><![CDATA[SQL (Structured Query Language) ist eine Sprache, mit der man Daten in einer Datenbank abfragt, verändert und verwaltet.Sie wird überall dort benutzt, wo Daten strukturiert in Tabellen gespeichert sind.Mit SQL kannst du:
+Daten speichern
+Daten lesen
+Daten ändern
+Daten löschen
+Tabellen erstellen und verwalten
+Eine einfache Abfrage:SELECT * FROM users;Das bedeutet:
+„Gib mir alle Einträge aus der Tabelle users.“Oder gezielter:SELECT * FROM users WHERE id = 42;Das heißt:
+„Gib mir den Benutzer mit der ID 42.“SQL arbeitet mit Tabellen:
+Zeilen = einzelne Datensätze
+Spalten = Eigenschaften (z. B. Name, Alter, E-Mail)
+Die Datenbank versteht SQL-Befehle und liefert passende Ergebnisse zurück.
+sehr schnell bei großen Datenmengen
+klar strukturierte Daten
+weit verbreitet und standardisiert
+ideal für klassische Anwendungen
+In diesem Projekt wurde SQL genutzt, um mit der MariaDB-Datenbank zu kommunizieren. PHP führt dabei SQL-Abfragen aus, um Daten zu speichern, zu lesen und für das Frontend bereitzustellen.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/sql.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/SQL.md</guid><pubDate>Mon, 27 Apr 2026 19:35:58 GMT</pubDate></item><item><title><![CDATA[SSH]]></title><description><![CDATA[SSSH (Secure Shell) ist ein Protokoll, mit dem man sich sicher über ein unsicheres Netzwerk (z. B. Internet oder Schulnetz) mit einem anderen Computer verbindet.Es wird vor allem genutzt, um Server aus der Ferne zu steuern, als wäre man direkt davor.SSH ermöglicht dir:
+dich sicher auf einem Server anzumelden
+Befehle auf einem entfernten Rechner auszuführen
+Dateien zu übertragen
+Tunnel (z. B. für Ports oder Proxys) aufzubauen
+Alles ist dabei verschlüsselt, sodass niemand im Netzwerk mitlesen kann.Du hast zwei Seiten:
+Client → dein eigener PC
+Server → z. B. Raspberry Pi
+Verbindung:ssh benutzer@server-ipBeispiel:ssh max@10.1.18.218Danach bist du „im System“ des Servers und kannst dort arbeiten.ssh user@ip
+ssh user@ip -p 2222
+scp datei.txt user@ip:/ziel/pfad/
+scp -r ordner/ user@ip:/ziel/pfad/
+scp user@ip:/pfad/datei.txt .
+Statt Passwort kann man Schlüssel benutzen:ssh-keygen
+Öffentlichen Key auf Server kopieren:ssh-copy-id user@ip
+Danach:ssh user@ip
+→ ohne PasswortSSH kann auch Ports weiterleiten:ssh -L 8080:localhost:80 user@server
+Das bedeutet:
+dein PC: localhost:8080
+wird weitergeleitet auf Server: localhost:80
+So kann man interne Dienste sicher erreichbar machen.
+sehr sicher (verschlüsselt)
+Standard für Serververwaltung
+ersetzt oft direkten physischen Zugriff
+ideal für Raspberry Pi / Linux-Server
+In diesem Projekt wurde SSH genutzt, um auf den Raspberry Pi zuzugreifen, Dateien zu verwalten, den Server zu administrieren und über SSH-Tunnel interne Dienste (wie Admin-Oberflächen) sicher erreichbar zu machen, ohne sie öffentlich ins Netzwerk zu stellen.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/ssh.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/SSH.md</guid><pubDate>Mon, 27 Apr 2026 19:35:54 GMT</pubDate></item><item><title><![CDATA[Webserver]]></title><description><![CDATA[Webserver ist ein Programm, das Webseiten bereitstellt und sie an den Browser eines Nutzers ausliefert.Wenn du eine Website aufrufst, sorgt der Webserver dafür, dass du HTML, CSS, JavaScript oder andere Inhalte bekommst.Ein Webserver:
+nimmt Anfragen vom Browser entgegen
+verarbeitet diese Anfragen
+liefert Dateien oder dynamische Inhalte zurück
+kann mit Backend-Systemen (z. B. PHP) zusammenarbeiten
+Apache2 ist einer der bekanntesten Webserver.Er läuft auf einem Server und stellt Webseiten bereit.
+Du rufst eine Website auf:
+http://server-ip/
+Der Browser sendet eine Anfrage an Apache2
+Apache2 sucht die passende Datei, z. B.: index.html
+oder ruft index.php auf Ergebnis wird an den Browser zurückgeschickt
+Wenn eine Datei PHP-Code enthält:Dann passiert:
+Apache erkennt: „Das ist PHP“
+PHP wird ausgeführt
+Ergebnis wird als HTML zurückgegeben:
+Hallo WeltDer Nutzer sieht nur das Ergebnis, nicht den Code.
+Document Root → Ordner, aus dem Webseiten geladen werden
+Virtual Hosts → mehrere Webseiten auf einem Server
+Modules → Erweiterungen (z. B. PHP-Unterstützung)
+Logs → Fehler- und Zugriffsdaten Sie machen Webseiten überhaupt erst erreichbar
+Sie verbinden Frontend und Backend
+Sie ermöglichen dynamische Inhalte
+Sie sind die Basis fast aller Websites im Internet
+In diesem Projekt wurde Apache2 als Webserver genutzt, um die Website bereitzustellen. Er liefert die HTML-, CSS- und JavaScript-Dateien aus und führt zusammen mit PHP die Backend-Logik aus, um Daten aus der MariaDB-Datenbank zu laden und an den Nutzer zurückzugeben.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>definitionen/webserver.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Definitionen/Webserver.md</guid><pubDate>Mon, 27 Apr 2026 19:35:27 GMT</pubDate></item><item><title><![CDATA[Verfügbarkeit Analyse]]></title><description><![CDATA[Meiner Vermutung nach ist der Zugriff von WLAN an verschiedenen Orten der Schule nicht möglich, da die Schule in verschiedene Subnetze eingeteilt ist und das andere Ende der Schule ein anderes Subnetz benutzt und somit das 10.1.0.0/16-Netz nicht erreichen kann, in dem die meisten LAN-Anschlüsse in den Uxx-Räumen liegen. Dies lässt mich zu der Vermutung kommen, dass der einzige Weg, das Gerät von überall aus erreichbar zu machen, eine Routing-Konfiguratyion über den Schulrouter (10.1.1.3) ist, da dieser von überall erreichbar ist.Nach weiteren Tests bin ich auch zu dem Ergebnis gekommen, dass der Ort, an dem man sich befindet, eine geringere Rolle spielt, da man manchmal am gleichen Ort eine Verbindung zum Gerät hat und manchmal nicht. Dieser Unterschied könnte durch Repeater entstehen und davon abhängen, in welchem Netz diese liegen. Dafür habe ich jedoch noch nicht genug Experimente gemacht und verlasse mich aktuell darauf, dass es in den unteren Räumen zuverlässig funktioniert, also im Maker-AG-Raum.23.03.: Zurzeit ist der Raspberry Pi im Schulnetz mit einer 10.1.0.0/26-Adresse (aktuell: 10.1.18.218) per LAN angeschlossen. Zusätzlich ist er mit dem WLAN im PongPing-Netz verbunden, wodurch der Reverse Proxy von NASABSOF4 weiterhin funktioniert. Dieses Setup könnte bereits ausreichend sein, wenn die Adresse im Schulnetz nicht dynamisch wäre und es einen DNS-Eintrag dafür gäbe.Ich habe einige Ideen, wie man es sonst lösen könnte, aber alle setzen voraus, dass die Nutzer bereit sind, sich mit einem zusätzlichen WLAN zu verbinden, um auf die Website zuzugreifen (was wiederum nicht für Personen funktioniert, die an Schul-PCs arbeiten). Man könnte beispielsweise einen DNS-Server auf einem der NAS-Server betreiben (z. B. mit Nginx Proxy Manager) und damit DNS-Einträge auf IP-Adressen umleiten, aber das erfordert die Zustimmung der Nutzer, ein Netzwerk mit einem eigenen DNS-Server zu verwenden.Es gibt also viele Ideen, aber die beste Möglichkeit ist es, den Schulrouter zu nutzen und eine feste IP-Adresse mit einem DNS-Eintrag zu konfigurieren.Analysierte Orte und in welchem Subnetz dieser Ort liegtAnalysierte Orte und in welchem Subnetz dieser Ort liegt. Alle diese Analysen wurden im ABS-GÄSTE-Netz durchgeführt.Raum 103:
+24.03.2026 10.100.0.0/16
+Ping möglich? = nein
+Seite verfügbar (über 10.1.200.8) = jaRaum 220 + 219
+25.03.2026 10.1.0.0/16
+Ping möglich? = ja
+Seite verfügbar (über 10.1.200.8) = jaVor Raum 102
+27.03.2026 10.100.0.0/16
+Ping möglich? = nein
+Seite verfügbar (über 10.1.200.8) = jaWie sich herausgestellt hat (war eigentlich klar), kann das Netz nur in dem Subnetz aufgerufen werden. In jedem anderen Netz wird jeder Port außer 80 blockiert. Das bedeutet eigentlich: Ja, die Seite ist überall verfügbar. Nein, man kann nicht von überall mit SSH oder so auf den Server zugreifen.Bestimmt gibt es einen Weg, sich mit WireGuard oder einem Proxy über Port 80 einen eigenen Weg in das Pong-Ping-Netz zu verschaffen, aber das wäre für die kurze Zeit die mir noch verbleibt unnötig.<a data-tooltip-position="top" aria-label="Assistentenausbildung/Maker AG/DAS Projekt/index" data-href="Assistentenausbildung/Maker AG/DAS Projekt/index" href="index.html" class="internal-link" target="_self" rel="noopener nofollow">Zurück zum Index</a>]]></description><link>extra/verfügbarkeit-analyse.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/extra/Verfügbarkeit Analyse.md</guid><pubDate>Mon, 27 Apr 2026 19:35:21 GMT</pubDate></item><item><title><![CDATA[Datenbank]]></title><description><![CDATA[<img src="img/datenbank.svg" target="_self">]]></description><link>img/datenbank.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/img/Datenbank.svg</guid><pubDate>Wed, 08 Apr 2026 11:19:44 GMT</pubDate><enclosure url="img/datenbank.svg" length="0" type="image/svg+xml"/><content:encoded>&lt;figure&gt;&lt;img src=&quot;img/datenbank.svg&quot;&gt;&lt;/figure&gt;</content:encoded></item><item><title><![CDATA[Dokumentation]]></title><link>dokumentation.html</link><guid isPermaLink="false">Assistentenausbildung/Maker AG/DAS Projekt/Dokumentation.html</guid><pubDate>Wed, 11 Mar 2026 22:09:04 GMT</pubDate></item></channel></rss>
