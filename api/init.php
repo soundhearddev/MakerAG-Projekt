@@ -293,7 +293,26 @@ function enrichItem(array $item): array
         $item['documents'] = fetchDocuments($id);
         // Anzahl als eigenes Feld rausziehen (liegt als Spec drin)
         // ?? null = wenn 'Anzahl' kein Key in specs ist, null zurückgeben
-        $item['quantity']  = $item['specs']['Anzahl'] ?? null;
+        
+        // Anzahl aus specs (case-insensitiv – Schlüssel kann 'Anzahl' oder 'anzahl' sein)
+        $specQty = null;
+        foreach (['Anzahl', 'anzahl', 'quantity', 'menge'] as $k) {
+            if (isset($item['specs'][$k]) && is_numeric($item['specs'][$k])) {
+                $specQty = (int) $item['specs'][$k];
+                break;
+            }
+        }
+        $item['quantity'] = $specQty;
+ 
+        // quantity_available direkt mitlesen – spart einen extra API-Call im Frontend
+        $item['quantity_available'] = isset($item['quantity_available'])
+            ? (int) $item['quantity_available']  // kommt schon aus dem items-SELECT
+            : $specQty;                           // Fallback: alles verfügbar
+ 
+
+
+
+
     } else {
         $item['specs']     = [];
         $item['tags']      = [];
