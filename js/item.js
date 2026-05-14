@@ -327,9 +327,18 @@
       );
       barWrap.appendChild(bar);
 
-      const count = document.createElement("span");
-      count.className = "qty-count";
-      count.textContent = `${available}/${total}`;
+      const count = document.createElement("input");
+      count.type = "number";
+      count.className = "qty-count qty-count--input";
+      count.value = available;
+      count.min = 0;
+      count.max = total;
+      count.addEventListener("change", () => {
+        const v = Math.max(0, Math.min(total, parseInt(count.value) || 0));
+        updateQty(v);
+      });
+      // Verhindert dass Blur mit ungültigem Wert hängt
+      count.addEventListener("blur", () => { count.value = available; });
 
       // Buttons
       const minusBtn = makeBtn("−", "secondary");
