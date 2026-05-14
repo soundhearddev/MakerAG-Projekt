@@ -122,9 +122,11 @@
       if (item.serial_number) appendIf(statusDiv, infoLine(
         "Seriennummer", `<span class="item-serial">${item.serial_number}</span>`,
       ));
-      if (item.quantity) appendIf(statusDiv, infoLine(
-        "Anzahl", `<span class="item-quantity">${item.quantity}</span>`,
-      ));
+
+      if (item.quantity) buildQuantityEditor(statusDiv, item);
+      // if (item.quantity) appendIf(statusDiv, infoLine(
+      //   "Anzahl", `<span class="item-quantity">${item.quantity}</span>`,
+      // ));
       if (item.notes) appendIf(statusDiv, infoLine(
         "Notizen", `<span class="item-notes">${item.notes}</span>`,
       ));
@@ -281,6 +283,117 @@
 
     container.appendChild(wrapper);
   }
+
+
+
+  // ── buildQuantityEditor ──────────────────────────────────────────────────
+  // Füge diese Funktion neben buildStatusEditor / buildLocationEditor ein:
+
+  function buildQuantityEditor(container, item) {
+    const total = parseInt(item.quantity) || 0;
+    if (total <= 0) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "info-line info-anzahl";
+    wrapper.setAttribute("data-label", "anzahl");
+
+    // Verfügbare Menge laden (quantity_available, Fallback = total)
+    let available = item.quantity_available != null
+      ? parseInt(item.quantity_available)
+      : total;
+
+    // ── Balance-Anzeige ──────────────────────────────────────────────────
+    function render() {
+      wrapper.innerHTML = "";
+
+      const row = document.createElement("div");
+      row.className = "editor-row qty-row";
+
+      const label = document.createElement("span");
+      label.innerHTML = "<strong>Anzahl:</strong> ";
+
+      // Balken
+      const barWrap = document.createElement("div");
+      barWrap.className = "qty-bar-wrap";
+      const bar = document.createElement("div");
+      bar.className = "qty-bar";
+      const pct = total > 0 ? (available / total) * 100 : 0;
+      bar.style.setProperty("--qty-pct", pct + "%");
+      // Farbe je nach Füllstand
+      bar.classList.add(
+        pct <= 0 ? "qty-bar--empty" :
+          pct <= 33 ? "qty-bar--low" :
+            pct <= 66 ? "qty-bar--mid" : "qty-bar--full"
+      );
+      barWrap.appendChild(bar);
+
+      const count = document.createElement("span");
+      count.className = "qty-count";
+      count.textContent = `${available}/${total}`;
+
+      // Buttons
+      const minusBtn = makeBtn("−", "secondary");
+      minusBtn.className += " qty-btn";
+      minusBtn.disabled = available <= 0;
+      minusBtn.title = "Eines entnehmen";
+
+      const plusBtn = makeBtn("+", "secondary");
+      plusBtn.className += " qty-btn";
+      plusBtn.disabled = available >= total;
+      plusBtn.title = "Eines zurücklegen";
+
+      minusBtn.addEventListener("click", () => updateQty(available - 1));
+      plusBtn.addEventListener("click", () => updateQty(available + 1));
+
+      row.append(label, minusBtn, barWrap, count, plusBtn);
+      wrapper.appendChild(row);
+    }
+
+    async function updateQty(newVal) {
+      if (newVal < 0 || newVal > total) return;
+
+      try {
+        const res = await fetch("/api/edit-quantity.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: item.id, quantity_available: newVal }),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error || "Fehler");
+
+        available = json.data.quantity_available;
+        item.quantity_available = available;
+        render();
+      } catch (err) {
+        console.error("Quantity-Update fehlgeschlagen:", err);
+        alert("Fehler: " + err.message);
+      }
+    }
+
+    // quantity_available vom Server holen falls nicht im Item-Objekt
+    if (item.quantity_available == null) {
+      fetch(`/api/edit-quantity.php?id=${item.id}`)
+        .then(r => r.json())
+        .then(json => {
+          if (json.success) {
+            available = json.data.quantity_available;
+            item.quantity_available = available;
+            render();
+          }
+        })
+        .catch(() => { }); // Fallback bleibt total
+    }
+
+    render();
+    container.appendChild(wrapper);
+  }
+
+
+
+
+
+
+
   function buildLocationEditor(container, item) {
 
     if (item.category_id == 4) return;

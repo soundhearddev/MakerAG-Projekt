@@ -310,3 +310,59 @@
 [hidden] {
   display: none !important;
 }
+
+/* ── Quantity Editor ─────────────────────────────────────────────────── */
+
+.qty-row {
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.qty-btn {
+  padding: 0 0.55rem !important;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  min-width: 1.8rem;
+  text-align: center;
+}
+
+.qty-bar-wrap {
+  flex: 1 1 80px;
+  max-width: 160px;
+  height: 10px;
+  background: var(--cat-surface1, #313244);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.qty-bar {
+  height: 100%;
+  width: var(--qty-pct, 100%);
+  border-radius: 999px;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.qty-bar--full {
+  background: var(--cat-green, #a6e3a1);
+}
+
+.qty-bar--mid {
+  background: var(--cat-yellow, #f9e2af);
+}
+
+.qty-bar--low {
+  background: var(--cat-peach, #fab387);
+}
+
+.qty-bar--empty {
+  background: var(--cat-red, #f38ba8);
+}
+
+.qty-count {
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5ch;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
