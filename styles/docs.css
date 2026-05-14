@@ -366,3 +366,28 @@
   font-size: 0.9rem;
   opacity: 0.85;
 }
+
+.qty-count--input {
+  width: 5ch;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--cat-overlay1, #6c7086);
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: text;
+
+  /* Spinner entfernen */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.qty-count--input::-webkit-inner-spin-button,
+.qty-count--input::-webkit-outer-spin-button {
+  display: none;
+}
+
+.qty-count--input:focus {
+  outline: none;
+  border-bottom-color: var(--cat-blue, #89b4fa);
+}
