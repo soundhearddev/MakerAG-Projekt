@@ -138,6 +138,7 @@
 
       if (specs && !Array.isArray(specs) && typeof specs === "object" && Object.keys(specs).length) {
         Object.entries(specs).forEach(([key, value]) => {
+          if (/^(anzahl|quantity|menge)$/i.test(key.trim())) return;
           const li = document.createElement("li");
           li.innerHTML = `<strong>${key}:</strong> ${value}`;
           specsList.appendChild(li);
