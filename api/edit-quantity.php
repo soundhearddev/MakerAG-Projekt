@@ -1,7 +1,21 @@
 <?php
 require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/RateLimiter.php';
 
-// Methoden-Whitelist – alles andere sofort abblocken
+// ── Rate Limiting ─────────────────────────────────────────────────────────────
+// Konfiguration (optional – Defaults greifen wenn nicht gesetzt):
+//   define('RL_IP_CAPACITY',   30);   // max. Requests pro IP im Burst
+//   define('RL_IP_REFILL',      2);   // Token-Nachfüllrate pro Sekunde
+//   define('RL_GL_CAPACITY',  500);   // globales Burst-Maximum
+//   define('RL_GL_REFILL',     50);   // globale Nachfüllrate pro Sekunde
+//   define('RL_BLOCK_SECONDS', 60);   // Sperrzeit in Sekunden nach Ausschöpfung
+
+$rateLimiter = new RateLimiter();
+if (!$rateLimiter->check()) {
+    sendError('Zu viele Anfragen – bitte warte kurz', 429);
+}
+
+// ── Methoden-Whitelist ────────────────────────────────────────────────────────
 if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST'], true)) {
     sendError('Methode nicht erlaubt', 405);
 }
@@ -12,14 +26,13 @@ if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST'], true)) {
 function fetchQuantityRow(int $id): ?array
 {
     global $db;
-
     $stmt = $db->prepare(
         "SELECT i.quantity_available,
                 s.value AS spec_quantity
          FROM items i
          LEFT JOIN specs s
-               ON  s.item_id = i.id
-               AND LOWER(s.key) IN ('anzahl', 'quantity', 'menge')
+             ON  s.item_id = i.id
+             AND LOWER(s.key) IN ('anzahl', 'quantity', 'menge')
          WHERE i.id = ?
          ORDER BY s.id ASC
          LIMIT 1"
@@ -28,16 +41,15 @@ function fetchQuantityRow(int $id): ?array
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
 
-    if ($row === false || $row === null) return null; // Item existiert nicht
+    if ($row === false || $row === null) return null;
 
-    // spec_quantity muss numerisch sein – sonst ignorieren
     $total = ($row['spec_quantity'] !== null && is_numeric($row['spec_quantity']))
         ? (int) $row['spec_quantity']
         : null;
 
     $available = $row['quantity_available'] !== null
         ? (int) $row['quantity_available']
-        : $total; // Fallback: noch nie gesetzt → alles verfügbar
+        : $total;
 
     return ['total' => $total, 'available' => $available];
 }
