@@ -1,19 +1,23 @@
 // =============================================================================
 // MAIN SCRIPT - Startseite
 // =============================================================================
+async function loadItemCount() {
+  try {
+    const res = await fetch("/api/count.php");
+    const data = await res.json();
+    if (data.success) {
+      state.totalCount = data.count;
+      const el = document.getElementById("item-count");
+      el.removeAttribute("data-i18n"); // ← verhindert Überschreiben
+      el.textContent = data.count;
+    }
+  } catch (err) {
+    console.error("Fehler beim Laden des Item-Counts:", err);
+    document.getElementById("item-count").textContent = T.counter_error;
+  }
+}
 
 // Guard verhindert "redeclaration"-Fehler wenn loader.js die Datei mehrfach ausführt
-if (typeof window._indexLog === "undefined") {
-  window._indexLog = {
-    info: (msg, data) =>
-      console.log(`%c[INFO] ${msg}`, "color: #0066ff", data || ""),
-    error: (msg, data) =>
-      console.error(`%c[ERROR] ${msg}`, "color: #ff4444", data || ""),
-    success: (msg, data) =>
-      console.log(`%c[SUCCESS] ${msg}`, "color: #00aa00", data || ""),
-  };
-}
-const log = window._indexLog;
 
 window.scrollTo(0, 0);
 
@@ -29,21 +33,7 @@ const state = {
 // =============================================================================
 // ITEM COUNT LADEN
 // =============================================================================
-async function loadItemCount() {
-  try {
-    const res = await fetch("/api/count.php");
-    const data = await res.json();
-    if (data.success) {
-      state.totalCount = data.count;
-      const el = document.getElementById("item-count");
-      el.removeAttribute("data-i18n"); // ← verhindert Überschreiben
-      el.textContent = data.count;
-    }
-  } catch (err) {
-    log.error("Fehler beim Laden des Item-Counts:", err);
-    document.getElementById("item-count").textContent = T.counter_error;
-  }
-}
+
 
 // =============================================================================
 // NEUESTE EINTRÄGE LADEN
@@ -112,7 +102,7 @@ async function loadLatestEntries() {
 
     button.textContent = T.btn_reload;
   } catch (err) {
-    log.error("Fehler beim Laden der neuesten Einträge:", err);
+    console.error("Fehler beim Laden der neuesten Einträge:", err);
     container.innerHTML = `<p class="error-message">Fehler beim Laden: ${err.message}</p>`;
     button.textContent = T.btn_retry;
   } finally {
@@ -195,7 +185,7 @@ ${item.docs_link
 
     button.textContent = T.btn_random_new;
   } catch (err) {
-    log.error("Fehler beim Laden des zufälligen Items:", err);
+    console.error("Fehler beim Laden des zufälligen Items:", err);
     statusDiv.innerHTML = `<p class="error-message">Fehler: ${err.message}</p>`;
     button.textContent = T.btn_retry;
   } finally {
@@ -281,7 +271,7 @@ async function loadCategories() {
       )
       .join("");
   } catch (err) {
-    log.error("Fehler beim Laden der Kategorien:", err);
+    console.error("Fehler beim Laden der Kategorien:", err);
     const container = document.querySelector("#Kategorien .row");
     if (container) {
       container.innerHTML = `<p class="error-message">${T.error_load_categories}</p>`;
@@ -299,7 +289,7 @@ async function init() {
     await Promise.all([loadItemCount(), loadCategories()]);
     //log.success("Startseite erfolgreich geladen");
   } catch (err) {
-    log.error("Fehler bei der Initialisierung:", err);
+    console.error("Fehler bei der Initialisierung:", err);
   }
 }
 
