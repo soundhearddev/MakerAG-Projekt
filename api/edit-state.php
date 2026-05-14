@@ -31,7 +31,6 @@ if (!in_array($status, $allowed, true)) {
 
 // DB
 try {
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
     $check = $db->prepare("SELECT id FROM items WHERE id = ? LIMIT 1");
     $check->bind_param('i', $id);

@@ -33,13 +33,11 @@ async function loadItemCount() {
   try {
     const res = await fetch("/api/count.php");
     const data = await res.json();
-
     if (data.success) {
       state.totalCount = data.count;
-      document.getElementById("item-count").textContent = data.count;
-      // log.success("Item-Count geladen:", data.count);
-    } else {
-      throw new Error(data.message || "Unbekannter Fehler");
+      const el = document.getElementById("item-count");
+      el.removeAttribute("data-i18n"); // ← verhindert Überschreiben
+      el.textContent = data.count;
     }
   } catch (err) {
     log.error("Fehler beim Laden des Item-Counts:", err);
@@ -184,9 +182,9 @@ async function loadRandomItem() {
       }
                     <div class="random-actions">
 ${item.docs_link
-  ? `<a href="${item.docs_link}" class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>`
-  : ""
-}
+        ? `<a href="${item.docs_link}" class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>`
+        : ""
+      }
                         <a href="/search.html?query=${encodeURIComponent(
         item.name,
       )}" class="btn-details random-item-button">${T.all_details_btn}</a>
