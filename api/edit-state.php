@@ -10,19 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendError('Nur POST erlaubt', 405);
 }
 
-// Rate Limiting
-if (session_status() === PHP_SESSION_NONE) session_start();
+require_once __DIR__ . '/RateLimiter.php';
 
-$ip      = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-$rateKey = 'rate_edit_state_' . md5($ip);
-$now     = time();
-
-if (!isset($_SESSION[$rateKey]) || $now - $_SESSION[$rateKey]['start'] > 60) {
-    $_SESSION[$rateKey] = ['count' => 0, 'start' => $now];
-}
-
-if (++$_SESSION[$rateKey]['count'] > 10) {
-    sendError('Zu viele Anfragen. Bitte warten.', 429);
+$rateLimiter = new RateLimiter();
+if (!$rateLimiter->check()) {
+    sendError('Zu viele Anfragen – bitte warte kurz', 429);
 }
 
 // Input

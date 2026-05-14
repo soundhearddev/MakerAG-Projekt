@@ -13,18 +13,12 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // ── Rate Limiting ─────────────────────────────────────────────────────────────
 
-$rateKey = 'rate_edit_location_' . md5($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-$now     = time();
+require_once __DIR__ . '/RateLimiter.php';
 
-if (!isset($_SESSION[$rateKey]) || $now - $_SESSION[$rateKey]['start'] > 60) {
-    $_SESSION[$rateKey] = ['count' => 0, 'start' => $now];
+$rateLimiter = new RateLimiter();
+if (!$rateLimiter->check()) {
+    sendError('Zu viele Anfragen – bitte warte kurz', 429);
 }
-
-if (++$_SESSION[$rateKey]['count'] > 20) {
-    sendError('Zu viele Anfragen. Bitte warten.', 429);
-}
-
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 // ── GET: alle Locations listen ────────────────────────────────────────────────
 

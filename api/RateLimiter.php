@@ -17,8 +17,8 @@
 class RateLimiter
 {
     // ── Defaults ──────────────────────────────────────────────────────────────
-    private const DEF_IP_CAP   = 30;
-    private const DEF_IP_FILL  = 2;
+    private const DEF_IP_CAP   = 10;
+    private const DEF_IP_FILL  = 0.5;
     private const DEF_GL_CAP   = 500;
     private const DEF_GL_FILL  = 50;
     private const DEF_BLOCK    = 60;
