@@ -1,5 +1,9 @@
 <?php
 /**
+ * 
+ * BENÖTIGT: php-apcu
+ * 
+ * 
  * RateLimiter – Token-Bucket via APCu (kein Redis nötig).
  *
  * Zwei unabhängige Ebenen:
