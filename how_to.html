@@ -7,18 +7,19 @@
   <title>MakerAG</title>
   <script src="/js/theme-loader.js"></script>
   <link rel="stylesheet" href="/styles/animation.css" />
-
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/how_to.css" />
   <link rel="icon" href="/images/logo.png" type="image/png" />
-
+  <script src="/js/lang.js"></script>
+  <script src="js/loader.js"></script>
 </head>
 
 <body>
-  <!-- TODO: bisschen QoL und mehr info und halt so-->
   <div class="page-loader">
     <div class="loader-spinner"></div>
   </div>
+
+
   <div id="header"></div>
   <div id="nav"></div>
   <div id="settings"></div>
@@ -35,7 +36,7 @@
           Sie das Terminal und führen Sie diesen Befehl aus:</p>
       </h4>
       <div class="code-block">
-        <code>ssh -L 8080:127.0.0.1:80 -N maintain@10.1.200.8 -p 222</code>
+        <code>ssh -L 8080:127.0.0.1:80 -N maintain@<span id="local-ip">wird geladen...</span></code>
       </div>
 
       <h4>
@@ -46,5 +47,15 @@
     </div>
   </div>
 </body>
+<script>
+  fetch('/api/get_ip.php')
+    .then(r => r.text())
+    .then(ip => {
+      document.getElementById('local-ip').textContent = ip.trim();
+    })
+    .catch(() => {
+      document.getElementById('local-ip').textContent = '<serveradresse>';
+    });
+</script>
 
 </html>
