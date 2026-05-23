@@ -183,8 +183,8 @@
         fetch(`/api/get_data.php?id=${id}&type=pdf`).then(r => r.json()),
         fetch(`/api/get_data.php?id=${id}&type=html`).then(r => r.json()),
       ]).then(([pdfData, htmlData]) => {
-        console.log("PDF files:", pdfData.data);
-        console.log("HTML files:", htmlData.data);
+        // console.log("PDF files:", pdfData.data);
+        // console.log("HTML files:", htmlData.data);
 
         const files = [
           ...(pdfData.data || []).map(f => ({ ...f, icon: "📄" })),

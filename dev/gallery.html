@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventar Galerie</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f0f0f;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #222;
+  }
+
+  header h1 {
+    font-size: 13px;
+    font-weight: 400;
+    color: #666;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  #item-count { font-size: 12px; color: #444; }
+
+  .gallery {
+    column-count: 5;
+    column-gap: 6px;
+  }
+
+  @media (max-width: 1400px) { .gallery { column-count: 4; } }
+  @media (max-width: 1000px) { .gallery { column-count: 3; } }
+  @media (max-width: 650px)  { .gallery { column-count: 2; } }
+
+  /* wrapper holds the space — never changes size on hover */
+  .item-slot {
+    break-inside: avoid;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .item-slot.tall   { height: 280px; }
+  .item-slot.medium { height: 200px; }
+  .item-slot.short  { height: 150px; }
+  .item-slot.squat  { height: 170px; }
+
+  /* card is absolute so transforms don't affect column layout */
+  .item {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 1;
+    transition: transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+                box-shadow 0.35s ease;
+  }
+
+  .item:hover {
+    transform: scale(1.22);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.85);
+    z-index: 100;
+    overflow: visible;
+    border-radius: 6px;
+  }
+
+  .item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #1a1a1a;
+    border-radius: 4px;
+  }
+
+  .item:hover img {
+    object-fit: contain;
+    background: #111;
+  }
+
+  /* overlay fades in on hover */
+  .item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,
+      rgba(0,0,0,0.88) 0%,
+      rgba(0,0,0,0.3)  55%,
+      transparent      100%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px 10px 12px;
+    pointer-events: none;
+  }
+
+  .item:hover .item-overlay { opacity: 1; }
+
+  .overlay-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.35;
+    margin-bottom: 3px;
+  }
+
+  .overlay-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.5;
+  }
+
+  .overlay-status {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 99px;
+    margin-top: 5px;
+    font-weight: 500;
+  }
+
+  .s-ok     { background: rgba(29,158,117,0.25); color: #4ecba0; border: 1px solid rgba(78,203,160,0.25); }
+  .s-lent   { background: rgba(186,117,23,0.25);  color: #f0a830; border: 1px solid rgba(240,168,48,0.25); }
+  .s-broken { background: rgba(200,60,50,0.25);   color: #f07070; border: 1px solid rgba(240,112,112,0.25); }
+
+  #error-msg { color: #f07070; font-size: 13px; margin-top: 2rem; display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Inventar</h1>
+  <span id="item-count">Lädt…</span>
+</header>
+
+<div class="gallery" id="gallery"></div>
+<div id="error-msg">Fehler beim Laden der Daten.</div>
+
+<script>
+const SIZES = ['tall','medium','short','squat','medium','tall','squat','short','medium','tall'];
+const PLACEHOLDER = 'https://placehold.co/400x300/1a1a1a/333333?text=';
+
+function sClass(s) {
+  if (s === 'verfügbar') return 's-ok';
+  if (s === 'ausgeliehen') return 's-lent';
+  return 's-broken';
+}
+
+async function load() {
+  try {
+    const res = await fetch('/api/fetch_all_items.php?limit=500');
+    if (!res.ok) throw new Error(res.status);
+    const json = await res.json();
+    const items = (json.data || json).sort(() => Math.random() - 0.5);
+
+    document.getElementById('item-count').textContent = items.length + ' Gegenstände';
+
+    const gallery = document.getElementById('gallery');
+
+    items.forEach((item, i) => {
+      const size = SIZES[i % SIZES.length];
+      const thumb = item.thumbnail || (PLACEHOLDER + encodeURIComponent(item.name || '?'));
+
+      const slot = document.createElement('div');
+      slot.className = 'item-slot ' + size;
+      const div = document.createElement('div');
+      div.className = 'item';
+
+      const loc = item.location
+        ? (item.location.room || '') + (item.locker ? ' · ' + item.locker : '')
+        : '';
+
+      div.innerHTML = `
+        <img src="${thumb}"
+             alt="${item.name || ''}"
+             loading="lazy"
+             onerror="this.src='${PLACEHOLDER + encodeURIComponent(item.name || '?')}'">
+        <div class="item-overlay">
+          <div class="overlay-name">${item.name || '—'}</div>
+          <div class="overlay-meta">
+            ${[item.category_name, item.brand, loc].filter(Boolean).join(' · ')}
+          </div>
+          <span class="overlay-status ${sClass(item.status)}">${item.status || '?'}</span>
+        </div>`;
+
+      if (item.docs_link) {
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => window.location.href = item.docs_link);
+      } else {
+        div.style.cursor = 'default';
+      }
+
+      slot.appendChild(div);
+      gallery.appendChild(slot);
+    });
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('item-count').textContent = '';
+    document.getElementById('error-msg').style.display = 'block';
+  }
+}
+
+load();
+</script>
+</body>
+</html>
