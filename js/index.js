@@ -193,45 +193,8 @@ ${item.docs_link
   }
 }
 
-document
-  .getElementById("random-item-btn")
-  ?.addEventListener("click", loadRandomItem);
 
-// Star-SVGs zum Random Button hinzufügen
-document.addEventListener("DOMContentLoaded", () => {
-  const randomBtn = document.getElementById("random-item-btn");
-  if (randomBtn && !randomBtn.querySelector(".star-1")) {
-    const starSVG = `
-            <svg class="star-1" viewBox="0 0 139 139" xmlns="http://www.w3.org/2000/svg">
-                <path class="fil0" d="M69.5 0l8.93 27.48h28.93l-23.41 17.01 8.93 27.48L69.5 54.96l-23.38 17.01 8.93-27.48-23.41-17.01h28.93z"/>
-            </svg>
-            <svg class="star-2" viewBox="0 0 139 139" xmlns="http://www.w3.org/2000/svg">
-                <path class="fil0" d="M69.5 0l8.93 27.48h28.93l-23.41 17.01 8.93 27.48L69.5 54.96l-23.38 17.01 8.93-27.48-23.41-17.01h28.93z"/>
-            </svg>
-            <svg class="star-3" viewBox="0 0 139 139" xmlns="http://www.w3.org/2000/svg">
-                <path class="fil0" d="M69.5 0l8.93 27.48h28.93l-23.41 17.01 8.93 27.48L69.5 54.96l-23.38 17.01 8.93-27.48-23.41-17.01h28.93z"/>
-            </svg>
-            <svg class="star-4" viewBox="0 0 139 139" xmlns="http://www.w3.org/2000/svg">
-                <path class="fil0" d="M69.5 0l8.93 27.48h28.93l-23.41 17.01 8.93 27.48L69.5 54.96l-23.38 17.01 8.93-27.48-23.41-17.01h28.93z"/>
-            </svg>
-            <svg class="star-5" viewBox="0 0 139 139" xmlns="http://www.w3.org/2000/svg">
-                <path class="fil0" d="M69.5 0l8.93 27.48h28.93l-23.41 17.01 8.93 27.48L69.5 54.96l-23.38 17.01 8.93-27.48-23.41-17.01h28.93z"/>
-            </svg>
-            <svg class="star-6" viewBox="0 0 139 139" xmlns="http://www.w3.org/2000/svg">
-                <path class="fil0" d="M69.5 0l8.93 27.48h28.93l-23.41 17.01 8.93 27.48L69.5 54.96l-23.38 17.01 8.93-27.48-23.41-17.01h28.93z"/>
-            </svg>
-        `;
-    randomBtn.insertAdjacentHTML("afterbegin", starSVG);
 
-    const textNode = [...randomBtn.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
-    if (textNode) {
-      const span = document.createElement("span");
-      span.style.cssText = "position: relative; z-index: 3;";
-      span.textContent = textNode.textContent;
-      textNode.replaceWith(span);
-    }
-  }
-});
 
 // =============================================================================
 // KATEGORIEN LADEN
