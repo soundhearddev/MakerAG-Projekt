@@ -32,12 +32,17 @@ window.VimCommands = [
   },
   {
     match: /^q$/,
-    desc: ":q – Offenes Modal schließen",
+    desc: ":q – Modal schließen oder Seite verlassen",
     group: "Settings",
     run() {
-      if (typeof window.closeCurrentModal === "function")
-        window.closeCurrentModal();
-      else _warn(":q – kein Modal offen");
+      const activeModal = document.querySelector(".settings-modal.active");
+      if (activeModal) {
+        if (typeof window.closeCurrentModal === "function") {
+          window.closeCurrentModal();
+        }
+      } else {
+        window.close();
+      }
     },
   },
   {
@@ -93,8 +98,14 @@ window.VimCommands = [
     desc: ":e <n> – Modal öffnen (settings, themes, ...)",
     group: "Modals",
     run(m) {
-      if (typeof window.openModal === "function") window.openModal(m[1]);
-      else _warn(":e – openModal nicht gefunden");
+      const trigger = document.querySelector(`[data-modal="${m[1]}"]`);
+      if (trigger) {
+        trigger.click();
+      } else if (typeof window.openModal === "function") {
+        window.openModal(m[1]);
+      } else {
+        _warn(`:e – Modal "${m[1]}" nicht gefunden`);
+      }
     },
   },
   {

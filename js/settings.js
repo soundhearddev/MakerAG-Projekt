@@ -303,30 +303,30 @@
 
   function openModal(type) {
     const modal = document.getElementById(`modal-${type}`);
+
+    // NEU: falls Modal noch nicht im DOM → erst Menü öffnen, dann retry
     if (!modal) {
-      log("Modal nicht gefunden:", type);
+      const menuCheckbox = document.getElementById("settings-icon");
+      if (menuCheckbox) {
+        menuCheckbox.checked = true;
+        menuCheckbox.dispatchEvent(new Event("change"));
+      }
+      // warten bis Menü-Animation + DOM-Rendering fertig
+      setTimeout(() => openModal(type), 450);
       return;
     }
 
     currentModal = modal;
-
     const menuCheckbox = document.getElementById("settings-icon");
     if (menuCheckbox) menuCheckbox.checked = false;
 
-    // wenn das menü noch offen war (checkbox war checked) → 400ms warten bis css-animation fertig ist
-    // sonst sofort öffnen (0ms timeout, aber trotzdem async damit DOM updates erst durchgehen)
-    setTimeout(
-      () => {
-        modal.classList.add("active");
-        document.body.classList.add("settings-open");
-
-        centerModal(modal);
-
-        const closeBtn = modal.querySelector(".close-modal");
-        if (closeBtn) closeBtn.focus();
-      },
-      menuCheckbox && menuCheckbox.checked ? 400 : 0,
-    );
+    setTimeout(() => {
+      modal.classList.add("active");
+      document.body.classList.add("settings-open");
+      centerModal(modal);
+      const closeBtn = modal.querySelector(".close-modal");
+      if (closeBtn) closeBtn.focus();
+    }, menuCheckbox && menuCheckbox.checked ? 400 : 0);
 
     log("Modal geöffnet:", type);
   }
@@ -824,4 +824,5 @@
   window.getThemeFromCSS = getThemeFromCSS;
   window.applyTheme = applyTheme;
   window.showModal = showModal;
+  window.closeCurrentModal = closeCurrentModal;
 })();
