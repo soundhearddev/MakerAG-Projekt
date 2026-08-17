@@ -1,0 +1,573 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap");
+
+/* ==============================================
+   ROOT & GLOBAL
+============================================== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==============================================
+   BODY
+============================================== */
+body {
+  transition: opacity 0.3s ease;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--cat-text);
+  background-color: var(--cat-primary);
+  background-position: center;
+  background-repeat: repeat;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+#header,
+#nav,
+#settings {
+  visibility: hidden;
+}
+
+body.loaded #header,
+body.loaded #nav,
+body.loaded #settings {
+  visibility: visible;
+}
+
+/* ==============================================
+   CONTAINER
+============================================== */
+.container,
+.cool-container,
+.search {
+  width: 90%;
+  max-width: 1600px;
+  margin: 2rem auto;
+  background-color: var(--cat-secondary);
+  padding: 2rem;
+  color: var(--cat-text);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--cat-extra);
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cool-container::before {
+  background: radial-gradient(circle, var(--cat-extra), transparent 70%);
+  animation: rotate-gradient 3s forwards;
+}
+
+@keyframes rotate-gradient {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(148deg);
+  }
+}
+
+.container > *,
+.cool-container > *,
+.search > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==============================================
+   HEADINGS
+============================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 1.2rem;
+  font-family: "Montserrat", sans-serif;
+  color: var(--cat-text);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--cat-extra);
+  padding-bottom: 0.3rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* ==============================================
+   LINKS
+============================================== */
+a {
+  color: var(--cat-accent);
+  text-decoration: none;
+  position: relative;
+  transition:
+    color 0.25s ease,
+    letter-spacing 0.25s ease;
+  font-weight: 500;
+}
+
+a:not(.btn):not(.category-card):not(.docs-link)::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background: var(--cat-accent);
+  transition:
+    width 0.3s ease,
+    left 0.3s ease,
+    background 0.25s ease;
+}
+
+a:not(.btn):not(.category-card):not(.docs-link):hover::after {
+  width: 100%;
+  left: 0;
+  background: var(--cat-text);
+}
+
+a:hover {
+  color: var(--cat-text);
+  letter-spacing: 0.02em;
+}
+
+/* ==============================================
+   BUTTONS
+   Ein einheitlicher Stil fuer alle Buttons.
+   Varianten: .btn--accent, .btn--ghost
+============================================== */
+.btn,
+button,
+#load-latest {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75em 2em;
+  min-height: 3em;
+  background-color: transparent;
+  border: 1px solid var(--cat-extra);
+  color: var(--cat-text);
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.15s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.btn:hover,
+button:hover,
+#load-latest:hover {
+  border-color: var(--cat-accent);
+  color: var(--cat-accent);
+  transform: translateY(-2px);
+}
+
+.edit-btn--primary:hover {
+  opacity: 0.85;
+  color: var(--cat-primary); /* base.css button:hover überschreiben */
+}
+
+.edit-btn--secondary:hover {
+  opacity: 0.7;
+  color: var(--cat-extra);
+}
+
+.btn:active,
+button:active,
+#load-latest:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn:disabled,
+button:disabled,
+#load-latest:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Variante: ausgefuellt mit Accent-Farbe */
+.btn--accent {
+  background-color: var(--cat-accent);
+  border-color: var(--cat-accent);
+  color: var(--cat-primary);
+}
+
+.btn--accent:hover {
+  background-color: transparent;
+  color: var(--cat-accent);
+}
+
+/* Variante: gedimmt (z.B. Abbrechen) */
+.btn--ghost {
+  opacity: 0.55;
+  border-color: var(--cat-extra);
+}
+
+.btn--ghost:hover {
+  opacity: 1;
+  border-color: var(--cat-extra);
+  color: var(--cat-text);
+}
+
+/* Legacy-Klassen — zeigen auf den gleichen Stil */
+.btn-docs,
+.btn-search,
+.btn-details,
+.btn-editor,
+.btn-save,
+.btn-cancel {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75em 2em;
+  min-height: 3em;
+  background-color: transparent;
+  border: 1px solid var(--cat-extra);
+  color: var(--cat-text);
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: normal;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.15s ease;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.btn-docs:hover,
+.btn-search:hover,
+.btn-details:hover,
+.btn-editor:hover {
+  border-color: var(--cat-accent);
+  color: var(--cat-accent);
+  transform: translateY(-2px);
+}
+
+.btn-docs:active,
+.btn-search:active,
+.btn-details:active,
+.btn-editor:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-docs:disabled,
+.btn-search:disabled,
+.btn-details:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-save {
+  border-color: var(--cat-accent);
+  color: var(--cat-accent);
+}
+
+.btn-save:hover {
+  background-color: var(--cat-accent);
+  color: var(--cat-primary);
+  transform: translateY(-2px);
+}
+
+.btn-save:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-cancel {
+  opacity: 0.55;
+}
+
+.btn-cancel:hover {
+  opacity: 1;
+  border-color: var(--cat-extra);
+  color: var(--cat-text);
+  transform: translateY(-2px);
+}
+
+.btn-cancel:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ==============================================
+   THUMBNAILS
+============================================== */
+.thumbnail,
+.item-thumbnail,
+.random-thumbnail {
+  object-fit: cover;
+  border: 2px solid var(--cat-accent);
+  transition: transform 0.3s ease;
+}
+
+.thumbnail {
+  max-width: 80px;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  display: block;
+}
+
+.thumbnail:hover {
+  transform: scale(2.5);
+  z-index: 100;
+  position: relative;
+}
+
+.no-image,
+.no-thumbnail,
+.no-thumbnail-large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cat-primary);
+  color: var(--cat-text);
+  opacity: 0.5;
+  border: 2px solid var(--cat-extra);
+}
+
+.no-image {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+/* ==============================================
+   LOADING
+============================================== */
+.loading-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: var(--cat-accent);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--cat-extra);
+  border-top-color: var(--cat-accent);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==============================================
+   ERROR & EMPTY STATES
+============================================== */
+.error-message,
+.no-items,
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: var(--cat-accent);
+  font-size: 1.1rem;
+  font-weight: 500;
+  border: 1px dashed var(--cat-extra);
+  background-color: var(--cat-primary);
+}
+
+/* ==============================================
+   HIGHLIGHT
+============================================== */
+.highlight {
+  background: var(--cat-accent);
+  color: var(--cat-primary);
+  padding: 2px 4px;
+  font-weight: 600;
+}
+
+/* ==============================================
+   LISTS
+============================================== */
+ul,
+ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* ==============================================
+   UTILITY
+============================================== */
+.hidden {
+  display: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* ==============================================
+   FOCUS
+============================================== */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--cat-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cat-accent) 25%, transparent);
+}
+
+/* ==============================================
+   RESPONSIVE
+============================================== */
+@media screen and (max-width: 991px) {
+  .settings-icon:checked + label,
+  .settings-icon:not(:checked) + label {
+    right: 55px;
+  }
+
+  .settings-nav {
+    right: 30px;
+  }
+
+  .settings-nav ul li a {
+    font-size: 8vh;
+  }
+}
+
+@media (max-width: 1200px) {
+  .thumbnail {
+    max-width: 60px;
+    max-height: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container,
+  .cool-container,
+  .search {
+    padding: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .thumbnail {
+    max-width: 50px;
+    max-height: 50px;
+  }
+
+  .btn,
+  button,
+  #load-latest,
+  .btn-docs,
+  .btn-search,
+  .btn-details,
+  .btn-save,
+  .btn-cancel,
+  .btn-editor {
+    padding: 0.6em 1.2em;
+    font-size: 0.85rem;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container,
+  .cool-container,
+  .search {
+    width: 95%;
+    padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  .thumbnail {
+    max-width: 40px;
+    max-height: 40px;
+  }
+
+  .thumbnail:hover {
+    transform: scale(2);
+  }
+
+  nav {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  nav a {
+    margin: 0.5rem 0;
+  }
+}

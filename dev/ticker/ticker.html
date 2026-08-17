@@ -1,0 +1,181 @@
+<!-- 
+24.05.2026
+Diese Seite ist eine Art Prototyp für eine Idee der Feedback anzeigung.
+Probleme die ich aber jetzt schon sehe ist, dass diese sind filtert und halt einfahc alles anzeigt... 
+mit etwas mehr entwicklung und absicherung KÖNNTE dies auf die feedback seite kommen.
+-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Ticker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #000;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .ticker-bar {
+    width: 100%;
+    background: #111;
+    border-top: 1px solid #222;
+    height: 38px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .ticker-label {
+    flex-shrink: 0;
+    background: #666666;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    z-index: 2;
+  }
+
+  .ticker-track-wrap {
+    flex: 1;
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+  }
+
+  /* fade edges */
+  .ticker-track-wrap::before,
+  .ticker-track-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .ticker-track-wrap::before { left: 0;  background: linear-gradient(to right, #111, transparent); }
+  .ticker-track-wrap::after  { right: 0; background: linear-gradient(to left,  #111, transparent); }
+
+  .ticker-track {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 32px;
+    color: #ccc;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .ticker-item .t-name {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .ticker-item .t-sep {
+    color: #444;
+    font-size: 10px;
+  }
+
+  .ticker-item .t-problem {
+    color: #aaa;
+  }
+
+  .ticker-item .t-time {
+    color: #555;
+    font-size: 10px;
+  }
+
+  .ticker-dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #333;
+    flex-shrink: 0;
+    margin: 0 16px;
+  }
+
+  @keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(var(--ticker-width)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker-bar">
+  <div class="ticker-label">Feedback</div>
+  <div class="ticker-track-wrap">
+    <div class="ticker-track" id="track"></div>
+  </div>
+</div>
+
+<script>
+const SPEED_PX_PER_SEC = 60;
+
+function formatTime(str) {
+  const d = new Date(str);
+  return d.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit' })
+    + ' ' + d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' });
+}
+
+function buildItems(entries) {
+  return entries.map(e => `
+    <span class="ticker-item">
+      <span class="t-name">${e.name}</span>
+      <span class="t-sep">—</span>
+      <span class="t-problem">${e.problem}</span>
+      <span class="t-time">${formatTime(e.created_at)}</span>
+    </span>
+    <span class="ticker-dot"></span>
+  `).join('');
+}
+
+async function load() {
+  try {
+    const res = await fetch('./ticker.php');
+    const json = await res.json();
+    const entries = json.data || json;
+    if (!entries.length) return;
+
+    const track = document.getElementById('track');
+
+    const html = buildItems(entries);
+    track.innerHTML = html + html;
+
+    await new Promise(r => requestAnimationFrame(r));
+    const fullWidth = track.scrollWidth / 2;
+    const duration  = fullWidth / SPEED_PX_PER_SEC;
+
+    track.style.setProperty('--ticker-width', `-${fullWidth}px`);
+    track.style.animation = `ticker-scroll ${duration}s linear infinite`;
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+load();
+setInterval(load, 60_000);
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+.tooltip {
+    position: fixed;
+    background: var(--cat-secondary);
+    border: 1px solid var(--cat-accent);
+    border-radius: 10px;
+    padding: 14px 18px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+        opacity 0.15s,
+        transform 0.15s;
+    z-index: 200;
+    min-width: 190px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tt-id {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cat-text);
+    margin-bottom: 4px;
+}
+
+.tt-name {
+    font-size: 18px;
+    font-weight: 300;
+    margin-bottom: 10px;
+}
+
+.tt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    font-size: 20px;
+    color: var(--cat-text);
+    margin-bottom: 4px;
+}
+
+.tt-row span:last-child {
+    color: var(--cat-text);
+    font-weight: 500;
+}
+
+.tt-bar {
+    height: 3px;
+    background: var(--cat-accent);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.tt-cap {
+    font-size: 10px;
+    color: var(--cat-text);
+    margin-top: 5px;
+    letter-spacing: 0.04em;
+}
+
+.tt-hint {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--cat-text);
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+}
+
+.map-object .hover-face {
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+
+.map-object:hover .hover-face {
+    opacity: 0.13 !important;
+}
+
+.map-object {
+    cursor: pointer;
+}
+
+.map-wrap {
+    width: 100%;
+    height: 100vh;
+}
+
+#isomap {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

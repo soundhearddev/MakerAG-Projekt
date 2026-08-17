@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ</title>
+  <script src="/js/theme-loader.js"></script>
+  <link rel="stylesheet" href="/styles/animation.css" />
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/faq.css" />
+  <link rel="icon" href="/images/logo.png" type="image/png" />
+  <script src="/js/lang.js"></script>
+  <script src="js/loader.js"></script>
+</head>
+
+<body>
+
+
+  <div id="header"></div>
+  <div id="settings"></div>
+  <div id="nav"></div>
+
+  <div class="container">
+    <h4 class="info" id="faq-info"></h4>
+    <h1 data-i18n="faq_title">Häufig gestellte Fragen</h1>
+    <div id="faq-list"></div>
+  </div>
+
+
+  <!-- TODO: einfach mall alles nochmal verbessern + css-->
+
+  <script>
+    function renderFaq() {
+      const faqList = document.getElementById("faq-list");
+      const faqInfo = document.getElementById("faq-info");
+
+      if (!faqList || !window.T?.faq_items) {
+        setTimeout(renderFaq, 50); // kurz warten bis T gesetzt ist
+        return;
+      }
+
+      faqList.innerHTML = window.T.faq_items.map(item => `
+    <h2 class="frage">${item.q}</h2>
+    <p class="antwort">
+      ${item.a}
+      ${item.link ? `<a href="${item.link}" target="_blank">${item.link_text}</a>` : ""}
+    </p>
+  `).join("");
+
+      if (faqInfo && window.T.faq_info) {
+        faqInfo.innerHTML = `${window.T.faq_info} <a href="/feedback.html" target="_blank">${window.T.faq_feedback_link}</a>`;
+      }
+    }
+
+    renderFaq();
+  </script>
+
+</body>
+
+</html>

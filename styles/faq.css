@@ -1,0 +1,179 @@
+/* ==============================================
+   FAQ PAGE — faq.css
+   Ergänzt base.css um FAQ-spezifische Stile.
+   Voraussetzung: base.css und CSS-Variablen
+   (--cat-*) sind bereits geladen.
+============================================== */
+
+/* ==============================================
+   INFO-HINWEIS (h4.info)
+============================================== */
+.info {
+  margin: 0 0 2rem;
+  padding: 0.85rem 1.25rem;
+  border-left: 3px solid var(--cat-accent);
+  background-color: color-mix(in srgb, var(--cat-accent) 8%, transparent);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--cat-text);
+  opacity: 0.85;
+}
+
+.info a {
+  font-weight: 600;
+}
+
+/* ==============================================
+   FAQ-FRAGEN (h2.frage)
+============================================== */
+.frage {
+  position: relative;
+  margin: 2.25rem 0 0.5rem;
+  padding: 0.6rem 0 0.6rem 1.4rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border-bottom: none;          /* base.css h2-Trennlinie aufheben */
+  color: var(--cat-accent);
+  cursor: default;
+  transition: letter-spacing 0.2s ease;
+}
+
+/* Senkrechter Akzentbalken links */
+.frage::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 70%;
+  background: var(--cat-accent);
+  transition: height 0.25s ease;
+}
+
+/* Fragezeichen-Ornament rechts */
+/* verrückt dass man einfach string mit css einsetzen kann */
+.frage::after {
+  content: "?";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--cat-extra);
+  opacity: 0.35;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.frage:hover {
+  letter-spacing: 0.015em;
+}
+
+.frage:hover::before {
+  height: 100%;
+}
+
+/* ==============================================
+   FAQ-ANTWORTEN (p.antwort)
+============================================== */
+.antwort {
+  margin: 0 0 1rem 1.4rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.75;
+  color: var(--cat-text);
+  border-left: 1px solid var(--cat-extra);
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.antwort:hover {
+  opacity: 1;
+}
+
+.antwort a {
+  background: color-mix(in srgb, var(--cat-accent) 15%, transparent);
+  padding: 0.1em 0.4em;
+  font-weight: 600;
+}
+
+
+
+/* ==============================================
+   TRENNLINIE ZWISCHEN FAQ-EINTRÄGEN
+============================================== */
+.frage + .antwort::after {
+  content: "";
+  display: block;
+  margin-top: 1.5rem;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--cat-extra),
+    transparent
+  );
+  opacity: 0.45;
+}
+
+/* ==============================================
+   PAGE-LOADER (loader.js-Anbindung)
+============================================== */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cat-primary);
+  transition: opacity 0.4s ease;
+}
+
+.page-loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--cat-extra);
+  border-top-color: var(--cat-accent);
+  animation: spin 0.8s linear infinite;
+}
+
+/* spin ist in base.css definiert – kein Duplikat nötig */
+
+/* ==============================================
+   RESPONSIVE
+============================================== */
+@media (max-width: 768px) {
+  .info {
+    font-size: 0.82rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .frage {
+    font-size: 1rem;
+    padding-left: 1rem;
+  }
+
+  .antwort {
+    margin-left: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .frage::after {
+    display: none; /* Platz sparen auf sehr kleinen Screens */
+  }
+
+  .frage {
+    font-size: 0.95rem;
+  }
+}

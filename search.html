@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MakerAG</title>
+    <script src="/js/theme-loader.js"></script>
+    <link rel="stylesheet" href="/styles/animation.css" />
+    <link rel="stylesheet" href="/styles/base.css" />
+    <link rel="stylesheet" href="/styles/search.css" />
+    <link rel="icon" href="/images/logo.png" type="image/png" />
+    <script src="/js/lang.js"></script>
+    <script src="js/loader.js"></script>
+</head>
+<body class="loading">
+
+
+    <div id="header"></div>
+    <div id="nav"></div>
+    <div id="settings"></div>
+
+    <div class="search">
+        <div class="search-header">
+            <h1 data-i18n="search_title">Inventar-Suche</h1>
+
+        </div>
+
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <input type="text" id="searchInput" placeholder="Suche nach ID, Name, Marke, Kategorie, Locker"
+                    autocomplete="off" aria-label="Suchfeld">
+                <button id="clearSearch" class="btn-clear" title="Suche zurücksetzen"
+                    aria-label="Suche löschen">✕</button>
+            </div>
+
+            <div class="search-options">
+                <div class="option-group">
+                    <label for="sortField" data-i18n="search_sort_label">Sortieren nach:</label>
+                    <select id="sortField" aria-label="Sortierfeld auswählen">
+                        <option value="id">ID</option>
+                        <option value="name">Name</option>
+                        <option value="category" data-i18n="search_sort_category">Kategorie</option>
+                        <option value="brand" data-i18n="search_sort_brand">Marke</option>
+                        <option value="quantity" data-i18n="search_sort_quantity">Menge</option>
+                        <option value="locker">Locker</option>
+
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="sortOrder" data-i18n="search_order_label">Reihenfolge:</label>
+                    <select id="sortOrder" aria-label="Sortierreihenfolge auswählen">
+                        <option value="DESC" data-i18n="search_order_desc">Absteigend</option>
+                        <option value="ASC" data-i18n="search_order_asc">Aufsteigend</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="limitResults" data-i18n="search_limit_label">Ergebnisse:</label>
+                    <select id="limitResults" aria-label="Anzahl Ergebnisse auswählen">
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
+
+                <div class="option-group">
+                    <label for="searchFor" data-i18n="search_for_label">Suche nach:</label>
+                    <select id="searchFor" aria-label="Nach Bestimmte Felder Suchen">
+                        <option value="" selected data-i18n="search_for_nothing">- Nichts</option>
+                        <option value="ID">ID</option>
+                        <option value="Name">Name</option>
+                        <option value="Kategorie">Kategorie</option>
+                        <option value="Marke">Marke</option>
+                        <option value="Modell">Modell</option>
+                        <option value="Seriennummer" data-i18n="search_for_serial">Seriennummer</option>
+                        <option value="Locker">Locker</option>
+                        <option value="Raum" data-i18n="search_for_room">Raum</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="searchInfo" class="search-info hidden">
+            <span id="resultCount">0 Ergebnisse</span>
+            <span id="searchQuery"></span>
+        </div>
+
+
+        <div class="table-wrapper">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th data-sort="id">ID</th>
+                        <th data-i18n="search_col_image">Bild</th>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="category" data-i18n="search_sort_category">Kategorie</th>
+                        <th data-sort="brand" data-i18n="search_sort_brand">Marke</th>
+                        <th data-i18n="search_col_model">Modell</th>
+                        <th data-sort="quantity" data-i18n="search_sort_quantity">Menge</th>
+                        <th data-sort="locker">Locker</th>
+                        <th data-i18n="search_col_docs">Dokumentation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="loading-row">
+                        <td colspan="12">
+                            <div class="loading-message">
+                                <div class="spinner"></div>
+                                <span data-i18n="search_loading">Lade Daten...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+
+        <!-- Scripts -->
+        <script src="/js/search.js"></script>
+
+</body>
+
+</html>

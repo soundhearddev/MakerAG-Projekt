@@ -1,0 +1,1409 @@
+<!-- 
+Ein Prototyp welcher eigentlich noch zur admin seite hinzugefügt werden sollte. 
+Es ist eignetlich komplett einsatzfähig außer von paar kleinigkeiten...
+
+Falls jemals das Problem kommt, dass ein neuer Schrank einfgahcmal irngetwoe hingestellt wird,
+"könnte man die karte gut uns simpel dort napassen und halt machen"
+-->
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MakerAG — Lager Editor</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f0ede6;
+      --surface: #ffffff;
+      --border: #ddd9d0;
+      --text: #1a1917;
+      --muted: #8a8780;
+      --green: #3a5c2e;
+      --green-light: #edf3eb;
+      --mono: 'DM Mono', monospace;
+      --serif: 'Fraunces', Georgia, serif;
+      --nav: 56px;
+      --panel: 300px;
+    }
+
+    body {
+      font-family: var(--mono);
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Nav ──────────────────────────────────────────────────────────────────── */
+    nav {
+      height: var(--nav);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+      z-index: 100;
+      gap: 12px;
+    }
+
+    .logo {
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .logo span {
+      color: var(--green);
+    }
+
+    .logo small {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: .06em;
+      margin-left: 8px;
+      text-transform: uppercase;
+    }
+
+    .nav-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .05em;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: background .12s, border-color .12s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--bg);
+      border-color: #c8c4ba;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+    .btn-primary:hover {
+      background: #2e4a24;
+      border-color: #2e4a24;
+    }
+
+    .btn-danger {
+      background: #fff;
+      color: #a33;
+      border-color: #f0c0c0;
+    }
+
+    .btn-danger:hover {
+      background: #fff5f5;
+    }
+
+    .mode-badge {
+      font-size: 10px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid #c5d9bf;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────────────── */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Seitenleiste ─────────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--panel);
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stab {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 10px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color .12s;
+    }
+
+    .stab.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    .sidebar-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+
+    .sidebar-body::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* Seitenleisten-Sektionen */
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      margin-top: 16px;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    /* Objekt-Karten in der Sidebar */
+    .obj-card {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: border-color .12s, background .12s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .obj-card:hover {
+      border-color: #c0bcb4;
+      background: var(--bg);
+    }
+
+    .obj-card.selected {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .obj-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .obj-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .obj-name {
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .obj-meta {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .obj-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: .04em;
+      background: var(--bg);
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* Füllstands-Balken in der Sidebar */
+    .fill-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .fill-bar-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 1px;
+    }
+
+    /* Properties-Felder */
+    .prop-group {
+      margin-bottom: 14px;
+    }
+
+    .prop-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      letter-spacing: .04em;
+    }
+
+    .prop-input {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color .12s;
+    }
+
+    .prop-input:focus {
+      border-color: var(--green);
+      background: #fff;
+    }
+
+    .prop-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .prop-select {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .coord-display {
+      font-size: 18px;
+      font-family: var(--serif);
+      font-weight: 300;
+      color: var(--text);
+      padding: 8px 0 4px;
+      letter-spacing: -.01em;
+    }
+
+    .coord-hint {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* Raumkarten */
+    .room-card {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: border-color .12s, background .12s;
+    }
+
+    .room-card:hover {
+      border-color: #c0bcb4;
+      background: var(--bg);
+    }
+
+    .room-card.selected {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    .room-name {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .room-meta {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* Hinweis-Box */
+    .hint-box {
+      background: var(--green-light);
+      border: 1px solid #c5d9bf;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 11px;
+      color: #3a5c2e;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* ── Karten-Bereich ───────────────────────────────────────────────────────── */
+    .map-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    #isomap {
+      width: 100%;
+      height: 100%;
+      cursor: default;
+      display: block;
+    }
+
+    /* Hover & Drag-Styles für SVG-Objekte */
+    .map-object {
+      cursor: grab;
+    }
+
+    .map-object:hover .hover-face {
+      opacity: .13 !important;
+    }
+
+    .map-object.dragging {
+      cursor: grabbing;
+      opacity: .85;
+    }
+
+    .hover-face {
+      pointer-events: none;
+      transition: opacity .12s;
+    }
+
+    /* Auswahlrahmen */
+    .selection-ring {
+      pointer-events: none;
+    }
+
+    /* Grid-Highlight beim Drag */
+    .grid-ghost {
+      pointer-events: none;
+    }
+
+    /* ── Config-Modal ─────────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 8, .45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: min(720px, 94vw);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, .18);
+      transform: translateY(10px);
+      transition: transform .18s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-head {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-title {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 300;
+    }
+
+    .modal-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color .12s;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 22px;
+    }
+
+    .modal-body pre {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .modal-foot {
+      padding: 14px 22px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* ── Tooltip ──────────────────────────────────────────────────────────────── */
+    .tooltip {
+      position: fixed;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 12px 16px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .12s, transform .12s;
+      z-index: 300;
+      min-width: 170px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .09);
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .tt-id {
+      font-size: 9px;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .tt-name {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+
+    .tt-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    .tt-row span:last-child {
+      color: var(--text);
+    }
+
+    /* ── Status-Leiste ────────────────────────────────────────────────────────── */
+    .statusbar {
+      height: 28px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .status-item {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .04em;
+    }
+
+    .status-item b {
+      color: var(--text);
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────────────────────── -->
+  <nav>
+    <div style="display:flex;align-items:center;gap:0">
+      <div class="logo">Maker<span>AG</span> <small>Editor</small></div>
+    </div>
+    <div class="nav-tools">
+      <span class="mode-badge" id="mode-badge">Objekte</span>
+      <button class="btn" id="btn-add-obj">+ Objekt</button>
+      <button class="btn" id="btn-add-room">+ Raum</button>
+      <button class="btn btn-danger" id="btn-delete" style="display:none">Löschen</button>
+      <button class="btn btn-primary" id="btn-export">Config exportieren</button>
+      <button class="btn" id="btn-import">Config importieren</button>
+
+    </div>
+  </nav>
+
+
+
+
+  <!-- ── Hauptbereich ────────────────────────────────────────────────────────── -->
+  <div class="workspace">
+
+    <!-- Seitenleiste -->
+    <aside class="sidebar">
+      <div class="sidebar-tabs">
+        <button class="stab active" data-tab="objects">Objekte</button>
+        <button class="stab" data-tab="rooms">Räume</button>
+        <button class="stab" data-tab="props">Eigenschaften</button>
+      </div>
+      <div class="sidebar-body">
+
+        <!-- Tab: Objekte -->
+        <div class="panel active" id="panel-objects">
+          <div class="hint-box">Objekt in der Liste oder auf der Karte anklicken zum Auswählen. Dann auf der Karte
+            ziehen zum Verschieben.</div>
+          <div class="section-title">Alle Objekte</div>
+          <div id="obj-list"></div>
+        </div>
+
+        <!-- Tab: Räume -->
+        <div class="panel" id="panel-rooms">
+          <div class="hint-box">Raum anklicken zum Auswählen, dann auf der Karte am Boden ziehen zum Verschieben.</div>
+          <div class="section-title">Alle Räume</div>
+          <div id="room-list"></div>
+        </div>
+
+        <!-- Tab: Eigenschaften -->
+        <div class="panel" id="panel-props">
+          <div id="props-empty" style="color:var(--muted);font-size:12px;padding:8px 0">
+            Nichts ausgewählt.<br>Objekt oder Raum anklicken.
+          </div>
+          <div id="props-obj" style="display:none">
+            <div class="section-title">Position</div>
+            <div class="coord-display" id="prop-coord">col 0, row 0</div>
+            <div class="coord-hint">Auf der Karte ziehen zum Verschieben</div>
+
+            <div class="section-title" style="margin-top:18px">Objekt-Daten</div>
+            <div class="prop-group">
+              <div class="prop-label">ID</div>
+              <input class="prop-input" id="pi-id" placeholder="A-01">
+            </div>
+            <div class="prop-group">
+              <div class="prop-label">Name</div>
+              <input class="prop-input" id="pi-name" placeholder="Schrank A-01">
+            </div>
+            <div class="prop-group">
+              <div class="prop-label">Typ</div>
+              <select class="prop-select" id="pi-type">
+                <option value="cabinet-green">Grüner Schrank</option>
+                <option value="cabinet-brown">Brauner Schrank</option>
+                <option value="room">Raum</option>
+                <option value="shelf">fach</option>
+              </select>
+            </div>
+            <div class="prop-group">
+              <div class="prop-label">Kategorie</div>
+              <input class="prop-input" id="pi-cat" placeholder="Elektronik">
+            </div>
+            <div class="prop-group">
+              <div class="prop-label">Standort</div>
+              <input class="prop-input" id="pi-loc" placeholder="Halle West">
+            </div>
+            <div class="prop-row">
+              <div class="prop-group">
+                <div class="prop-label">Artikel</div>
+                <input class="prop-input" id="pi-items" type="number" placeholder="—">
+              </div>
+              <div class="prop-group">
+                <div class="prop-label">Kapazität</div>
+                <input class="prop-input" id="pi-cap" type="number" placeholder="—">
+              </div>
+            </div>
+            <div class="prop-group">
+              <div class="prop-label">Link (optional)</div>
+              <input class="prop-input" id="pi-link" placeholder="/lager/a-01">
+            </div>
+            <button class="btn" style="width:100%;margin-top:4px" id="btn-apply-obj">Übernehmen</button>
+            <div class="prop-group">
+              <div class="prop-label">Ebene (z-Index)</div>
+              <input class="prop-input" id="pi-z" type="number" placeholder="0" min="0" max="99">
+            </div>
+          </div>
+
+          <div id="props-room" style="display:none">
+            <div class="section-title">Position & Größe</div>
+            <div class="coord-display" id="prop-room-coord">col 0, row 0</div>
+            <div class="coord-hint">Am Boden ziehen zum Verschieben</div>
+
+            <div class="section-title" style="margin-top:18px">Raum-Daten</div>
+            <div class="prop-group">
+              <div class="prop-label">Label</div>
+              <input class="prop-input" id="ri-label" placeholder="HALLE WEST">
+            </div>
+            <div class="prop-row">
+              <div class="prop-group">
+                <div class="prop-label">Breite (spanCols)</div>
+                <input class="prop-input" id="ri-cols" type="number" min="1" placeholder="10">
+              </div>
+              <div class="prop-group">
+                <div class="prop-label">Tiefe (spanRows)</div>
+                <input class="prop-input" id="ri-rows" type="number" min="1" placeholder="8">
+              </div>
+            </div>
+            <div class="prop-group">
+              <div class="prop-label">Wandhöhe (px)</div>
+              <input class="prop-input" id="ri-wallh" type="number" placeholder="100">
+            </div>
+
+
+
+            <button class="btn" style="width:100%;margin-top:4px" id="btn-apply-room">Übernehmen</button>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Karte -->
+    <div class="map-area">
+      <svg id="isomap" viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid-pat" width="58" height="33" patternUnits="userSpaceOnUse">
+            <path d="M0 16.5 L29 0 L58 16.5 L29 33 Z" fill="none" stroke="#ddd8d0" stroke-width="0.5" />
+          </pattern>
+        </defs>
+        <g id="rooms-layer"></g>
+        <g id="objects-layer"></g>
+        <g id="ui-layer"></g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Status-Leiste -->
+  <div class="statusbar">
+    <div class="status-item">Cursor: <b id="st-cursor">—</b></div>
+    <div class="status-item">Ausgewählt: <b id="st-sel">Nichts</b></div>
+    <div class="status-item">Objekte: <b id="st-count">0</b></div>
+    <div class="status-item">Räume: <b id="st-rooms">0</b></div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip" id="tooltip">
+    <div class="tt-id" id="tt-id"></div>
+    <div class="tt-name" id="tt-name"></div>
+    <div class="tt-row"><span>Typ</span><span id="tt-type"></span></div>
+    <div class="tt-row"><span>Grid</span><span id="tt-grid"></span></div>
+  </div>
+
+  <!-- Config-Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Config exportieren</div>
+          <div class="modal-sub">Diesen Block in makerAG-lager-v2.html einfügen (ROOMS & OBJECTS ersetzen)</div>
+        </div>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <pre id="config-output"></pre>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="btn-copy">In Zwischenablage kopieren</button>
+        <button class="btn btn-primary" id="modal-ok">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal-overlay" id="modal-import">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Config importieren</div>
+          <div class="modal-sub">Exportierten Config-Block hier einfügen</div>
+        </div>
+        <button class="modal-close" id="modal-import-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="import-input"
+          style="width:100%;height:320px;font-family:var(--mono);font-size:11.5px;line-height:1.7;padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);resize:vertical;outline:none"
+          placeholder="// ── Generiert vom MakerAG Editor ──
+const ROOMS = [ ... ];
+const OBJECTS = [ ... ];"></textarea>
+        <div id="import-error"
+          style="display:none;margin-top:8px;font-size:11px;color:#a33;padding:8px 12px;background:#fff5f5;border:1px solid #f0c0c0;border-radius:6px">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" id="modal-import-cancel">Abbrechen</button>
+        <button class="btn btn-primary" id="btn-import-apply">Importieren</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================================================================
+    //  DATEN — Initial-State
+    // =============================================================================
+    const GRID = { TILE_W: 58, TILE_H: 33, ORIGIN: [550, 80] };
+
+    function isoXY(col, row) {
+      const [ox, oy] = GRID.ORIGIN;
+      return [ox + col * GRID.TILE_W / 2 - row * GRID.TILE_W / 2,
+      oy + col * GRID.TILE_H / 2 + row * GRID.TILE_H / 2];
+    }
+    function isoFloor(col, row, sc, sr) {
+      return [isoXY(col, row + sr), isoXY(col, row), isoXY(col + sc, row), isoXY(col + sc, row + sr)];
+    }
+    function buildWalls(floor, wh = 100) {
+      const sh = p => [p[0], p[1] + wh];
+      return {
+        wallL: [floor[0], sh(floor[0]), sh(floor[3]), floor[3]],
+        wallR: [floor[2], sh(floor[2]), sh(floor[3]), floor[3]],
+      };
+    }
+    function pts(arr) { return arr.map(p => p.join(',')).join(' '); }
+
+    // Pixel → nächste Grid-Zelle (snap)
+    function pixelToGrid(px, py) {
+      const [ox, oy] = GRID.ORIGIN;
+      const { TILE_W, TILE_H } = GRID;
+      const dx = px - ox, dy = py - oy;
+      const col = Math.round((dx / (TILE_W / 2) + dy / (TILE_H / 2)) / 2);
+      const row = Math.round((dy / (TILE_H / 2) - dx / (TILE_W / 2)) / 2);
+      return [col, row];
+    }
+
+    const OBJECT_TYPES = {
+      'cabinet-green': { w: 30, h: 76, d: 16, color: { top: '#4e7a3c', front: '#325228', side: '#2a4220', label: '#b8860b', handle: '#b8860b' }, shelfLines: [] },
+      'cabinet-brown': { w: 30, h: 96, d: 16, color: { top: '#8a5530', front: '#5a3620', side: '#4a2c18', label: '#c8a415', handle: '#c8a415' }, shelfLines: [.33, .66] },
+      'room': { w: 90, h: 20, d: 60, color: { top: '#d4c9a8', front: '#b8ad90', side: '#a09880', label: '#8a8270', handle: null }, shelfLines: [] },
+      'shelf': { w: 30, h: 48, d: 16, color: { top: '#4e7a3c', front: '#325228', side: '#2a4220', label: '#b8860b', handle: '#b8860b' }, shelfLines: [.5] },
+    };
+
+    let ROOMS = [
+      { id: 'halle-west', label: 'HALLE WEST', col: 0, row: 0, spanCols: 11, spanRows: 10, wallH: 100 },
+      { id: 'abstellraum', label: 'ABSTELLRAUM', col: 11, row: 0, spanCols: 5, spanRows: 5, wallH: 100 },
+    ];
+
+    let OBJECTS = [
+      { id: 'A-01', name: 'Schrank A-01', type: 'cabinet-green', gridCol: 3, gridRow: 5, cat: 'Elektronik', loc: 'Halle West', items: 14, cap: 20, link: null },
+      { id: 'A-02', name: 'Schrank A-02', type: 'cabinet-green', gridCol: 4, gridRow: 4, cat: 'Elektronik', loc: 'Halle West', items: 18, cap: 20, link: null },
+      { id: 'B-01', name: 'Schrank B-01', type: 'cabinet-brown', gridCol: 7, gridRow: 3, cat: 'Raum', loc: 'Halle West', items: 7, cap: 25, link: null },
+      { id: 'C-01', name: 'Schrank C-01', type: 'cabinet-green', gridCol: 5, gridRow: 2, cat: 'Kabel & Stecker', loc: 'Halle West', items: 31, cap: 40, link: null },
+      { id: 'WB-01', name: 'Raum WB-01', type: 'room', gridCol: 1, gridRow: 6, cat: 'Arbeitsplatz', loc: 'Halle West', items: null, cap: null, link: null },
+      { id: 'SH-01', name: 'fach SH-01', type: 'shelf', gridCol: 2, gridRow: 8, cat: 'Kleinteile', loc: 'Halle West', items: 45, cap: 60, link: null },
+      { id: 'B-02', name: 'Schrank B-02', type: 'cabinet-brown', gridCol: 12, gridRow: 1, cat: 'PC-Teile', loc: 'Abstellraum', items: 8, cap: 30, link: null },
+    ];
+
+    let selectedId = null;   // aktuell ausgewähltes Objekt/Raum-ID
+    let selectedType = null;   // 'object' | 'room'
+    let dragState = null;   // { type, id, startGridCol, startGridRow, startMouseX, startMouseY, svgOriginX, svgOriginY }
+
+    // =============================================================================
+    //  SVG RENDER
+    // =============================================================================
+    function renderObjectSVG(obj) {
+      const [px, py] = isoXY(obj.gridCol, obj.gridRow);
+      const def = OBJECT_TYPES[obj.type];
+      if (!def) return '';
+      const { w, h, d, color, shelfLines } = def;
+      const tx = -d * .5, ty = -d * .5;
+
+      const topPts = [[px + tx, py - h + ty], [px + tx + w, py - h + ty], [px + w, py - h], [px, py - h]];
+      const frtPts = [[px, py - h], [px + w, py - h], [px + w, py], [px, py]];
+      const sidPts = [[px + tx + w, py - h + ty], [px + w, py - h], [px + w, py], [px + tx + w, py + ty]];
+
+      const handleSVG = color.handle
+        ? `<line x1="${px + w * .55}" y1="${py - h * .55}" x2="${px + w * .75}" y2="${py - h * .55}" stroke="${color.handle}" stroke-width="1.5" stroke-linecap="round"/>`
+        : '';
+      const shelfSVG = shelfLines.map(f =>
+        `<line x1="${px}" y1="${py - h * f}" x2="${px + w}" y2="${py - h * f}" stroke="${color.side}" stroke-width=".8" opacity=".6"/>`
+      ).join('');
+
+      const isSelected = selectedId === obj.id && selectedType === 'object';
+      const selRing = isSelected
+        ? `<polygon class="selection-ring" points="${pts(topPts)}" fill="none" stroke="#3a5c2e" stroke-width="1.5" stroke-dasharray="4 3"/>`
+        : '';
+
+      return `<g class="map-object" data-objid="${obj.id}" data-type="object">
+    <polygon points="${pts(sidPts)}" fill="${color.side}"/>
+    <polygon points="${pts(frtPts)}" fill="${color.front}"/>
+    ${shelfSVG}${handleSVG}
+    <polygon points="${pts(topPts)}" fill="${color.top}"/>
+    <text x="${px + 3}" y="${py - 2}" font-family="'DM Mono',monospace" font-size="7" fill="${color.label}" letter-spacing=".05em">${obj.id}</text>
+    <polygon class="hover-face" points="${pts(topPts)}" fill="white" opacity="0"/>
+    ${selRing}
+    <polygon class="drag-handle" points="${pts(topPts)}" fill="transparent"/>
+  </g>`;
+    }
+
+    function renderRoomSVG(room) {
+      const floor = isoFloor(room.col, room.row, room.spanCols, room.spanRows);
+      const { wallL, wallR } = buildWalls(floor, room.wallH ?? 100);
+      const lx = (floor[0][0] + floor[2][0]) / 2;
+      const ly = (floor[1][1] + floor[3][1]) / 2 + 10;
+      const isSelected = selectedId === room.id && selectedType === 'room';
+      const selStroke = isSelected ? '#3a5c2e' : '#b8b4a8';
+      const selW = isSelected ? 2 : 1;
+
+      return `<g class="map-room" data-roomid="${room.id}" data-type="room">
+    <polygon points="${pts(wallL)}" fill="#d0ccbf" stroke="#b8b4a8" stroke-width="1"/>
+    <polygon points="${pts(wallR)}" fill="#bab6a9" stroke="#a8a49a" stroke-width="1"/>
+    <polygon class="room-floor" points="${pts(floor)}" fill="#e8e4db" stroke="${selStroke}" stroke-width="${selW}"/>
+    <polygon points="${pts(floor)}" fill="url(#grid-pat)" opacity=".6" style="pointer-events:none"/>
+    <text x="${lx}" y="${ly}" font-family="'DM Mono',monospace" font-size="11" fill="#c0bcb4" letter-spacing=".12em" text-anchor="middle" style="pointer-events:none">${room.label}</text>
+  </g>`;
+    }
+
+    function renderAll() {
+      document.getElementById('rooms-layer').innerHTML = ROOMS.map(renderRoomSVG).join('');
+      // Nach zIndex sortieren — höherer Wert = weiter vorne
+      const sorted = [...OBJECTS].sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
+      document.getElementById('objects-layer').innerHTML = sorted.map(renderObjectSVG).join('');
+      renderSidebar();
+      updateStatus();
+    }
+
+    // =============================================================================
+    //  SIDEBAR
+    // =============================================================================
+    function renderSidebar() {
+      // Objekt-Liste
+      document.getElementById('obj-list').innerHTML = OBJECTS.map(obj => {
+        const def = OBJECT_TYPES[obj.type];
+        const fill = obj.items != null && obj.cap != null ? Math.round(obj.items / obj.cap * 100) : null;
+        const isActive = selectedId === obj.id && selectedType === 'object';
+        return `<div class="obj-card${isActive ? ' selected' : ''}" data-click-obj="${obj.id}">
+      <div class="obj-dot" style="background:${def?.color.top ?? '#aaa'}"></div>
+      <div class="obj-info">
+        <div class="obj-name">${obj.name}</div>
+        <div class="obj-meta">${obj.cat} · col ${obj.gridCol}, row ${obj.gridRow}</div>
+        ${fill != null ? `<div class="fill-bar"><div class="fill-bar-fill" style="width:${fill}%"></div></div>` : ''}
+      </div>
+      <div class="obj-badge">${obj.id}</div>
+    </div>`;
+      }).join('');
+
+      // Raum-Liste
+      document.getElementById('room-list').innerHTML = ROOMS.map(room => {
+        const isActive = selectedId === room.id && selectedType === 'room';
+        return `<div class="room-card${isActive ? ' selected' : ''}" data-click-room="${room.id}">
+      <div class="room-name">${room.label}</div>
+      <div class="room-meta">${room.spanCols}×${room.spanRows} Kacheln · col ${room.col}, row ${room.row}</div>
+    </div>`;
+      }).join('');
+
+      // Properties-Panel
+      renderProps();
+    }
+
+    function renderProps() {
+      const empty = document.getElementById('props-empty');
+      const objP = document.getElementById('props-obj');
+      const roomP = document.getElementById('props-room');
+      empty.style.display = 'none'; objP.style.display = 'none'; roomP.style.display = 'none';
+
+      if (!selectedId) { empty.style.display = 'block'; return; }
+
+      if (selectedType === 'object') {
+        const obj = OBJECTS.find(o => o.id === selectedId);
+        if (!obj) { empty.style.display = 'block'; return; }
+        objP.style.display = 'block';
+        document.getElementById('prop-coord').textContent = `col ${obj.gridCol}, row ${obj.gridRow}`;
+        document.getElementById('pi-id').value = obj.id;
+        document.getElementById('pi-name').value = obj.name;
+        document.getElementById('pi-type').value = obj.type;
+        document.getElementById('pi-cat').value = obj.cat ?? '';
+        document.getElementById('pi-loc').value = obj.loc ?? '';
+        document.getElementById('pi-items').value = obj.items ?? '';
+        document.getElementById('pi-cap').value = obj.cap ?? '';
+        document.getElementById('pi-link').value = obj.link ?? '';
+        document.getElementById('pi-z').value = obj.zIndex ?? 0;  // ← hier
+      } else if (selectedType === 'room') {
+        const room = ROOMS.find(r => r.id === selectedId);
+        if (!room) { empty.style.display = 'block'; return; }
+        roomP.style.display = 'block';
+        document.getElementById('prop-room-coord').textContent = `col ${room.col}, row ${room.row}`;
+        document.getElementById('ri-label').value = room.label;
+        document.getElementById('ri-cols').value = room.spanCols;
+        document.getElementById('ri-rows').value = room.spanRows;
+        document.getElementById('ri-wallh').value = room.wallH ?? 100;
+      }
+    }
+
+    // =============================================================================
+    //  SELECTION
+    // =============================================================================
+    function select(id, type) {
+      selectedId = id;
+      selectedType = type;
+      // Props-Tab öffnen wenn nötig
+      if (id) activateTab('props');
+      document.getElementById('btn-delete').style.display = id ? '' : 'none';
+      renderAll();
+    }
+
+    function clearSelection() { select(null, null); }
+
+    // =============================================================================
+    //  DRAG & DROP
+    // =============================================================================
+    const svg = document.getElementById('isomap');
+
+    function svgPoint(e) {
+      const rect = svg.getBoundingClientRect();
+      const vb = svg.viewBox.baseVal;
+      return [
+        (e.clientX - rect.left) / rect.width * vb.width,
+        (e.clientY - rect.top) / rect.height * vb.height,
+      ];
+    }
+
+    svg.addEventListener('mousedown', e => {
+      // Objekt?
+      const objEl = e.target.closest('.map-object');
+      const roomEl = e.target.closest('.room-floor');
+
+      if (objEl) {
+        const id = objEl.dataset.objid;
+        select(id, 'object');
+        const obj = OBJECTS.find(o => o.id === id);
+        const [mx, my] = svgPoint(e);
+        dragState = { type: 'object', id, startGridCol: obj.gridCol, startGridRow: obj.gridRow, startMx: mx, startMy: my };
+        objEl.classList.add('dragging');
+        e.preventDefault();
+        return;
+      }
+
+      if (roomEl) {
+        const roomEl2 = e.target.closest('.map-room');
+        if (!roomEl2) return;
+        const id = roomEl2.dataset.roomid;
+        select(id, 'room');
+        const room = ROOMS.find(r => r.id === id);
+        const [mx, my] = svgPoint(e);
+        dragState = { type: 'room', id, startGridCol: room.col, startGridRow: room.row, startMx: mx, startMy: my };
+        e.preventDefault();
+        return;
+      }
+
+      // Klick auf leere Fläche → Deselect
+      if (!e.target.closest('.map-object') && !e.target.closest('.map-room')) {
+        clearSelection();
+      }
+    });
+
+    svg.addEventListener('mousemove', e => {
+      const [mx, my] = svgPoint(e);
+
+      // Cursor-Grid-Position in Statusbar
+      const [gc, gr] = pixelToGrid(mx, my);
+      document.getElementById('st-cursor').textContent = `col ${gc}, row ${gr}`;
+
+      // Tooltip (nur wenn nicht am Dragging)
+      if (!dragState) {
+        const objEl = e.target.closest('.map-object');
+        const tip = document.getElementById('tooltip');
+        if (objEl) {
+          const obj = OBJECTS.find(o => o.id === objEl.dataset.objid);
+          if (obj) {
+            document.getElementById('tt-id').textContent = obj.id;
+            document.getElementById('tt-name').textContent = obj.name;
+            document.getElementById('tt-type').textContent = obj.type;
+            document.getElementById('tt-grid').textContent = `col ${obj.gridCol}, row ${obj.gridRow}`;
+            tip.classList.add('visible');
+            let tx = e.clientX + 16, ty = e.clientY - 8;
+            if (tx + 200 > window.innerWidth) tx = e.clientX - 210;
+            if (ty + 160 > window.innerHeight) ty = e.clientY - 160;
+            tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+          }
+        } else {
+          tip.classList.remove('visible');
+        }
+      }
+
+      // Drag
+      if (!dragState) return;
+
+      const { TILE_W, TILE_H } = GRID;
+      const dMx = mx - dragState.startMx;
+      const dMy = my - dragState.startMy;
+
+      // Delta in Grid-Koordinaten umrechnen
+      const dCol = Math.round((dMx / (TILE_W / 2) + dMy / (TILE_H / 2)) / 2);
+      const dRow = Math.round((dMy / (TILE_H / 2) - dMx / (TILE_W / 2)) / 2);
+
+      const newCol = dragState.startGridCol + dCol;
+      const newRow = dragState.startGridRow + dRow;
+
+      if (dragState.type === 'object') {
+        const obj = OBJECTS.find(o => o.id === dragState.id);
+        if (obj && (obj.gridCol !== newCol || obj.gridRow !== newRow)) {
+          obj.gridCol = Math.max(0, newCol);
+          obj.gridRow = Math.max(0, newRow);
+          renderAll();
+        }
+      } else if (dragState.type === 'room') {
+        const room = ROOMS.find(r => r.id === dragState.id);
+        if (room && (room.col !== newCol || room.row !== newRow)) {
+          room.col = Math.max(0, newCol);
+          room.row = Math.max(0, newRow);
+          renderAll();
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (dragState) {
+        dragState = null;
+        document.getElementById('tooltip').classList.remove('visible');
+        renderAll();
+      }
+    });
+
+    svg.addEventListener('mouseleave', () => {
+      document.getElementById('st-cursor').textContent = '—';
+      if (!dragState) document.getElementById('tooltip').classList.remove('visible');
+    });
+
+    // =============================================================================
+    //  PROPERTIES APPLY
+    // =============================================================================
+    document.getElementById('btn-apply-obj').addEventListener('click', () => {
+      const obj = OBJECTS.find(o => o.id === selectedId);
+
+      if (!obj) return;
+      const newId = document.getElementById('pi-id').value.trim() || obj.id;
+      obj.id = newId;
+      obj.name = document.getElementById('pi-name').value.trim() || obj.name;
+      obj.type = document.getElementById('pi-type').value;
+      obj.cat = document.getElementById('pi-cat').value.trim() || null;
+      obj.loc = document.getElementById('pi-loc').value.trim() || null;
+      const iv = document.getElementById('pi-items').value;
+      const cv = document.getElementById('pi-cap').value;
+      obj.items = iv !== '' ? parseInt(iv) : null;
+      obj.cap = cv !== '' ? parseInt(cv) : null;
+      const lv = document.getElementById('pi-link').value.trim();
+      obj.link = lv || null;
+      selectedId = newId;
+      obj.zIndex = parseInt(document.getElementById('pi-z').value) || 0;
+
+      renderAll();
+    });
+
+    document.getElementById('btn-apply-room').addEventListener('click', () => {
+      const room = ROOMS.find(r => r.id === selectedId);
+      if (!room) return;
+      room.label = document.getElementById('ri-label').value.trim() || room.label;
+      room.spanCols = parseInt(document.getElementById('ri-cols').value) || room.spanCols;
+      room.spanRows = parseInt(document.getElementById('ri-rows').value) || room.spanRows;
+      room.wallH = parseInt(document.getElementById('ri-wallh').value) || 100;
+      renderAll();
+    });
+
+    // =============================================================================
+    //  OBJEKT / RAUM HINZUFÜGEN & LÖSCHEN
+    // =============================================================================
+    document.getElementById('btn-add-obj').addEventListener('click', () => {
+      const ids = OBJECTS.map(o => o.id);
+      let n = 1; while (ids.includes(`NEU-${String(n).padStart(2, '0')}`)) n++;
+      const newObj = {
+        id: `NEU-${String(n).padStart(2, '0')}`, name: 'Neues Objekt', type: 'cabinet-green',
+        gridCol: 1, gridRow: 1, cat: 'Allgemein', loc: '—', items: null, cap: null, link: null,
+      };
+      OBJECTS.push(newObj);
+      select(newObj.id, 'object');
+      activateTab('props');
+    });
+
+    document.getElementById('btn-add-room').addEventListener('click', () => {
+      const ids = ROOMS.map(r => r.id);
+      let n = 1; while (ids.includes(`raum-${n}`)) n++;
+      const newRoom = { id: `raum-${n}`, label: 'NEUER RAUM', col: 0, row: 0, spanCols: 6, spanRows: 5, wallH: 100 };
+      ROOMS.push(newRoom);
+      select(newRoom.id, 'room');
+      activateTab('props');
+    });
+
+    document.getElementById('btn-delete').addEventListener('click', () => {
+      if (!selectedId) return;
+      if (selectedType === 'object') OBJECTS = OBJECTS.filter(o => o.id !== selectedId);
+      if (selectedType === 'room') ROOMS = ROOMS.filter(r => r.id !== selectedId);
+      clearSelection();
+    });
+
+    // Sidebar-Klicks auf Karten
+    document.getElementById('obj-list').addEventListener('click', e => {
+      const card = e.target.closest('[data-click-obj]');
+      if (card) { select(card.dataset.clickObj, 'object'); activateTab('props'); }
+    });
+    document.getElementById('room-list').addEventListener('click', e => {
+      const card = e.target.closest('[data-click-room]');
+      if (card) { select(card.dataset.clickRoom, 'room'); activateTab('props'); }
+    });
+
+    // =============================================================================
+    //  TABS
+    // =============================================================================
+    function activateTab(name) {
+      document.querySelectorAll('.stab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
+      document.getElementById('mode-badge').textContent =
+        name === 'objects' ? 'Objekte' : name === 'rooms' ? 'Räume' : 'Eigenschaften';
+    }
+    document.querySelectorAll('.stab').forEach(t => {
+      t.addEventListener('click', () => activateTab(t.dataset.tab));
+    });
+
+    // =============================================================================
+    //  STATUS-LEISTE
+    // =============================================================================
+    function updateStatus() {
+      document.getElementById('st-count').textContent = OBJECTS.length;
+      document.getElementById('st-rooms').textContent = ROOMS.length;
+      const label = selectedId
+        ? (selectedType === 'object'
+          ? OBJECTS.find(o => o.id === selectedId)?.name
+          : ROOMS.find(r => r.id === selectedId)?.label) ?? selectedId
+        : 'Nichts';
+      document.getElementById('st-sel').textContent = label;
+    }
+
+    // =============================================================================
+    //  CONFIG EXPORT
+    // =============================================================================
+    function generateConfig() {
+      const fmtVal = v => v === null ? 'null' : typeof v === 'string' ? `'${v}'` : v;
+
+      const roomsStr = ROOMS.map(r =>
+        `  {\n    id:       '${r.id}',\n    label:    '${r.label}',\n    col:      ${r.col},\n    row:      ${r.row},\n    spanCols: ${r.spanCols},\n    spanRows: ${r.spanRows},\n    wallH:    ${r.wallH ?? 100},\n  }`
+      ).join(',\n');
+
+      const objsStr = OBJECTS.map(o =>
+        `  {\n    id: '${o.id}', name: '${o.name}', type: '${o.type}',\n    gridCol: ${o.gridCol}, gridRow: ${o.gridRow},\n    zIndex: ${o.zIndex ?? 0},\n    cat: ${fmtVal(o.cat)}, loc: ${fmtVal(o.loc)},\n    items: ${fmtVal(o.items)}, cap: ${fmtVal(o.cap)},\n    link: ${fmtVal(o.link)},\n  }`
+      ).join(',\n');
+
+      return `// ── Generiert vom MakerAG Editor ──────────────────────────────────────
+// Diesen Block in makerAG-lager-v2.html einfügen:
+// ROOMS und OBJECTS ersetzen.
+
+const ROOMS = [\n${roomsStr},\n];\n\nconst OBJECTS = [\n${objsStr},\n];`;
+    }
+
+    document.getElementById('btn-export').addEventListener('click', () => {
+      document.getElementById('config-output').textContent = generateConfig();
+      document.getElementById('modal').classList.add('open');
+    });
+
+    document.getElementById('modal-close').addEventListener('click', () => {
+      document.getElementById('modal').classList.remove('open');
+    });
+    document.getElementById('modal-ok').addEventListener('click', () => {
+      document.getElementById('modal').classList.remove('open');
+    });
+    document.getElementById('modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
+    });
+
+    document.getElementById('btn-copy').addEventListener('click', () => {
+      const text = document.getElementById('config-output').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-copy');
+        btn.textContent = 'Kopiert ✓';
+        setTimeout(() => btn.textContent = 'In Zwischenablage kopieren', 2000);
+      });
+    });
+
+    // =============================================================================
+    //  KEYBOARD SHORTCUTS
+    // =============================================================================
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      if (e.key === 'Escape') clearSelection();
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedId) document.getElementById('btn-delete').click();
+      }
+      // Pfeiltasten: ausgewähltes Objekt/Raum um 1 Grid verschieben
+      if (!selectedId) return;
+      const dirs = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1] };
+      if (dirs[e.key]) {
+        const [dc, dr] = dirs[e.key];
+        if (selectedType === 'object') {
+          const obj = OBJECTS.find(o => o.id === selectedId);
+          if (obj) { obj.gridCol = Math.max(0, obj.gridCol + dc); obj.gridRow = Math.max(0, obj.gridRow + dr); renderAll(); }
+        } else if (selectedType === 'room') {
+          const room = ROOMS.find(r => r.id === selectedId);
+          if (room) { room.col = Math.max(0, room.col + dc); room.row = Math.max(0, room.row + dr); renderAll(); }
+        }
+        e.preventDefault();
+      }
+    });
+
+    // =============================================================================
+    //  INIT
+    // =============================================================================
+
+    // =============================================================================
+    //  CONFIG IMPORT
+    // =============================================================================
+    document.getElementById('btn-import').addEventListener('click', () => {
+      document.getElementById('import-input').value = '';
+      document.getElementById('import-error').style.display = 'none';
+      document.getElementById('modal-import').classList.add('open');
+    });
+
+    ['modal-import-close', 'modal-import-cancel'].forEach(id => {
+      document.getElementById(id).addEventListener('click', () => {
+        document.getElementById('modal-import').classList.remove('open');
+      });
+    });
+
+    document.getElementById('modal-import').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal-import'))
+        document.getElementById('modal-import').classList.remove('open');
+    });
+
+    document.getElementById('btn-import-apply').addEventListener('click', () => {
+      const raw = document.getElementById('import-input').value.trim();
+      const errEl = document.getElementById('import-error');
+      errEl.style.display = 'none';
+
+      try {
+        // Kommentarzeilen entfernen, dann ROOMS und OBJECTS extrahieren
+        const cleaned = raw.replace(/\/\/[^\n]*/g, '');
+
+        const roomsMatch = cleaned.match(/const\s+ROOMS\s*=\s*(\[[\s\S]*?\]);/);
+        const objsMatch = cleaned.match(/const\s+OBJECTS\s*=\s*(\[[\s\S]*?\]);/);
+
+        if (!roomsMatch) throw new Error('ROOMS nicht gefunden');
+        if (!objsMatch) throw new Error('OBJECTS nicht gefunden');
+
+        // eval in isoliertem Scope — nur Arrays, kein Code
+        const parsedRooms = Function('"use strict"; return ' + roomsMatch[1])();
+        const parsedObjects = Function('"use strict"; return ' + objsMatch[1])();
+
+        if (!Array.isArray(parsedRooms)) throw new Error('ROOMS ist kein Array');
+        if (!Array.isArray(parsedObjects)) throw new Error('OBJECTS ist kein Array');
+        if (parsedRooms.length === 0) throw new Error('ROOMS ist leer');
+
+        // Validierung: Pflichtfelder prüfen
+        parsedRooms.forEach((r, i) => {
+          if (!r.id || !r.label) throw new Error(`ROOMS[${i}]: id und label erforderlich`);
+        });
+        parsedObjects.forEach((o, i) => {
+          if (!o.id || !o.type) throw new Error(`OBJECTS[${i}]: id und type erforderlich`);
+          if (!OBJECT_TYPES[o.type]) throw new Error(`OBJECTS[${i}]: unbekannter type "${o.type}"`);
+        });
+
+        // Übernehmen
+        ROOMS = parsedRooms;
+        OBJECTS = parsedObjects;
+        clearSelection();
+        document.getElementById('modal-import').classList.remove('open');
+
+      } catch (err) {
+        errEl.textContent = 'Fehler: ' + err.message;
+        errEl.style.display = 'block';
+      }
+    });
+
+
+    renderAll();
+  </script>
+</body>
+
+</html>
