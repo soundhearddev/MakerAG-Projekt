@@ -1,10 +1,6 @@
 # MakerAG Inventarverwaltung
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="images/MakerAG-White.png">
-  <source media="(prefers-color-scheme: light)" srcset="images/MakerAG-Black.png">
-  <img alt="MakerAG Logo" src="images/MakerAG-White.png">
-</picture>
+![Logo](images/MakerAG-White.png)
 
 Webbasierte Inventarverwaltung für die Maker-AG.
 
