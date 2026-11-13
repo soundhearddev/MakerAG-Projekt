@@ -12,7 +12,6 @@
 
   // diese Key wird benutzt um die Einstellungen im localStorage zu speichern. Alle Daten werden als JSON-String unter diesem Key abgelegt.
   const SETTINGS_KEY = "Settings-Obj";
-  const BG_PATTERN_KEY = "bg_pattern_settings";
   const t = (key) => window.T?.[key] || key;
 
 
@@ -216,7 +215,7 @@
 
     if (inputs.fontSize) {
       inputs.fontSize.addEventListener("input", (e) => {
-        settings.fontSize = parseInt(e.target.value);
+        settings.fontSize = parseInt(e.target.value, 10);
         // nextElementSibling ist das <span> direkt nach dem slider im HTML
         // das zeigt "15px" usw. an ohne extra querySelector
         const valueSpan = e.target.nextElementSibling;
@@ -260,21 +259,16 @@
         log("pipesOnClick geändert:", settings.pipesOnClick);
       });
     }
+
+    const vimModeEl = document.getElementById("vim-mode");
+    if (vimModeEl) {
+      vimModeEl.addEventListener("change", (e) => {
+        settings.vimMode = e.target.checked;
+        applyVimMode(settings.vimMode);
+        log("Vim-Modus geändert:", settings.vimMode);
+      });
+    }
   }
-
-  const vimModeEl = document.getElementById("vim-mode");
-
-  if (vimModeEl) {
-    vimModeEl.addEventListener("change", (e) => {
-      settings.vimMode = e.target.checked;
-      applyVimMode(settings.vimMode);
-      log("Vim-Modus geändert:", settings.vimMode);
-    });
-  }
-
-  // HINWEIS: applyVimMode war hier früher zusätzlich definiert (Duplikat).
-  // Die tatsächlich verwendete Definition steht weiter unten bei "VIM MODE"
-  // (lädt korrekt erst vim-commands.js, dann vim-bar.js, mit absoluten Pfaden).
 
   /* ===== NAVIGATION ===== */
   function handleNavClick(e) {
@@ -302,6 +296,7 @@
 
     currentModal = modal;
     const menuCheckbox = document.getElementById("settings-icon");
+    const menuWasOpen = Boolean(menuCheckbox?.checked);
     if (menuCheckbox) menuCheckbox.checked = false;
 
     setTimeout(() => {
@@ -310,7 +305,7 @@
       centerModal(modal);
       const closeBtn = modal.querySelector(".close-modal");
       if (closeBtn) closeBtn.focus();
-    }, menuCheckbox && menuCheckbox.checked ? 400 : 0);
+    }, menuWasOpen ? 400 : 0);
 
     log("Modal geöffnet:", type);
   }
@@ -340,19 +335,13 @@
   }
 
   function showModal(title, contentHTML) {
+    const rootStyles = getComputedStyle(document.documentElement);
+    const cssVar = (name) => rootStyles.getPropertyValue(name).trim();
     const c = {
-      primary: getComputedStyle(document.documentElement)
-        .getPropertyValue("--cat-primary")
-        .trim(),
-      accent: getComputedStyle(document.documentElement)
-        .getPropertyValue("--cat-accent")
-        .trim(),
-      text: getComputedStyle(document.documentElement)
-        .getPropertyValue("--cat-text")
-        .trim(),
-      extra: getComputedStyle(document.documentElement)
-        .getPropertyValue("--cat-extra")
-        .trim(),
+      primary: cssVar("--cat-primary"),
+      accent: cssVar("--cat-accent"),
+      text: cssVar("--cat-text"),
+      extra: cssVar("--cat-extra"),
     };
 
     const overlay = document.createElement("div");
@@ -387,17 +376,18 @@
     overlay.appendChild(box);
     document.body.appendChild(overlay);
 
-    const close = () => overlay.remove();
+    const onEscape = (e) => {
+      if (e.key === "Escape") close();
+    };
+    const close = () => {
+      overlay.remove();
+      document.removeEventListener("keydown", onEscape);
+    };
     box.querySelector("[data-close]").addEventListener("click", close);
     overlay.addEventListener("mousedown", (e) => {
       if (e.target === overlay) close();
     });
-    document.addEventListener("keydown", function esc(e) {
-      if (e.key === "Escape") {
-        close();
-        document.removeEventListener("keydown", esc);
-      }
-    });
+    document.addEventListener("keydown", onEscape);
   }
 
   /* ===== TAB SYSTEM ===== */
@@ -433,10 +423,10 @@
     }
   }
 
-  function saveSettings() {
+  function saveSettings({ silent = false } = {}) {
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-      showNotification(t("notif_saved"), "success");
+      if (!silent) showNotification(t("notif_saved"), "success");
       log("Einstellungen gespeichert");
     } catch (e) {
       console.error("Fehler beim Speichern:", e);
@@ -467,7 +457,6 @@
     }
 
     if (inputs.animations) inputs.animations.checked = settings.animations;
-    if (inputs.compactMode) inputs.compactMode.checked = settings.compactMode;
     if (inputs.themePreviewMode)
       inputs.themePreviewMode.checked = settings.themePreviewMode;
     if (inputs.golMode) inputs.golMode.checked = settings.golMode;
@@ -580,6 +569,9 @@
       reader.onload = (event) => {
         try {
           const imported = JSON.parse(event.target.result);
+          if (imported === null || typeof imported !== "object" || Array.isArray(imported)) {
+            throw new Error("Kein Einstellungs-Objekt");
+          }
           settings = { ...DEFAULT_SETTINGS, ...imported };
           applyAllSettings();
           saveSettings();
@@ -602,7 +594,7 @@
       closeCurrentModal();
     }
 
-    if (e.ctrlKey && e.key === "s") {
+    if (currentModal && e.ctrlKey && e.key === "s") {
       e.preventDefault(); // verhindert das standard "seite speichern" des browsers
       handleSave();
     }
@@ -784,7 +776,7 @@
   // alle 60 sekunden speichern wenn autoSave aktiv ist
   setInterval(() => {
     if (settings.autoSave) {
-      saveSettings();
+      saveSettings({ silent: true });
     }
   }, 60000);
 

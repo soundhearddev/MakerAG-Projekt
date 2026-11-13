@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/styles/search.css" />
     <link rel="icon" href="/images/logo.png" type="image/png" />
     <script src="/js/lang.js"></script>
-    <script src="js/loader.js"></script>
+    <script src="/js/loader.js"></script>
 </head>
 <body class="loading">
 
@@ -94,20 +94,20 @@
             <table id="resultsTable">
                 <thead>
                     <tr>
-                        <th data-sort="id">ID</th>
-                        <th data-i18n="search_col_image">Bild</th>
-                        <th data-sort="name">Name</th>
-                        <th data-sort="category" data-i18n="search_sort_category">Kategorie</th>
-                        <th data-sort="brand" data-i18n="search_sort_brand">Marke</th>
-                        <th data-i18n="search_col_model">Modell</th>
-                        <th data-sort="quantity" data-i18n="search_sort_quantity">Menge</th>
-                        <th data-sort="locker">Locker</th>
-                        <th data-i18n="search_col_docs">Dokumentation</th>
+                        <th scope="col" data-sort="id">ID</th>
+                        <th scope="col" data-i18n="search_col_image">Bild</th>
+                        <th scope="col" data-sort="name">Name</th>
+                        <th scope="col" data-sort="category" data-i18n="search_sort_category">Kategorie</th>
+                        <th scope="col" data-sort="brand" data-i18n="search_sort_brand">Marke</th>
+                        <th scope="col" data-i18n="search_col_model">Modell</th>
+                        <th scope="col" data-sort="quantity" data-i18n="search_sort_quantity">Menge</th>
+                        <th scope="col" data-sort="locker">Locker</th>
+                        <th scope="col" data-i18n="search_col_docs">Dokumentation</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr class="loading-row">
-                        <td colspan="12">
+                        <td colspan="9">
                             <div class="loading-message">
                                 <div class="spinner"></div>
                                 <span data-i18n="search_loading">Lade Daten...</span>
@@ -122,8 +122,9 @@
         <div id="toastContainer" class="toast-container"></div>
 
         <!-- Scripts -->
-        <script src="/js/search.js"></script>
+    </div>
 
+    <script src="/js/search.js"></script>
 </body>
 
 </html>

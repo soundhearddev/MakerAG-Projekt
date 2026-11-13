@@ -5,6 +5,13 @@
 // ██║██║ ╚███║██████╔╝███████╗██╔╝╚██╗██╗╚█████╔╝██████╔╝
 // ╚═╝╚═╝  ╚══╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝ ╚════╝ ╚═════╝ 
 
+// Escaped Text für die Verwendung in innerHTML (auch in Attributen).
+const escHtml = (value) =>
+  String(value ?? "").replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+  );
+
 async function loadItemCount() {
   try {
     const res = await fetch("/api/count.php");
@@ -21,8 +28,6 @@ async function loadItemCount() {
   }
 }
 
-// Guard verhindert "redeclaration"-Fehler wenn loader.js die Datei mehrfach ausführt
-
 window.scrollTo(0, 0);
 
 // =============================================================================
@@ -35,11 +40,6 @@ const state = {
 };
 
 // =============================================================================
-// ITEM COUNT LADEN
-// =============================================================================
-
-
-// =============================================================================
 // NEUESTE EINTRÄGE LADEN
 // =============================================================================
 async function loadLatestEntries() {
@@ -50,7 +50,7 @@ async function loadLatestEntries() {
   button.disabled = true;
 
   try {
-    const res = await fetch("/api/fetch_all_items.php?latest=true&limit=5");
+    const res = await fetch("/api/fetch_all_items.php?limit=5");
 
     if (!res.ok) {
       throw new Error("Server Error " + res.status);
@@ -69,7 +69,6 @@ async function loadLatestEntries() {
       return;
     }
 
-    //log.success("Neueste Einträge geladen:", items.length);
 
     // Render Items
     container.innerHTML = items
@@ -77,21 +76,21 @@ async function loadLatestEntries() {
         (item) => `
             <div class="latest-item-card">
                 ${item.thumbnail
-            ? `<img src="${item.thumbnail}" alt="${item.name}" class="item-thumbnail">`
+            ? `<img src="${escHtml(item.thumbnail)}" alt="${escHtml(item.name)}" class="item-thumbnail">`
             : `<img src="/images/uhhhh.jpg" alt="${T.no_image_alt}" class="item-thumbnail placeholder">`
           }
                 <div class="item-info">
-                    <h3>${item.name}</h3>
+                    <h3>${escHtml(item.name)}</h3>
                     <p class="item-meta">
-                      <span class="category">${item.category_name || T.no_category}</span>
+                      <span class="category">${escHtml(item.category_name) || T.no_category}</span>
                         ${item.brand
-            ? `<span class="brand">${item.brand}</span>`
+            ? `<span class="brand">${escHtml(item.brand)}</span>`
             : ""
           }
                     </p>
                     <div class="item-actions">
                         ${item.docs_link
-            ? `<a href="..." class="btn-docs" target="_blank">${T.docs_btn}</a>`
+            ? `<a href="${escHtml(item.docs_link)}" class="btn-docs" target="_blank">${T.docs_btn}</a>`
             : ""
           }
                         <a href="/search.html?query=${encodeURIComponent(
@@ -107,7 +106,7 @@ async function loadLatestEntries() {
     button.textContent = T.btn_reload;
   } catch (err) {
     console.error("Fehler beim Laden der neuesten Einträge:", err);
-    container.innerHTML = `<p class="error-message">Fehler beim Laden: ${err.message}</p>`;
+    container.innerHTML = `<p class="error-message">Fehler beim Laden: ${escHtml(err.message)}</p>`;
     button.textContent = T.btn_retry;
   } finally {
     button.disabled = false;
@@ -143,40 +142,36 @@ async function loadRandomItem() {
     }
 
     const item = response.data[0];
-    //log.success("Zufälliges Item geladen:", item.name);
 
     statusDiv.innerHTML = `
   <div class="random-item-result random-item-button">
     ${item.thumbnail
-        ? `<img src="${item.thumbnail}" alt="${item.name}" class="random-thumbnail">`
+        ? `<img src="${escHtml(item.thumbnail)}" alt="${escHtml(item.name)}" class="random-thumbnail">`
         : `<img src="/images/uhhhh.jpg" alt="${T.no_image_alt}" class="random-thumbnail placeholder">`
       }
                 <div class="random-item-details">
-                    <h3>${item.name}</h3>
+                    <h3>${escHtml(item.name)}</h3>
                     <div class="random-meta">
                         ${item.category_name
-        ? `<span class="badge">${item.category_name}</span>`
+        ? `<span class="badge">${escHtml(item.category_name)}</span>`
         : ""
       }
                         ${item.brand
-        ? `<span class="badge">${item.brand}</span>`
+        ? `<span class="badge">${escHtml(item.brand)}</span>`
         : ""
       }
                         ${item.model
-        ? `<span class="badge">${item.model}</span>`
+        ? `<span class="badge">${escHtml(item.model)}</span>`
         : ""
       }
                     </div>
                     ${item.notes
-        ? `<p class="random-notes">${item.notes.substring(
-          0,
-          150,
-        )}${item.notes.length > 150 ? "..." : ""}</p>`
+        ? `<p class="random-notes">${escHtml(item.notes.substring(0, 150))}${item.notes.length > 150 ? "..." : ""}</p>`
         : ""
       }
                     <div class="random-actions">
 ${item.docs_link
-        ? `<a href="${item.docs_link}" class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>`
+        ? `<a href="${escHtml(item.docs_link)}" class="btn-docs random-item-button" target="_blank">${T.docs_long_btn}</a>`
         : ""
       }
                         <a href="/search.html?query=${encodeURIComponent(
@@ -190,7 +185,7 @@ ${item.docs_link
     button.textContent = T.btn_random_new;
   } catch (err) {
     console.error("Fehler beim Laden des zufälligen Items:", err);
-    statusDiv.innerHTML = `<p class="error-message">Fehler: ${err.message}</p>`;
+    statusDiv.innerHTML = `<p class="error-message">Fehler: ${escHtml(err.message)}</p>`;
     button.textContent = T.btn_retry;
   } finally {
     button.disabled = false;
@@ -219,7 +214,6 @@ async function loadCategories() {
 
     const categories = response.data || [];
 
-    //log.success("Kategorien geladen:", categories.length);
 
     // Render Kategorien
     const container = document.querySelector("#Kategorien .row");
@@ -230,8 +224,8 @@ async function loadCategories() {
       .map(
         (cat) => `
                 <div class="category-card" onclick="window.location.href='/search.html?category_id=${cat.id}'">
-                    <h3>${cat.name}</h3>
-                    ${cat.parent_name ? `<p class="category-parent">${cat.parent_name}</p>` : ""}
+                    <h3>${escHtml(cat.name)}</h3>
+                    ${cat.parent_name ? `<p class="category-parent">${escHtml(cat.parent_name)}</p>` : ""}
                     ${cat.item_count} ${cat.item_count === 1 ? T.item_singular : T.item_plural}
                 </div>
             `,
@@ -250,11 +244,10 @@ async function loadCategories() {
 // INITIALISIERUNG
 // =============================================================================
 async function init() {
-  //log.info("Initialisiere Startseite...");
+  await window.langReady;
 
   try {
     await Promise.all([loadItemCount(), loadCategories()]);
-    //log.success("Startseite erfolgreich geladen");
   } catch (err) {
     console.error("Fehler bei der Initialisierung:", err);
   }

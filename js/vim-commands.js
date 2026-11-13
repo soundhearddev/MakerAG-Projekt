@@ -365,8 +365,15 @@ window.VimCommands = [
     match: /^version$/,
     desc: ":version – System-Info anzeigen",
     group: "System",
-    run() {
+    async run() {
       const cmds = (window.VimCommands || []).length;
+      let version = "unknown";
+      try {
+        const res = await fetch("/config/config.json", { cache: "no-store" });
+        version = (await res.json()).version ?? version;
+      } catch {
+        // config.json nicht erreichbar: "unknown" anzeigen
+      }
       const theme = document.body.getAttribute("data-theme") || "default";
       const fs = document.body.style.fontSize || "15px";
 
@@ -376,7 +383,7 @@ window.VimCommands = [
           `
           <table style="width:100%; border-collapse:collapse; font-family:monospace; font-size:13px;">
             ${[
-            ["Version", "0.5.0"],
+            ["Version", version],
             ["Befehle", cmds],
             ["Theme", theme],
             ["Schriftgröße", fs],
@@ -413,7 +420,7 @@ window.VimCommands = [
             return `<div style="display:flex; justify-content:space-between; padding:4px 0;
                               border-bottom:1px solid var(--cat-extra,#333)22;
                               font-family:monospace; font-size:12px;">
-                    <span>${k}</span>
+                    <span>${_escapeHtml(k)}</span>
                     <span style="opacity:0.45;">${size}</span>
                   </div>`;
           })
@@ -771,6 +778,12 @@ window.VimCommands = [
 
 
 // ── Private Helfer ────────────────────────────────────────────────────────
+
+function _escapeHtml(value) {
+  const div = document.createElement("div");
+  div.textContent = String(value);
+  return div.innerHTML;
+}
 
 function _info(msg) {
   if (window.VimBar?._showMsg) window.VimBar._showMsg(msg, "info");

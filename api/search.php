@@ -1,181 +1,101 @@
 <?php
 
 /**
- * API Endpoint: search.php
- * Durchsucht Items über mehrere Tabellen (items, categories, locations, specs, tags).
+ * Durchsucht Items über items, categories, locations, specs und tags.
  *
- * GET ?query=Dell       → Suche nach "Dell"
- * GET ?query=           → Alle Items (neueste zuerst)
- * GET ?sort=name        → Sortierung nach Feld
- * GET ?order=ASC        → Sortierreihenfolge (ASC | DESC, Standard: DESC)
- * GET ?limit=50         → Max. Ergebnisse (1–200, Standard: 50)
- * GET ?searchFor=Marke  → Nur in bestimmtem Feld suchen
+ * GET ?query=Dell        Suchbegriff (leer: alle Items)
+ * GET ?searchFor=Marke   nur in diesem Feld suchen
+ * GET ?category_id=8     auf Kategorie (inkl. Unterkategorien) einschränken
+ * GET ?sort=name         Sortierfeld (Whitelist)
+ * GET ?order=ASC         ASC | DESC (Standard DESC)
+ * GET ?limit=50          1–200 (Standard 50)
  */
 
 require_once __DIR__ . '/init.php';
 
-// ─── Erlaubte Sortierfelder ───────────────────────────────────────────────────
-// Whitelist! Der Benutzer übergibt ?sort=name → wir prüfen ob 'name' erlaubt ist.
-// Ohne Whitelist könnte man beliebige SQL in den ORDER BY schreiben (SQL-Injection).
-// Prepared Statements funktionieren für ORDER BY nicht, deshalb Whitelist-Ansatz.
+// Spaltennamen lassen sich nicht binden, daher Whitelist.
 const SORT_FIELDS = ['id', 'name', 'brand', 'model', 'status', 'item_condition', 'created_at', 'updated_at'];
 
-// ─── Input ────────────────────────────────────────────────────────────────────
-// mb_substr = Multibyte-sicher kürzen (wichtig für Umlaute/Sonderzeichen)
-// strip_tags = HTML-Tags entfernen (<script> usw.)
-// max 500 Zeichen als Sicherheitslimit
-$query     = mb_substr(strip_tags(trim(getStringParam('query'))), 0, 500, 'UTF-8');
-$limit     = max(1, min(getIntParam('limit', 50), 200));
-// in_array prüft ob der übergebene Sort-Wert in der Whitelist ist
-// Wenn nicht → 'id' als sicheren Fallback nehmen
-$sortField = in_array(getStringParam('sort', 'id'), SORT_FIELDS, true) ? getStringParam('sort', 'id') : 'id';
-// strtoupper macht 'asc' → 'ASC', dann === 'ASC' prüfen → sonst DESC
-$sortOrder = strtoupper(getStringParam('order', 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
-
-$categoryId = getIntParam('category_id', 0);
-
-
-// ─── searchFor: Mapping Frontend-Wert → SQL-Ausdruck ─────────────────────────
-// Das Frontend schickt einen deutschen Label wie "Marke",
-// wir übersetzen das in den echten SQL-Spaltennamen.
-// Auch hier: kein direktes Einfügen von Benutzereingaben in SQL!
-// CAST(i.id AS CHAR) = Zahl 42 zu String "42" machen damit LIKE darauf funktioniert
-$searchForMap = [
-    'ID'           => 'CAST(i.id AS CHAR)',
-    'Name'         => 'i.name',
-    'Kategorie'    => 'c.name',
-    'Marke'        => 'i.brand',
-    'Modell'       => 'i.model',
-    'Locker'       => 'l.schrank',
-    'Raum'         => 'r.name',  
+// Frontend-Label → SQL-Ausdruck.
+const SEARCH_FIELDS = [
+    'ID' => 'CAST(i.id AS CHAR)',
+    'Name' => 'i.name',
+    'Kategorie' => 'c.name',
+    'Marke' => 'i.brand',
+    'Modell' => 'i.model',
+    'Locker' => 'l.schrank',
+    'Raum' => 'r.name',
 ];
-$searchForRaw = getStringParam('searchFor', '');
-// isset() prüft ob der Key existiert. Wenn nicht → null (Vollsuche)
-$searchForCol = isset($searchForMap[$searchForRaw]) ? $searchForMap[$searchForRaw] : null;
 
+// Spalten der Vollsuche.
+const FULLTEXT_COLUMNS = [
+    'CAST(i.id AS CHAR)', 'i.name', 'i.brand', 'i.model', 'i.notes', 'i.status',
+    'c.name', 'l.schrank', 'l.fach', 'r.name', 's.value', 't.name',
+];
+
+$query = mb_substr(strip_tags(getStringParam('query')), 0, 500, 'UTF-8');
+$limit = max(1, min(getIntParam('limit', 50), 200));
+$sortField = in_array(getStringParam('sort'), SORT_FIELDS, true) ? getStringParam('sort') : 'id';
+$sortOrder = strtoupper(getStringParam('order', 'DESC')) === 'ASC' ? 'ASC' : 'DESC';
+$categoryId = getIntParam('category_id');
+$searchFor = getStringParam('searchFor');
+$searchColumn = SEARCH_FIELDS[$searchFor] ?? null;
 
 try {
-    $categoryWhere = $categoryId > 0 ? "AND (i.category_id = ? OR c.parent_id = ?)" : "";
+    $conditions = [];
+    $params = [];
+    $types = '';
 
-    if ($query === '') {
-        // ── Kein Suchbegriff ──────────────────────────────────────────────────
-        $sql = "SELECT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.fach AS shelf
-                FROM items i
-                LEFT JOIN categories c ON c.id = i.category_id
-                LEFT JOIN categories p ON p.id = c.parent_id
-                LEFT JOIN locations l ON l.id = i.location_id   
-                LEFT JOIN rooms r ON r.id = l.room_id
-                WHERE 1=1 {$categoryWhere}
-                ORDER BY i.`{$sortField}` {$sortOrder}
-                LIMIT ?";
+    // specs/tags werden nur für die Vollsuche gejoint (und erzwingen dort DISTINCT).
+    $fullSearch = $query !== '' && $searchColumn === null;
 
-        $stmt = $db->prepare($sql);
-        if ($categoryId > 0) {
-            $stmt->bind_param('iii', $categoryId, $categoryId, $limit);
-        } else {
-            $stmt->bind_param('i', $limit);
-        }
-    } elseif ($searchForCol !== null) {
-        // ── Nur ein bestimmtes Feld durchsuchen ───────────────────────────────
-        $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.fach AS shelf
-                FROM items i
-                LEFT JOIN categories c ON c.id = i.category_id
-                LEFT JOIN categories p ON p.id = c.parent_id
-                LEFT JOIN locations l ON l.id = i.location_id
-                LEFT JOIN rooms r ON r.id = l.room_id
-                WHERE {$searchForCol} LIKE CONCAT('%', ?, '%') {$categoryWhere}
-                ORDER BY i.`{$sortField}` {$sortOrder}
-                LIMIT ?";
-
-        $stmt = $db->prepare($sql);
-        if ($categoryId > 0) {
-            $stmt->bind_param('siii', $query, $categoryId, $categoryId, $limit);
-        } else {
-            $stmt->bind_param('si', $query, $limit);
-        }
-    } else {
-        // ── Vollsuche über ALLE Felder ────────────────────────────────────────
-        $sql = "SELECT DISTINCT i.*, c.name AS category_name, p.name AS parent_category,
-                    r.name AS room, l.schrank AS locker, l.fach AS shelf
-                FROM items i
-                LEFT JOIN categories c ON c.id = i.category_id
-                LEFT JOIN categories p ON p.id = c.parent_id
-                LEFT JOIN locations l ON l.id = i.location_id
-                LEFT JOIN rooms r ON r.id = l.room_id
-                LEFT JOIN specs s ON s.item_id = i.id
-                LEFT JOIN item_tags it ON it.item_id = i.id
-                LEFT JOIN tags t ON t.id = it.tag_id
-                WHERE (
-                    CAST(i.id AS CHAR)  LIKE CONCAT('%', ?, '%') OR
-                    i.name              LIKE CONCAT('%', ?, '%') OR
-                    i.brand             LIKE CONCAT('%', ?, '%') OR
-                    i.model             LIKE CONCAT('%', ?, '%') OR
-                    i.notes             LIKE CONCAT('%', ?, '%') OR
-                    i.status            LIKE CONCAT('%', ?, '%') OR
-                    c.name              LIKE CONCAT('%', ?, '%') OR
-                    l.schrank           LIKE CONCAT('%', ?, '%') OR
-                    l.fach             LIKE CONCAT('%', ?, '%') OR
-                    r.name              LIKE CONCAT('%', ?, '%') OR
-                    s.value             LIKE CONCAT('%', ?, '%') OR
-                    t.name              LIKE CONCAT('%', ?, '%')
-                ) {$categoryWhere}
-                ORDER BY i.`{$sortField}` {$sortOrder}
-                LIMIT ?";
-
-        $stmt = $db->prepare($sql);
-        if ($categoryId > 0) {
-            $stmt->bind_param(
-                'ssssssssssssiii',
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $categoryId,
-                $categoryId,
-                $limit
-            );
-        } else {
-            $stmt->bind_param(
-                'ssssssssssss' . 'i',
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $query,
-                $limit
-            );
-        }
+    if ($query !== '') {
+        $columns = $fullSearch ? FULLTEXT_COLUMNS : [$searchColumn];
+        $like = array_map(static fn(string $col): string => "{$col} LIKE CONCAT('%', ?, '%')", $columns);
+        $conditions[] = '(' . implode(' OR ', $like) . ')';
+        $params = array_fill(0, count($columns), $query);
+        $types = str_repeat('s', count($columns));
     }
 
+    if ($categoryId > 0) {
+        $conditions[] = '(i.category_id = ? OR c.parent_id = ?)';
+        array_push($params, $categoryId, $categoryId);
+        $types .= 'ii';
+    }
+
+    $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
+    $distinct = $query !== '' ? 'DISTINCT' : '';
+    $extraJoins = $fullSearch
+        ? 'LEFT JOIN specs s ON s.item_id = i.id
+           LEFT JOIN item_tags it ON it.item_id = i.id
+           LEFT JOIN tags t ON t.id = it.tag_id'
+        : '';
+
+    $stmt = $db->prepare(
+        "SELECT {$distinct} i.*, c.name AS category_name, p.name AS parent_category,
+                r.name AS room, l.schrank AS locker, l.fach AS shelf
+         FROM items i
+         LEFT JOIN categories c ON c.id = i.category_id
+         LEFT JOIN categories p ON p.id = c.parent_id
+         LEFT JOIN locations l ON l.id = i.location_id
+         LEFT JOIN rooms r ON r.id = l.room_id
+         {$extraJoins}
+         {$where}
+         ORDER BY i.`{$sortField}` {$sortOrder}
+         LIMIT ?"
+    );
+    $params[] = $limit;
+    $stmt->bind_param($types . 'i', ...$params);
     $stmt->execute();
-    $items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    $items = enrichItems($items);
+    $items = enrichItems($stmt->get_result()->fetch_all(MYSQLI_ASSOC));
 
     sendSuccess($items, [
-        'count'     => count($items),
-        'query'     => $query,
-        'searchFor' => $searchForRaw ?: 'all',
-        'sort'      => ['field' => $sortField, 'order' => $sortOrder],
-        'limit'     => $limit,
+        'count' => count($items),
+        'query' => $query,
+        'searchFor' => $searchFor ?: 'all',
+        'sort' => ['field' => $sortField, 'order' => $sortOrder],
+        'limit' => $limit,
     ]);
-} catch (Exception $e) {
-    error_log('search.php: ' . $e->getMessage());
-    sendError('Suchfehler', 500);
+} catch (Throwable $e) {
+    sendException($e, 'Suchfehler');
 }

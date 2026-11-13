@@ -300,14 +300,6 @@ const OBJECT_TYPES = {
   },
 };
 
-// Beschriftungen für die Legende (was bedeutet welcher Typ?)
-const LEGEND_LABELS = {
-  "cabinet-green": "Grüne Schränke",
-  "cabinet-brown": "Braune Schränke",
-  "room": "Raum",
-  "shelf": "Fach",
-};
-
 
 // ============================================================
 //  KLEINE HILFSFUNKTIONEN
@@ -317,11 +309,6 @@ const LEGEND_LABELS = {
 // Beispiel: [[10,20],[30,40]] → "10,20 30,40"
 function pts(arr) {
   return arr.map((p) => p.join(",")).join(" ");
-}
-
-// shift verschiebt einen Punkt [x,y] um (dx, dy) Pixel.
-function shift(pt, dx, dy) {
-  return [pt[0] + dx, pt[1] + dy];
 }
 
 // esc macht Sonderzeichen in Texten für HTML sicher (verhindert Angriffe).
@@ -367,7 +354,6 @@ function renderObject(obj) {
   const sideTL = [px + depthX, py - h + depthY]; // Hinten oben links
   const sideTR = [px + w + depthX, py - h + depthY]; // Hinten oben rechts
   const sideBR = [px + w + depthX, py + depthY];     // Hinten unten rechts
-  const sideBL = [px + depthX, py + depthY];     // Hinten unten links
 
   // ── Die 3 sichtbaren Flächen festlegen ──
   const frontPts = [frontTL, frontTR, frontBR, frontBL]; // Vorderseite

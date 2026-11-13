@@ -6,7 +6,7 @@
 // ╚══════╝╚═╝  ╚═╝╚═╝  ╚══╝ ╚═════╝ ╚═╝ ╚════╝ ╚═════╝ 
 
 
-(async function () {
+window.langReady = (async function () {
   const saved = localStorage.getItem("lang") || "de";
 
   // JSON laden

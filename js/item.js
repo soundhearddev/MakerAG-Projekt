@@ -25,6 +25,19 @@
   const match = window.location.pathname.match(/\/docs\/items\/(\d+)\//);
   const id = match ? match[1] : 17;
 
+  // Headers für schreibende API-Aufrufe. Ist serverseitig API_WRITE_TOKEN gesetzt,
+  // wird das Token aus localStorage ("api_token") mitgeschickt.
+  function apiHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    try {
+      const token = localStorage.getItem("api_token");
+      if (token) headers["X-Api-Token"] = token;
+    } catch {
+      // localStorage nicht verfügbar
+    }
+    return headers;
+  }
+
   // ── Hilfsfunktionen ──────────────────────────────────────────────────────
   //
   // Kleine, wiederverwendbare Utilities die an mehreren Stellen gebraucht
@@ -145,7 +158,8 @@
       // Manche Items haben einen eigenen Namen (z.B. "Lötstationen-Set"),
       // andere sind nur über Marke + Modell identifiziert ("Bosch GSR 12V").
       // Wir bevorzugen name, fallback ist die Kombination aus beidem.
-      const title = item.name || `${item.brand} ${item.model}`;
+      const title =
+        item.name || [item.brand, item.model].filter(Boolean).join(" ") || `Item ${id}`;
 
       // Sowohl der Browser-Tab-Titel als auch die sichtbare H1 werden gesetzt.
       document.title = title;
@@ -177,7 +191,7 @@
       // per slug-Klasse kann CSS das unterschiedlich einfärben.
       if (item.item_condition) appendIf(statusDiv, infoLine(
         "Zustand",
-        `<span class="condition-${slug(item.item_condition)} item-condition">${item.item_condition}</span>`,
+        `<span class="condition-${slug(item.item_condition)} item-condition">${esc(item.item_condition)}</span>`,
       ));
 
       // Kategorien können verschachtelt sein (Eltern → Kind).
@@ -186,7 +200,7 @@
         const kat = item.parent_category
           ? `${item.parent_category} / ${item.category_name}`
           : item.category_name;
-        appendIf(statusDiv, infoLine("Kategorie", `<span class="item-category">${kat}</span>`));
+        appendIf(statusDiv, infoLine("Kategorie", `<span class="item-category">${esc(kat)}</span>`));
       }
 
       // Standort-Editor: zeigt Raum/Schrank/Fach und erlaubt Änderung
@@ -246,7 +260,7 @@
       // Bilder werden separat nachgeladen, nicht im Haupt-Fetch mitgeliefert,
       // damit der erste Render schnell ist und Bilder nachladen können.
       // Thumbnails werden herausgefiltert (nur für interne Zwecke, nicht zur Anzeige).
-      fetch(`/api/get_data.php?id=${id}&type=image`)
+      fetch(`/api/get_data.php?id=${encodeURIComponent(id)}&type=image`)
         .then((res) => res.json())
         .then((imgData) => {
           const gallery = document.getElementById("image-gallery");
@@ -279,8 +293,8 @@
       // (Promise.all) um nicht zwei sequentielle Requests zu machen.
       // Danach werden beide Listen zusammengeführt und als Links angezeigt.
       Promise.all([
-        fetch(`/api/get_data.php?id=${id}&type=pdf`).then(r => r.json()),
-        fetch(`/api/get_data.php?id=${id}&type=html`).then(r => r.json()),
+        fetch(`/api/get_data.php?id=${encodeURIComponent(id)}&type=pdf`).then(r => r.json()),
+        fetch(`/api/get_data.php?id=${encodeURIComponent(id)}&type=html`).then(r => r.json()),
       ]).then(([pdfData, htmlData]) => {
         // Beide Arrays mergen, jedes File bekommt ein passendes Icon
         const files = [
@@ -301,11 +315,20 @@
           const name = file.filename
             .replace(/\.(pdf|html?)$/i, "")
             .replace(/--\s*pdf\s*version/i, isPdf ? "-- PDF version" : "-- HTML version");
-          p.innerHTML = `${file.icon} <a href="${file.path}" target="_blank">${name}</a>`;
+          const link = document.createElement("a");
+          link.href = file.path;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.textContent = name;
+          p.append(`${file.icon} `, link);
           docsContainer.appendChild(p);
         });
 
       }).catch((err) => console.warn("Dokumente:", err));
+    })
+    .catch((err) => {
+      console.error("Item konnte nicht geladen werden:", err);
+      document.getElementById("item-title").textContent = "Fehler beim Laden";
     });
 
   // ── Status Editor ────────────────────────────────────────────────────────
@@ -378,7 +401,7 @@
         try {
           const res = await fetch("/api/edit-state.php", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: apiHeaders(),
             body: JSON.stringify({ id: item.id, status: newStatus }),
           });
           const json = await res.json();
@@ -503,7 +526,7 @@
       try {
         const res = await fetch("/api/edit-quantity.php", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: apiHeaders(),
           body: JSON.stringify({ id: item.id, quantity_available: newVal }),
         });
         const json = await res.json();
@@ -558,7 +581,7 @@
   function buildLocationEditor(container, item) {
 
     // Kategorie 4 = Räume — die haben keinen Standort, früh raus.
-    if (item.category_id == 4) return;
+    if (Number(item.category_id) === 4) return;
 
     const wrapper = document.createElement("div");
     wrapper.className = "info-line info-standort";
@@ -840,7 +863,7 @@
             // Serverfehler: versuchen den Debug-Text aus dem JSON zu holen,
             // sonst HTTP-Status als Fallback anzeigen
             let msg = `Serverfehler ${res.status}`;
-            try { const j = await res.json(); msg = j.debug || j.error || msg; } catch (_) { }
+            try { const j = await res.json(); msg = j.debug || j.error || msg; } catch { /* Antwort war kein JSON */ }
             roomSel.innerHTML = `<option disabled selected>Fehler: ${msg}</option>`;
             loaded = true;
             return;
@@ -912,7 +935,7 @@
     try {
       const res = await fetch("/api/edit-location.php", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders(),
         body: JSON.stringify(payload),
       });
       const json = await res.json();

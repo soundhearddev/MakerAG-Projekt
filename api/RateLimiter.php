@@ -1,171 +1,137 @@
 <?php
+
+namespace MakerAG;
+
 /**
- * 
- * BENÖTIGT: php-apcu
- * 
- * 
- * RateLimiter – Token-Bucket via APCu (kein Redis nötig).
+ * Token-Bucket-Rate-Limiter auf Basis von APCu (benötigt php-apcu).
  *
  * Zwei unabhängige Ebenen:
- *   1. Per-IP  – schützt gegen einzelne aggressive Clients
- *   2. Global  – schützt den Server insgesamt
+ *   1. pro IP – schützt gegen einzelne aggressive Clients
+ *   2. global – schützt den Server insgesamt
  *
- * Konfiguration über Konstanten (in init.php oder hier direkt setzen):
+ * Konfiguration über optionale Konstanten (z. B. in config.php):
  *
- *   RL_IP_CAPACITY   – max. Tokens pro IP          (default 30)
- *   RL_IP_REFILL     – Tokens/Sekunde pro IP        (default 2)
- *   RL_GL_CAPACITY   – globales Bucket-Maximum      (default 500)
- *   RL_GL_REFILL     – globale Tokens/Sekunde        (default 50)
- *   RL_BLOCK_SECONDS – Sperrzeit nach Ausschöpfung  (default 60)
+ *   RL_IP_CAPACITY   max. Tokens pro IP              (Standard 10)
+ *   RL_IP_REFILL     Tokens/Sekunde pro IP           (Standard 0.5)
+ *   RL_GL_CAPACITY   globales Bucket-Maximum         (Standard 500)
+ *   RL_GL_REFILL     globale Tokens/Sekunde          (Standard 50)
+ *   RL_BLOCK_SECONDS Sperrzeit nach Ausschöpfung     (Standard 60)
+ *
+ * Lesen und Schreiben des Bucket-Zustands sind nicht atomar. Bei parallelen
+ * Requests derselben IP kann das Limit dadurch geringfügig überschritten
+ * werden; für diesen Einsatzzweck ist das ausreichend.
  */
 class RateLimiter
 {
-    // ── Defaults ──────────────────────────────────────────────────────────────
-    private const DEF_IP_CAP   = 10;
-    private const DEF_IP_FILL  = 0.5;
-    private const DEF_GL_CAP   = 500;
-    private const DEF_GL_FILL  = 50;
-    private const DEF_BLOCK    = 60;
+    private const DEFAULT_IP_CAPACITY = 10;
+    private const DEFAULT_IP_REFILL = 0.5;
+    private const DEFAULT_GLOBAL_CAPACITY = 500;
+    private const DEFAULT_GLOBAL_REFILL = 50;
+    private const DEFAULT_BLOCK_SECONDS = 60;
 
-    // ── Intern ────────────────────────────────────────────────────────────────
-    private int   $ipCap;
-    private float $ipFill;
-    private int   $glCap;
-    private float $glFill;
-    private int   $blockSec;
-    private bool  $apcuAvail;
+    private int $ipCapacity;
+    private float $ipRefill;
+    private int $globalCapacity;
+    private float $globalRefill;
+    private int $blockSeconds;
+    private bool $apcuAvailable;
 
     public function __construct()
     {
-        $this->ipCap    = defined('RL_IP_CAPACITY')   ? RL_IP_CAPACITY   : self::DEF_IP_CAP;
-        $this->ipFill   = defined('RL_IP_REFILL')     ? RL_IP_REFILL     : self::DEF_IP_FILL;
-        $this->glCap    = defined('RL_GL_CAPACITY')   ? RL_GL_CAPACITY   : self::DEF_GL_CAP;
-        $this->glFill   = defined('RL_GL_REFILL')     ? RL_GL_REFILL     : self::DEF_GL_FILL;
-        $this->blockSec = defined('RL_BLOCK_SECONDS') ? RL_BLOCK_SECONDS : self::DEF_BLOCK;
-        $this->apcuAvail = extension_loaded('apcu') && apcu_enabled();
+        $this->ipCapacity = defined('RL_IP_CAPACITY') ? RL_IP_CAPACITY : self::DEFAULT_IP_CAPACITY;
+        $this->ipRefill = defined('RL_IP_REFILL') ? RL_IP_REFILL : self::DEFAULT_IP_REFILL;
+        $this->globalCapacity = defined('RL_GL_CAPACITY') ? RL_GL_CAPACITY : self::DEFAULT_GLOBAL_CAPACITY;
+        $this->globalRefill = defined('RL_GL_REFILL') ? RL_GL_REFILL : self::DEFAULT_GLOBAL_REFILL;
+        $this->blockSeconds = defined('RL_BLOCK_SECONDS') ? RL_BLOCK_SECONDS : self::DEFAULT_BLOCK_SECONDS;
+        $this->apcuAvailable = extension_loaded('apcu') && apcu_enabled();
     }
 
     /**
-     * Haupteinsprungpunkt.
-     * Gibt true zurück wenn der Request erlaubt ist, false wenn geblockt.
-     * Setzt passende HTTP-Header (X-RateLimit-*, Retry-After).
+     * Gibt true zurück, wenn der Request erlaubt ist. Setzt die
+     * Header X-RateLimit-* und Retry-After.
      */
     public function check(): bool
     {
-        if (!$this->apcuAvail) {
-            // APCu nicht verfügbar → fail-open (kein Absturz der API)
+        if (!$this->apcuAvailable) {
+            // Fail-open: ohne APCu läuft die API weiter, nur ungedrosselt.
             error_log('[RateLimiter] APCu nicht verfügbar – Rate Limiting deaktiviert');
             return true;
         }
 
         $ip = $this->resolveIp();
 
-        // 1. Ist die IP hart geblockt?
-        if ($this->isBlocked($ip)) {
-            $retry = (int) apcu_fetch("rl:block:ttl:{$ip}");
-            $this->sendHeaders(0, $this->ipCap, max(1, $retry));
+        $blockedUntil = (int) apcu_fetch("rl:block:{$ip}");
+        if ($blockedUntil > time()) {
+            $this->sendHeaders(0, $this->ipCapacity, $blockedUntil - time());
             return false;
         }
 
-        // 2. IP-Bucket prüfen
-        [$ipTokens, $ipAllowed] = $this->consumeBucket("rl:ip:{$ip}", $this->ipCap, $this->ipFill);
+        [$ipTokens, $ipAllowed] = $this->consumeToken("rl:ip:{$ip}", $this->ipCapacity, $this->ipRefill);
         if (!$ipAllowed) {
             $this->blockIp($ip);
-            $this->sendHeaders(0, $this->ipCap, $this->blockSec);
+            $this->sendHeaders(0, $this->ipCapacity, $this->blockSeconds);
             return false;
         }
 
-        // 3. Globales Bucket prüfen
-        [, $glAllowed] = $this->consumeBucket('rl:global', $this->glCap, $this->glFill);
-        if (!$glAllowed) {
-            // Global überlastet – kurze Pause, IP nicht hard-blocken
-            $this->sendHeaders(0, $this->ipCap, 5);
+        [, $globalAllowed] = $this->consumeToken('rl:global', $this->globalCapacity, $this->globalRefill);
+        if (!$globalAllowed) {
+            // Server überlastet: kurze Pause, die IP wird nicht gesperrt.
+            $this->sendHeaders(0, $this->ipCapacity, 5);
             return false;
         }
 
-        // Verbleibende IP-Tokens als Header mitgeben
-        $this->sendHeaders((int) $ipTokens, $this->ipCap);
+        $this->sendHeaders((int) $ipTokens, $this->ipCapacity);
         return true;
     }
 
-    // ── Token-Bucket (APCu-basiert, lock-frei) ────────────────────────────────
-
     /**
-     * Atomarer Token-Bucket-Schritt.
-     * Gibt [verbleibende Tokens nach Consume, bool erlaubt] zurück.
+     * Füllt den Bucket anhand der vergangenen Zeit auf und entnimmt einen Token.
+     *
+     * @return array{0: float, 1: bool} verbleibende Tokens, erlaubt
      */
-    private function consumeBucket(string $key, int $capacity, float $refillRate): array
+    private function consumeToken(string $key, int $capacity, float $refillRate): array
     {
-        $now    = microtime(true);
-        $tKey   = "{$key}:tokens";
-        $tsKey  = "{$key}:ts";
-        $ttl    = (int) ceil($capacity / $refillRate) * 2; // sinnvoller APCu-TTL
+        $now = microtime(true);
+        $ttl = (int) ceil($capacity / $refillRate) * 2;
 
-        // Letzten Stand laden (oder frisch initialisieren)
-        $tokens    = apcu_fetch($tKey);
-        $lastStamp = apcu_fetch($tsKey);
-
-        if ($tokens === false || $lastStamp === false) {
-            // Erster Request für diesen Key
-            $tokens    = $capacity - 1;
-            $lastStamp = $now;
-            apcu_store($tKey,  $tokens,    $ttl);
-            apcu_store($tsKey, $lastStamp, $ttl);
-            return [$tokens, true];
+        $state = apcu_fetch($key);
+        if (!is_array($state)) {
+            $state = ['tokens' => (float) $capacity, 'ts' => $now];
         }
 
-        // Tokens seit letztem Zugriff nachfüllen
-        $elapsed  = max(0.0, $now - (float) $lastStamp);
-        $refilled = $elapsed * $refillRate;
-        $tokens   = min($capacity, (float) $tokens + $refilled);
+        $elapsed = max(0.0, $now - $state['ts']);
+        $tokens = min((float) $capacity, $state['tokens'] + $elapsed * $refillRate);
 
-        apcu_store($tsKey, $now, $ttl);
-
-        if ($tokens >= 1.0) {
+        $allowed = $tokens >= 1.0;
+        if ($allowed) {
             $tokens -= 1.0;
-            apcu_store($tKey, $tokens, $ttl);
-            return [$tokens, true];
         }
 
-        // Bucket leer
-        apcu_store($tKey, $tokens, $ttl);
-        return [0, false];
-    }
+        apcu_store($key, ['tokens' => $tokens, 'ts' => $now], $ttl);
 
-    // ── Hard-Block ────────────────────────────────────────────────────────────
-
-    private function isBlocked(string $ip): bool
-    {
-        return (bool) apcu_fetch("rl:block:{$ip}");
+        return [$tokens, $allowed];
     }
 
     private function blockIp(string $ip): void
     {
-        apcu_store("rl:block:{$ip}",     true,           $this->blockSec);
-        apcu_store("rl:block:ttl:{$ip}", $this->blockSec, $this->blockSec);
-        error_log("[RateLimiter] IP geblockt für {$this->blockSec}s: {$ip}");
+        apcu_store("rl:block:{$ip}", time() + $this->blockSeconds, $this->blockSeconds);
+        error_log("[RateLimiter] IP geblockt für {$this->blockSeconds}s: {$ip}");
     }
-
-    // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
     private function resolveIp(): string
     {
-        // Vertrauenswürdige Proxies (Cloudflare, eigener Reverse-Proxy) anpassen
-        $trusted = ['127.0.0.1', '::1'];
+        // Nur hinter einem vertrauenswürdigen Proxy wird X-Forwarded-For ausgewertet.
+        $trustedProxies = ['127.0.0.1', '::1'];
+        $remote = $_SERVER['REMOTE_ADDR'] ?? '';
 
-        if (
-            in_array($_SERVER['REMOTE_ADDR'] ?? '', $trusted, true) &&
-            !empty($_SERVER['HTTP_X_FORWARDED_FOR'])
-        ) {
-            // Nur die erste (ursprüngliche) IP aus dem Header
-            $forwarded = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-            $ip = trim($forwarded[0]);
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                return $ip;
+        if (in_array($remote, $trustedProxies, true) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $forwarded = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+            if (filter_var($forwarded, FILTER_VALIDATE_IP)) {
+                return $forwarded;
             }
         }
 
-        return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        return $remote !== '' ? $remote : '0.0.0.0';
     }
 
     private function sendHeaders(int $remaining, int $limit, int $retryAfter = 0): void

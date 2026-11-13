@@ -351,26 +351,11 @@ function renderTable(data, query) {
       query !== "" && String(item.id) === String(query).trim();
     if (isExactIdMatch) row.classList.add("exact-match");
 
-    // Zeile klickbar machen (optional. hat mich manchmal genervt als ich infos kopieren wollte)
-    //    row.addEventListener("click", () => {
-    //      window.location.href = `/docs/items/${item.id}/index.html`;
-    //    });
 
-    const SEARCH_FOR_FIELD_MAP = {
-      ID: "id",
-      Name: "name",
-      Kategorie: "category_name",
-      Marke: "brand",
-      Modell: "model",
-      Seriennummer: "serial",
-      Locker: "locker",
-      Raum: "room",
-    };
-
-    function resolveQuery(field) {
+    const resolveQuery = (field) => {
       if (!state.searchFor) return query;
       return SEARCH_FOR_FIELD_MAP[state.searchFor] === field ? query : "";
-    }
+    };
 
     row.innerHTML = `
       <td class="item-id">${escapeHtml(item.id)}</td>
@@ -390,12 +375,17 @@ function renderTable(data, query) {
   tbody.appendChild(fragment);
 }
 
-function renderCell(value, field, index, query, isMultiline = false) {
-  const text = value === null || value === undefined ? "" : String(value);
-
-  const highlighted = highlightText(text, query);
-  return isMultiline ? highlighted.replace(/\n/g, "<br>") : highlighted;
-}
+// Frontend-Label des Suchfelds → Feldname im API-Ergebnis.
+const SEARCH_FOR_FIELD_MAP = {
+  ID: "id",
+  Name: "name",
+  Kategorie: "category_name",
+  Marke: "brand",
+  Modell: "model",
+  Seriennummer: "serial",
+  Locker: "locker",
+  Raum: "room",
+};
 
 function renderThumbnail(path, itemId) {
   // Fallback auf /images/uhhhh.jpg wenn kein Thumbnail gefunden wurde

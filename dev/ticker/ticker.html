@@ -152,7 +152,7 @@ function buildItems(entries) {
 
 async function load() {
   try {
-    const res = await fetch('./ticker.php');
+    const res = await fetch('./ticker.php', { headers: { 'X-Api-Token': localStorage.getItem('api_token') || '' } });
     const json = await res.json();
     const entries = json.data || json;
     if (!entries.length) return;

@@ -43,6 +43,9 @@
 
     function createOverlay() {
 
+        // Doppelter Aufruf würde zweite Overlays und Intervalle erzeugen.
+        if (overlay) return;
+
         // Wir erstellen ein <style>-Element und injizieren es in den <head> der Seite.
         // Das ist nötig, weil wir CSS-Regeln für das Overlay und Canvas brauchen,
         // die wir später auch wieder sauber entfernen wollen (per ID "gol-overlay-style").
@@ -97,6 +100,8 @@
 
         // Das Overlay-Div aus dem DOM entfernen (entfernt auch das Canvas als Kind-Element).
         // Alle Referenzen auf null setzen, damit der Garbage Collector den Speicher freigeben kann.
+        window.removeEventListener("resize", resize);
+
         if (overlay) {
             overlay.remove();
             overlay = null;
@@ -110,7 +115,6 @@
         const style = document.getElementById("gol-overlay-style");
         if (style) style.remove();
 
-        console.log("Game of Life Overlay entfernt!");
     }
 
 
@@ -270,4 +274,12 @@
     window.createGameOfLifeOverlay = createOverlay;
     window.removeGameOfLifeOverlay = removeOverlay;
 
+    // Gespeicherte Einstellung wiederherstellen (die Checkbox in den Settings
+    // zeigt sonst "an", obwohl nach einem Reload kein Overlay läuft).
+    try {
+        const saved = JSON.parse(localStorage.getItem("Settings-Obj") || "{}");
+        if (saved.golMode) createOverlay();
+    } catch {
+        // kaputte Einstellungen: Overlay bleibt aus
+    }
 })();

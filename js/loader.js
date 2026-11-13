@@ -295,28 +295,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.scrollTo(0, 0);
     document.body.style.overflow = "hidden";
 
-    // 1. Sprache laden
-    const saved = localStorage.getItem("lang") || "de";
-    try {
-      const res = await fetch("/config/lang.index.json");
-      const translations = await res.json();
-      window.T = translations[saved] || translations["de"] || {};
-    } catch (e) {
-      console.warn("[lang] Fallback auf leer");
-      window.T = {};
-    }
-    window._currentLang = saved;
-    window.applyTranslations = function () {
-      document.querySelectorAll("[data-i18n]").forEach((el) => {
-        const key = el.dataset.i18n;
-        if (window.T[key]) el.textContent = window.T[key];
+    // 1. Sprache (wird von lang.js geladen)
+    // Seiten ohne eigenes <script src="lang.js"> (z. B. die Item-Doku-Seiten)
+    if (!window.langReady) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "/js/lang.js";
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
       });
-      document.documentElement.lang = window._currentLang;
-    };
-    window.setLang = function (lang) {
-      localStorage.setItem("lang", lang);
-      location.reload();
-    };
+    }
+    await window.langReady;
 
     // 2. Partials laden
     await Promise.all([
